@@ -1,0 +1,365 @@
+basePath: /
+definitions:
+  abstractions.PaginationInfo:
+    properties:
+      count:
+        type: integer
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      sort:
+        type: string
+      total:
+        type: integer
+    type: object
+  dto.AuthLoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.AuthRegisterRequest:
+    properties:
+      email:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      status:
+        type: string
+    required:
+    - email
+    - is_active
+    - name
+    - password
+    - phone
+    - status
+    type: object
+  dto.SampleStoreRequest:
+    properties:
+      key:
+        type: string
+      user_id:
+        type: integer
+      value:
+        type: string
+    required:
+    - key
+    - user_id
+    - value
+    type: object
+  dto.SampleUpdateRequest:
+    properties:
+      id:
+        type: integer
+      key:
+        type: string
+      user_id:
+        type: integer
+      value:
+        type: string
+    required:
+    - id
+    type: object
+  response.Meta:
+    properties:
+      info:
+        $ref: '#/definitions/abstractions.PaginationInfo'
+      message:
+        default: "true"
+        type: string
+      success:
+        default: true
+        type: boolean
+    type: object
+  response.errorResponse:
+    properties:
+      error:
+        type: string
+      meta:
+        $ref: '#/definitions/response.Meta'
+    type: object
+  response.successResponse:
+    properties:
+      data:
+        type: object
+      meta:
+        $ref: '#/definitions/response.Meta'
+    type: object
+host: localhost:3030
+info:
+  contact: {}
+  description: This is a doc for code-boiler.
+  title: code-boiler
+  version: 0.0.1
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user account
+      parameters:
+      - description: request body login
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AuthLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.successResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+      summary: Login user account
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register user account
+      parameters:
+      - description: request body register
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AuthRegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.successResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+      summary: Register user account
+      tags:
+      - auth
+  /samples:
+    get:
+      consumes:
+      - application/json
+      description: Get samples
+      parameters:
+      - description: Page of pagination
+        in: query
+        name: page
+        type: integer
+      - description: Page Size of pagination
+        in: query
+        name: page_size
+        type: integer
+      - description: Sort
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.successResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get samples
+      tags:
+      - samples
+    post:
+      consumes:
+      - application/json
+      description: Create samples
+      parameters:
+      - description: request body
+        in: body
+        name: create
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SampleStoreRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.successResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create samples
+      tags:
+      - samples
+  /samples/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete samples
+      parameters:
+      - description: resource id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.successResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete samples
+      tags:
+      - samples
+    get:
+      consumes:
+      - application/json
+      description: Get samples by id
+      parameters:
+      - description: resource id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.successResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get samples by id
+      tags:
+      - samples
+    patch:
+      consumes:
+      - application/json
+      description: Update samples
+      parameters:
+      - description: request body
+        in: body
+        name: update
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SampleUpdateRequest'
+      - description: resource id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.successResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update samples
+      tags:
+      - samples
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
