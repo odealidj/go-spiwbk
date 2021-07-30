@@ -3,7 +3,7 @@ services:
   # api
   codeid-api:
     container_name: codeid-api
-    build: .
+    image: codeid-api:latest
     ports:
       - "3030:3030"
     networks:

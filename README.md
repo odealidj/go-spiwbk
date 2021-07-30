@@ -15,6 +15,7 @@ $ cd my-project
 
 ## Build & Run
 
+Local environment
 ``` bash
 # build 
 $ go build
@@ -30,14 +31,20 @@ $ ENV=STAGING ./filego
 # run in production 
 $ ENV=PROD go run main.go
 $ ENV=PROD ./filego
-
-# run in docker
-$ docker-compose up 
 ```
 
-## Swagger Documentation
+Docker environment
+``` bash
+# build 
+$ docker build -t codeid-api:latest .
 
-Install go swagger
+# run
+$ docker compose up
+```
+
+## Documentation
+
+Install environment
 ``` bash
 # get swagger package 
 $ go get github.com/swaggo/swag
@@ -49,29 +56,48 @@ $ cd $GOPATH/src/github.com/swaggo/swag
 $ go install cmd/swag
 ```
 
-Generate API documentation
+Generate documentation
 ``` bash
 # generate swagger doc
 $ swag init --propertyStrategy snakecase
 ```
-to see the results, run app and access {{base_url}}/swagger/index.html
+to see the results, run app and access {{url}}/swagger/index.html
 
-## Feature 
-This project have default feature
-- Http
-- Middleware 
-- Database
-- Validation
-- Auth 
-- CRUD  
+## Description 
+This project built in clean architecture that contains :
+1. Http
+2. Factory
+3. Middleware 
+4. Handler
+5. Binder
+6. Validation
+7. Service
+8. Repository
+9. Model
+10. Database
+
+This project have some default function :
+- Context
+- Validator
 - Transaction
-- Pagination
-- Response
+- Pagination & Sort
+- Filter
 - Env
+- Response
 - Redis
 - Elasticsearch
-- Swagger
 - Log
+
+This project have some default endpoint :
+- Auth 
+  - Login
+  - Register
+- Sample
+  - Get (with pagination, sort, & filter)
+  - GetByID
+  - Create (with transaction)
+  - Update (with transaction)
+  - Delete
 
 # Author
 CodeID Backend Team
