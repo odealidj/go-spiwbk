@@ -20,4 +20,4 @@ COPY --from=build /go/src/app/bin /go/bin
 COPY --from=build /go/src/app/ ./
 COPY ./.env.development /
 EXPOSE 3030
-ENTRYPOINT ENV=STAGING /go/bin/api
+ENTRYPOINT ENV=DEV /go/bin/api
