@@ -38,6 +38,9 @@ Docker environment
 # build 
 $ docker build -t codeid-api:latest .
 
+# config
+sudo sysctl -w vm.max_map_count=262144 # it is required for elasticsearch config
+
 # run
 $ docker compose up
 ```
