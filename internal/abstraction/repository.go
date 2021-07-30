@@ -43,6 +43,7 @@ func (r *Repository) Filter(ctx *Context, query *gorm.DB, payload interface{}) *
 
 				key := mTypeChild.Type.Field(j).Tag.Get("query")
 				filter := mTypeChild.Type.Field(j).Tag.Get("filter")
+				// TODO need to custom field
 				// filterColumn := mTypeChild.Type.Field(j).Tag.Get("filterColumn")
 
 				switch filter {
