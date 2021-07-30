@@ -180,26 +180,22 @@ var doc = `{
                     {
                         "type": "integer",
                         "name": "page",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "integer",
                         "name": "page_size",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "string",
                         "name": "sort",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "string",
                         "name": "sort_by",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "string",
@@ -291,59 +287,6 @@ var doc = `{
             }
         },
         "/samples/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Get samples by id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "samples"
-                ],
-                "summary": "Get samples by id",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "id path",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.SampleGetByIDResponseDoc"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.errorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/response.errorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/response.errorResponse"
-                        }
-                    }
-                }
-            },
             "delete": {
                 "security": [
                     {
@@ -459,17 +402,66 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/samples/{id}/{child}/{child_id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get samples by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "samples"
+                ],
+                "summary": "Get samples by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id path",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SampleGetByIDResponseDoc"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.errorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
         "abstraction.PaginationInfo": {
             "type": "object",
-            "required": [
-                "page",
-                "page_size",
-                "sort",
-                "sort_by"
-            ],
             "properties": {
                 "count": {
                     "type": "integer"
@@ -942,6 +934,12 @@ var doc = `{
                 "modified_by": {
                     "type": "string"
                 },
+                "sample_grand_childs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SampleGrandChildEntityModel"
+                    }
+                },
                 "sample_id": {
                     "description": "relations",
                     "type": "integer"
@@ -982,6 +980,40 @@ var doc = `{
                     "items": {
                         "$ref": "#/definitions/model.SampleChildEntityModel"
                     }
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.SampleGrandChildEntityModel": {
+            "type": "object",
+            "required": [
+                "key",
+                "value"
+            ],
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "modified_at": {
+                    "type": "string"
+                },
+                "modified_by": {
+                    "type": "string"
+                },
+                "sample_child_id": {
+                    "description": "relations",
+                    "type": "integer"
                 },
                 "value": {
                     "type": "string"

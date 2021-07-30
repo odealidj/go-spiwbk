@@ -14,11 +14,6 @@ definitions:
         type: string
       sort_by:
         type: string
-    required:
-    - page
-    - page_size
-    - sort
-    - sort_by
     type: object
   dto.AuthLoginRequest:
     properties:
@@ -318,6 +313,10 @@ definitions:
         type: string
       modified_by:
         type: string
+      sample_grand_childs:
+        items:
+          $ref: '#/definitions/model.SampleGrandChildEntityModel'
+        type: array
       sample_id:
         description: relations
         type: integer
@@ -346,6 +345,29 @@ definitions:
         items:
           $ref: '#/definitions/model.SampleChildEntityModel'
         type: array
+      value:
+        type: string
+    required:
+    - key
+    - value
+    type: object
+  model.SampleGrandChildEntityModel:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: integer
+      key:
+        type: string
+      modified_at:
+        type: string
+      modified_by:
+        type: string
+      sample_child_id:
+        description: relations
+        type: integer
       value:
         type: string
     required:
@@ -470,19 +492,15 @@ paths:
         type: string
       - in: query
         name: page
-        required: true
         type: integer
       - in: query
         name: page_size
-        required: true
         type: integer
       - in: query
         name: sort
-        required: true
         type: string
       - in: query
         name: sort_by
-        required: true
         type: string
       - in: query
         name: value
@@ -581,40 +599,6 @@ paths:
       summary: Delete samples
       tags:
       - samples
-    get:
-      consumes:
-      - application/json
-      description: Get samples by id
-      parameters:
-      - description: id path
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.SampleGetByIDResponseDoc'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.errorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/response.errorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/response.errorResponse'
-      security:
-      - BearerAuth: []
-      summary: Get samples by id
-      tags:
-      - samples
     patch:
       consumes:
       - application/json
@@ -653,6 +637,41 @@ paths:
       security:
       - BearerAuth: []
       summary: Update samples
+      tags:
+      - samples
+  /samples/{id}/{child}/{child_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get samples by id
+      parameters:
+      - description: id path
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SampleGetByIDResponseDoc'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get samples by id
       tags:
       - samples
 securityDefinitions:
