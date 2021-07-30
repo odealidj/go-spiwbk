@@ -6,6 +6,10 @@ services:
     image: codeid-api:latest
     ports:
       - "3030:3030"
+    depends_on: 
+      - codeid-postgres
+      - codeid-redis
+      - codeid-es-01
     networks:
       - codeid-net
     
