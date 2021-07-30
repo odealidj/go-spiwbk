@@ -1,155 +1,141 @@
 package repository
 
 import (
-	"code-boiler/internal/abstractions"
-	"code-boiler/internal/dto"
-	"code-boiler/internal/model"
-	"encoding/json"
+	"codeid-boiler/internal/abstraction"
+	"codeid-boiler/internal/model"
 	"fmt"
 
-	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
 type Sample interface {
-	Find(payload *dto.SampleGetRequest) ([]*model.Sample, *abstractions.PaginationInfo, error)
-	FindByID(id int) (*model.Sample, error)
-	FindByKey(key string) (*model.Sample, error)
-	Create(data *model.Sample) (*model.Sample, error)
-	Update(id int, data *model.Sample) (*model.Sample, error)
-	Delete(id int) (*model.Sample, error)
-
-	WithTrx(trx *gorm.DB) *sample
+	Find(ctx *abstraction.Context, m *model.SampleFilterModel, p *abstraction.Pagination) (*[]model.SampleEntityModel, *abstraction.PaginationInfo, error)
+	FindByID(ctx *abstraction.Context, id *int) (*model.SampleEntityModel, error)
+	Create(ctx *abstraction.Context, e *model.SampleEntityModel) (*model.SampleEntityModel, error)
+	Update(ctx *abstraction.Context, id *int, e *model.SampleEntityModel) (*model.SampleEntityModel, error)
+	Delete(ctx *abstraction.Context, id *int, e *model.SampleEntityModel) (*model.SampleEntityModel, error)
 }
 
 type sample struct {
-	abstractions.Repository
+	abstraction.Repository
 }
 
-func NewSample(dbConnection *gorm.DB) *sample {
+func NewSample(db *gorm.DB) *sample {
 	return &sample{
-		abstractions.Repository{
-			DBConnection: dbConnection,
+		abstraction.Repository{
+			Db: db,
 		},
 	}
 }
 
-func (r *sample) WithTrx(trx *gorm.DB) *sample {
-	new := &sample{
-		abstractions.Repository{
-			DBConnection: trx,
-		},
+func (r *sample) Find(ctx *abstraction.Context, m *model.SampleFilterModel, p *abstraction.Pagination) (*[]model.SampleEntityModel, *abstraction.PaginationInfo, error) {
+	conn := r.CheckTrx(ctx)
+
+	var datas []model.SampleEntityModel
+	var info abstraction.PaginationInfo
+
+	query := conn.Model(&model.SampleEntityModel{})
+
+	// filter
+	query = r.Filter(ctx, query, m)
+
+	// sort
+	if p.Sort == nil {
+		sort := "desc"
+		p.Sort = &sort
 	}
-	return new
-}
-
-func (r *sample) Find(payload *dto.SampleGetRequest) ([]*model.Sample, *abstractions.PaginationInfo, error) {
-	var data []*model.Sample
-	var info *abstractions.PaginationInfo
-	query := r.DBConnection.Model(&model.Sample{})
-	var sort string = "created_at desc"
-	logrus.Info(sort)
-
-	if payload.Pagination.Page != 0 {
-		var limit int = 10
-		if payload.Pagination.PageSize != 0 {
-			limit = payload.Pagination.PageSize
-		}
-
-		var total int64
-		var count int64
-		query.Count(&total)
-
-		offset := (payload.Pagination.Page - 1) * limit
-		query = query.Limit(limit).Offset(offset)
-		query.Count(&count)
-
-		info = &abstractions.PaginationInfo{
-			Pagination: &abstractions.Pagination{
-				Page:     payload.Pagination.Page,
-				PageSize: payload.Pagination.PageSize,
-				Sort:     payload.Pagination.Sort,
-			},
-			Total: total,
-			Count: count,
-		}
+	if p.SortBy == nil {
+		sortBy := "created_at"
+		p.SortBy = &sortBy
 	}
-	if payload.Pagination.Sort != "" {
-		sort = payload.Pagination.Sort
-	}
-	query = filter(&payload.Filter, query)
+	sort := fmt.Sprintf("%s %s", *p.SortBy, *p.Sort)
 	query = query.Order(sort)
 
-	err := query.Find(&data).Error
-	if err != nil {
-		return data, info, err
+	// pagination
+	if p.Page == nil {
+		page := 1
+		p.Page = &page
 	}
-	return data, info, nil
+	if p.PageSize == nil {
+		pageSize := 10
+		p.PageSize = &pageSize
+	}
+	info = abstraction.PaginationInfo{
+		Pagination: p,
+	}
+	limit := *p.PageSize + 1
+	offset := (*p.Page - 1) * limit
+	query = query.Limit(limit).Offset(offset)
+
+	err := query.Find(&datas).
+		WithContext(ctx.Request().Context()).Error
+	if err != nil {
+		return &datas, &info, err
+	}
+
+	info.Count = len(datas)
+	info.MoreRecords = false
+	if len(datas) > *p.PageSize {
+		info.MoreRecords = true
+		info.Count -= 1
+		datas = datas[:len(datas)-1]
+	}
+
+	return &datas, &info, nil
 }
 
-func (r *sample) FindByID(id int) (*model.Sample, error) {
-	var data *model.Sample
-	err := r.DBConnection.Where("id = ?", id).First(&data).Error
-	if err != nil {
-		return data, err
-	}
-	return data, nil
-}
+func (r *sample) FindByID(ctx *abstraction.Context, id *int) (*model.SampleEntityModel, error) {
+	conn := r.CheckTrx(ctx)
 
-func (r *sample) FindByKey(key string) (*model.Sample, error) {
-	var data model.Sample
-	err := r.DBConnection.Where("key = ?", key).First(&data).Error
+	var data model.SampleEntityModel
+	err := conn.Where("id = ?", id).First(&data).
+		WithContext(ctx.Request().Context()).Error
 	if err != nil {
 		return nil, err
 	}
 	return &data, nil
 }
 
-func (r *sample) Create(payload *model.Sample) (*model.Sample, error) {
-	err := r.DBConnection.Create(&payload).Error
+func (r *sample) Create(ctx *abstraction.Context, e *model.SampleEntityModel) (*model.SampleEntityModel, error) {
+	conn := r.CheckTrx(ctx)
+
+	err := conn.Create(e).
+		WithContext(ctx.Request().Context()).Error
 	if err != nil {
-		return payload, err
+		return nil, err
 	}
-	err = r.DBConnection.Model(&payload).First(&payload).Error
+	err = conn.Model(e).First(e).
+		WithContext(ctx.Request().Context()).Error
 	if err != nil {
-		return payload, err
+		return nil, err
 	}
-	return payload, nil
+	return e, nil
 }
 
-func (r *sample) Update(id int, data *model.Sample) (*model.Sample, error) {
-	var sample *model.Sample
-	err := r.DBConnection.Where("id = ?", id).First(&sample).Error
+func (r *sample) Update(ctx *abstraction.Context, id *int, e *model.SampleEntityModel) (*model.SampleEntityModel, error) {
+	conn := r.CheckTrx(ctx)
+
+	err := conn.Where("id = ?", id).First(e).
+		WithContext(ctx.Request().Context()).Error
 	if err != nil {
 		return nil, err
 	}
-	err = r.DBConnection.Model(&sample).Updates(data).Error
+	err = conn.Model(e).Updates(e).
+		WithContext(ctx.Request().Context()).Error
 	if err != nil {
 		return nil, err
 	}
-	return sample, nil
+	return e, nil
 }
 
-func (r *sample) Delete(id int) (*model.Sample, error) {
-	var data *model.Sample
-	data, err := r.FindByID(id)
-	if err != nil {
-		return nil, err
-	}
-	err = r.DBConnection.Where("id = ?", id).Delete(&data).Error
+func (r *sample) Delete(ctx *abstraction.Context, id *int, e *model.SampleEntityModel) (*model.SampleEntityModel, error) {
+	conn := r.CheckTrx(ctx)
+
+	err := conn.Where("id = ?", id).Delete(e).
+		WithContext(ctx.Request().Context()).Error
 	if err != nil {
 		return nil, err
 	}
 
-	return data, nil
-}
-
-func filter(payload *dto.SampleGetFilterRequest, query *gorm.DB) *gorm.DB {
-	var inInterface map[string]interface{}
-	inrec, _ := json.Marshal(payload)
-	json.Unmarshal(inrec, &inInterface)
-	for key, value := range inInterface {
-		query = query.Where(fmt.Sprintf("%s = ?", key), value)
-	}
-	return query
+	return e, nil
 }

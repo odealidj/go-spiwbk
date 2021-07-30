@@ -1,17 +1,17 @@
 package response
 
 import (
-	"code-boiler/internal/abstractions"
+	"codeid-boiler/internal/abstraction"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
 
-type successHelper struct {
+type successConstant struct {
 	OK Success
 }
 
-var successConstant successHelper = successHelper{
+var SuccessConstant successConstant = successConstant{
 	OK: Success{
 		Response: successResponse{
 			Meta: Meta{
@@ -34,12 +34,12 @@ type Success struct {
 	Code     int             `json:"code"`
 }
 
-func SuccessBuilder(res Success, data interface{}) *Success {
+func SuccessBuilder(res *Success, data interface{}) *Success {
 	res.Response.Data = data
-	return &res
+	return res
 }
 
-func CustomSuccessBuilder(code int, data interface{}, message string, info *abstractions.PaginationInfo) *Success {
+func CustomSuccessBuilder(code int, data interface{}, message string, info *abstraction.PaginationInfo) *Success {
 	return &Success{
 		Response: successResponse{
 			Meta: Meta{
@@ -54,7 +54,7 @@ func CustomSuccessBuilder(code int, data interface{}, message string, info *abst
 }
 
 func SuccessResponse(data interface{}) *Success {
-	return SuccessBuilder(Constant.Success.OK, data)
+	return SuccessBuilder(&SuccessConstant.OK, data)
 }
 
 func (s *Success) Send(c echo.Context) error {

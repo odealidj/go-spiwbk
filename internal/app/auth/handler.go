@@ -1,120 +1,84 @@
 package auth
 
 import (
-	"code-boiler/database"
-	"code-boiler/internal/abstractions"
-	"code-boiler/internal/dto"
-	res "code-boiler/pkg/util/response"
-	"strings"
+	"codeid-boiler/internal/abstraction"
+	"codeid-boiler/internal/dto"
+	"codeid-boiler/internal/factory"
+	res "codeid-boiler/pkg/util/response"
 
 	"github.com/labstack/echo/v4"
-	"gorm.io/gorm"
 )
 
 type handler struct {
-	service      *service
-	dbConnection *gorm.DB
+	service *service
 }
 
-func NewHandler() *handler {
-	dbConnection, err := database.DBManager(strings.ToUpper("sample2"))
-	if err != nil {
-		panic("there is no database for your account, Please contact admin handler")
-	}
-	return &handler{dbConnection: dbConnection}
+var err error
+
+func NewHandler(f *factory.Factory) *handler {
+	service := NewService(f)
+	return &handler{service}
 }
 
-// Login godoc
-// @Summary Login user account
-// @Description Login user account
+// Login
+// @Summary Login user
+// @Description Login user
 // @Tags auth
-// @Accept  json
-// @Produce  json
-// @Param login body dto.AuthLoginRequest true "request body login"
-// @Success 200 {object} res.successResponse
+// @Accept json
+// @Produce json
+// @Param request body dto.AuthLoginRequest true "request body"
+// @Success 200 {object} dto.AuthLoginResponseDoc
 // @Failure 400 {object} res.errorResponse
 // @Failure 404 {object} res.errorResponse
 // @Failure 500 {object} res.errorResponse
 // @Router /auth/login [post]
-func (h *handler) Login(c echo.Context) (err error) {
-	h.service = NewService(h.dbConnection)
+func (h *handler) Login(c echo.Context) error {
+	cc := c.(*abstraction.Context)
 
-	//logic
 	payload := new(dto.AuthLoginRequest)
 	if err = c.Bind(payload); err != nil {
-		return res.ErrorBuilder(res.Constant.Error.BadRequest, err).Send(c)
+		return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err).Send(c)
 	}
 	if err = c.Validate(payload); err != nil {
-		response := res.ErrorBuilder(res.Constant.Error.Validation, err)
-		return response.Send(c)
+		return res.ErrorBuilder(&res.ErrorConstant.Validation, err).Send(c)
 	}
 
-	user, token, err := h.service.Login(payload)
+	data, err := h.service.Login(cc, payload)
 	if err != nil {
 		return res.ErrorResponse(err).Send(c)
-	}
-
-	data := &dto.AuthLoginResponse{
-		Token: token,
-		User: dto.User{
-			Name:     user.Name,
-			Phone:    user.Phone,
-			Email:    user.Email,
-			Status:   user.Status,
-			IsActive: user.IsActive,
-		},
 	}
 
 	return res.SuccessResponse(data).Send(c)
 }
 
-// Register godoc
-// @Summary Register user account
-// @Description Register user account
+// Register
+// @Summary Register user
+// @Description Register user
 // @Tags auth
-// @Accept  json
-// @Produce  json
-// @Param register body dto.AuthRegisterRequest true "request body register"
-// @Success 200 {object} res.successResponse
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body dto.AuthRegisterRequest true "request body"
+// @Success 200 {object} dto.AuthRegisterResponseDoc
 // @Failure 400 {object} res.errorResponse
 // @Failure 404 {object} res.errorResponse
 // @Failure 500 {object} res.errorResponse
 // @Router /auth/register [post]
-func (h *handler) Register(c echo.Context) (err error) {
-	h.service = NewService(h.dbConnection)
-	trx := h.dbConnection.Begin()
-	c.Set("db_transaction", trx)
+func (h *handler) Register(c echo.Context) error {
+	cc := c.(*abstraction.Context)
 
-	//logic
 	payload := new(dto.AuthRegisterRequest)
 	if err = c.Bind(payload); err != nil {
-		return res.ErrorBuilder(res.Constant.Error.BadRequest, err).Send(c)
+		return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err).Send(c)
 	}
 	if err = c.Validate(payload); err != nil {
-		return res.ErrorBuilder(res.Constant.Error.Validation, err).Send(c)
+		return res.ErrorBuilder(&res.ErrorConstant.Validation, err).Send(c)
 	}
 
-	//register -> store user
-	user, err := h.service.WithTrx(trx).Register(payload)
+	data, err := h.service.Register(cc, payload)
 	if err != nil {
 		return res.ErrorResponse(err).Send(c)
 	}
 
-	result := dto.AuthRegisterResponse{
-		abstractions.Model{
-			ID:         user.ID,
-			CreatedAt:  user.CreatedAt,
-			CreatedBy:  user.CreatedBy,
-			ModifiedAt: user.ModifiedAt,
-			ModifiedBy: user.ModifiedBy,
-		},
-		dto.User{
-			Name:     user.Name,
-			Phone:    user.Phone,
-			Email:    user.Email,
-			Status:   user.Status,
-			IsActive: user.IsActive,
-		},
-	}
-	return res.SuccessResponse(result).Send(c)
+	return res.SuccessResponse(data).Send(c)
 }

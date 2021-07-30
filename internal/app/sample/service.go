@@ -1,122 +1,148 @@
 package sample
 
 import (
-	"code-boiler/internal/abstractions"
-	"code-boiler/internal/dto"
-	"code-boiler/internal/model"
-	"code-boiler/internal/repository"
-	res "code-boiler/pkg/util/response"
+	"codeid-boiler/internal/abstraction"
+	"codeid-boiler/internal/dto"
+	"codeid-boiler/internal/factory"
+	"codeid-boiler/internal/model"
+	"codeid-boiler/internal/repository"
+	res "codeid-boiler/pkg/util/response"
+	"codeid-boiler/pkg/util/trxmanager"
+	"errors"
 
 	"gorm.io/gorm"
 )
 
 type Service interface {
-	Find(*dto.SampleGetRequest) ([]*model.Sample, *abstractions.PaginationInfo, error)
-	FindByID(id int) (*model.Sample, error)
-
-	Create(data dto.SampleStoreRequest) (*model.Sample, error)
-	Update(id int, data dto.SampleUpdateRequest) (*model.Sample, error)
-	Delete(id int) (*model.Sample, error)
-
-	WithTrx(trx *gorm.DB) *service
+	Find(ctx *abstraction.Context, payload *dto.SampleGetRequest) (*dto.SampleGetResponse, error)
+	FindByID(ctx *abstraction.Context, payload *dto.SampleGetByIDRequest) (*dto.SampleGetByIDResponse, error)
+	Create(ctx *abstraction.Context, payload *dto.SampleCreateRequest) (*dto.SampleCreateResponse, error)
+	Update(ctx *abstraction.Context, payload *dto.SampleUpdateRequest) (*dto.SampleUpdateResponse, error)
+	Delete(ctx *abstraction.Context, payload *dto.SampleDeleteRequest) (*dto.SampleDeleteResponse, error)
 }
 
 type service struct {
 	Repository repository.Sample
+	Db         *gorm.DB
 }
 
-func NewService(dbConnection *gorm.DB) *service {
-	repository := repository.NewSample(dbConnection)
-	return &service{repository}
+func NewService(f *factory.Factory) *service {
+	repository := f.SampleRepository
+	db := f.Db
+	return &service{repository, db}
 }
 
-func (s *service) WithTrx(trx *gorm.DB) *service {
-	repository := repository.NewSample(trx)
-	return &service{
-		Repository: repository,
-	}
-}
+func (s *service) Find(ctx *abstraction.Context, payload *dto.SampleGetRequest) (*dto.SampleGetResponse, error) {
+	var result *dto.SampleGetResponse
+	var datas *[]model.SampleEntityModel
 
-func (s *service) Find(payload *dto.SampleGetRequest) ([]*model.Sample, *abstractions.PaginationInfo, error) {
-	var companies []*model.Sample
-	var err error
-
-	companies, info, err := s.Repository.Find(payload)
+	datas, info, err := s.Repository.Find(ctx, &payload.SampleFilterModel, &payload.Pagination)
 	if err != nil {
-		return nil, info, res.ErrorBuilder(res.Constant.Error.InternalServerError, err)
+		return result, res.ErrorBuilder(&res.ErrorConstant.InternalServerError, err)
 	}
 
-	return companies, info, nil
+	result = &dto.SampleGetResponse{
+		Datas:          *datas,
+		PaginationInfo: *info,
+	}
+
+	return result, nil
 }
 
-func (s *service) FindByID(id int) (*model.Sample, error) {
-	sample, err := s.Repository.FindByID(id)
+func (s *service) FindByID(ctx *abstraction.Context, payload *dto.SampleGetByIDRequest) (*dto.SampleGetByIDResponse, error) {
+	var result *dto.SampleGetByIDResponse
+
+	data, err := s.Repository.FindByID(ctx, &payload.ID)
 	if err != nil {
-		if err.Error() == "record not found" {
-			return nil, res.ErrorBuilder(res.Constant.Error.NotFound, err)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return result, res.ErrorBuilder(&res.ErrorConstant.NotFound, err)
 		}
-		return nil, res.ErrorBuilder(res.Constant.Error.InternalServerError, err)
+		return result, res.ErrorBuilder(&res.ErrorConstant.InternalServerError, err)
 	}
-	return sample, nil
+
+	result = &dto.SampleGetByIDResponse{
+		SampleEntityModel: *data,
+	}
+
+	return result, nil
 }
 
-func (s *service) Create(data *dto.SampleStoreRequest) (*model.Sample, error) {
-	sample, err := s.Repository.FindByKey(data.Key)
-	if sample != nil {
-		return nil, res.ErrorBuilder(res.Constant.Error.Duplicate, nil)
-	}
+func (s *service) Create(ctx *abstraction.Context, payload *dto.SampleCreateRequest) (*dto.SampleCreateResponse, error) {
+	var result *dto.SampleCreateResponse
+	var data *model.SampleEntityModel
 
-	if err != nil {
-		if err.Error() != "record not found" {
-			return nil, res.ErrorBuilder(res.Constant.Error.InternalServerError, err)
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+		data.Context = ctx
+		data.SampleEntity = payload.SampleEntity
+		data, err = s.Repository.Create(ctx, data)
+		if err != nil {
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
 		}
+
+		return nil
+	}); err != nil {
+		return result, err
+
 	}
 
-	sample = &model.Sample{
-		Key:    data.Key,
-		Value:  data.Value,
-		UserId: data.UserId,
+	result = &dto.SampleCreateResponse{
+		SampleEntityModel: *data,
 	}
 
-	sample, err = s.Repository.Create(sample)
-	if err != nil {
-		return sample, res.ErrorBuilder(res.Constant.Error.UnprocessableEntity, err)
-	}
-	return sample, nil
+	return result, nil
 }
 
-func (s *service) Update(id int, data *dto.SampleUpdateRequest) (*model.Sample, error) {
-	if data.Key != "" {
-		sample, _ := s.Repository.FindByKey(data.Key)
-		if sample != nil {
-			return nil, res.ErrorBuilder(res.Constant.Error.Duplicate, nil)
+func (s *service) Update(ctx *abstraction.Context, payload *dto.SampleUpdateRequest) (*dto.SampleUpdateResponse, error) {
+	var result *dto.SampleUpdateResponse
+	var data *model.SampleEntityModel
+
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+		_, err := s.Repository.FindByID(ctx, &payload.ID)
+		if err != nil {
+			return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err)
 		}
+
+		data.Context = ctx
+		data.SampleEntity = payload.SampleEntity
+		data, err = s.Repository.Update(ctx, &payload.ID, data)
+		if err != nil {
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+		return nil
+	}); err != nil {
+		return result, err
 	}
 
-	_, err := s.Repository.FindByID(id)
-	if err != nil {
-		return nil, res.ErrorBuilder(res.Constant.Error.BadRequest, err)
+	result = &dto.SampleUpdateResponse{
+		SampleEntityModel: *data,
 	}
-	sample, err := s.Repository.Update(id, &model.Sample{
-		Key:    data.Key,
-		Value:  data.Value,
-		UserId: data.UserId,
-	})
-	if err != nil {
-		return nil, res.ErrorBuilder(res.Constant.Error.InternalServerError, err)
-	}
-	return sample, nil
+
+	return result, nil
 }
 
-func (s *service) Delete(id int) (*model.Sample, error) {
-	_, err := s.Repository.FindByID(id)
-	if err != nil {
-		return nil, res.ErrorBuilder(res.Constant.Error.BadRequest, err)
+func (s *service) Delete(ctx *abstraction.Context, payload *dto.SampleDeleteRequest) (*dto.SampleDeleteResponse, error) {
+	var result *dto.SampleDeleteResponse
+	var data *model.SampleEntityModel
+
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+		data, err = s.Repository.FindByID(ctx, &payload.ID)
+		if err != nil {
+			return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err)
+		}
+
+		data.Context = ctx
+		data, err = s.Repository.Delete(ctx, &payload.ID, data)
+		if err != nil {
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+		return nil
+	}); err != nil {
+		return result, err
 	}
 
-	sample, err := s.Repository.Delete(id)
-	if err != nil {
-		return nil, res.ErrorBuilder(res.Constant.Error.InternalServerError, err)
+	result = &dto.SampleDeleteResponse{
+		SampleEntityModel: *data,
 	}
-	return sample, nil
+
+	return result, nil
 }

@@ -1,75 +1,80 @@
 package dto
 
-import "code-boiler/internal/abstractions"
+import (
+	"codeid-boiler/internal/abstraction"
+	"codeid-boiler/internal/model"
+	res "codeid-boiler/pkg/util/response"
+)
 
-type Sample struct {
-	Key    string `json:"key"`
-	Value  string `json:"value"`
-	UserId int    `json:"user_id"`
-}
-
-//region Get
+// Get
 type SampleGetRequest struct {
-	abstractions.Pagination
-	Filter SampleGetFilterRequest
+	abstraction.Pagination
+	model.SampleFilterModel
 }
-type SampleGetFilterRequest struct {
-	Key    string `json:"key,omitempty" query:"key"`
-	Value  string `json:"value,omitempty" query:"value"`
-	UserId int    `json:"user_id,omitempty" query:"user_id"`
+type SampleGetResponse struct {
+	Datas          []model.SampleEntityModel
+	PaginationInfo abstraction.PaginationInfo
+}
+type SampleGetResponseDoc struct {
+	Body struct {
+		Meta res.Meta                  `json:"meta"`
+		Data []model.SampleEntityModel `json:"data"`
+	} `json:"body"`
 }
 
-//endregion
-
-//region SampleGetByID
+// GetByID
 type SampleGetByIDRequest struct {
 	ID int `param:"id" validate:"required,numeric"`
 }
-
 type SampleGetByIDResponse struct {
-	abstractions.Model
-	Sample
+	model.SampleEntityModel
+}
+type SampleGetByIDResponseDoc struct {
+	Body struct {
+		Meta res.Meta              `json:"meta"`
+		Data SampleGetByIDResponse `json:"data"`
+	} `json:"body"`
 }
 
-//endregion
-
-//region SampleStore
-type SampleStoreRequest struct {
-	Key    string `json:"key" validate:"required"`
-	Value  string `json:"value" validate:"required"`
-	UserId int    `json:"user_id" validate:"required"`
+// Create
+type SampleCreateRequest struct {
+	model.SampleEntity
+}
+type SampleCreateResponse struct {
+	model.SampleEntityModel
+}
+type SampleCreateResponseDoc struct {
+	Body struct {
+		Meta res.Meta             `json:"meta"`
+		Data SampleCreateResponse `json:"data"`
+	} `json:"body"`
 }
 
-type SampleStoreResponse struct {
-	abstractions.Model
-	Sample
-}
-
-//endregion
-
-//region SampleUpdate
+// Update
 type SampleUpdateRequest struct {
-	ID     int    `param:"id" validate:"required,numeric"`
-	Key    string `json:"key,omitempty"`
-	Value  string `json:"value,omitempty"`
-	UserId int    `json:"user_id,omitempty"`
+	ID int `param:"id" validate:"required,numeric"`
+	model.SampleEntity
 }
-
 type SampleUpdateResponse struct {
-	abstractions.Model
-	Sample
+	model.SampleEntityModel
+}
+type SampleUpdateResponseDoc struct {
+	Body struct {
+		Meta res.Meta             `json:"meta"`
+		Data SampleUpdateResponse `json:"data"`
+	} `json:"body"`
 }
 
-//endregion
-
-//region SampleUpdate
+// Delete
 type SampleDeleteRequest struct {
 	ID int `param:"id" validate:"required,numeric"`
 }
-
 type SampleDeleteResponse struct {
-	abstractions.Model
-	Sample
+	model.SampleEntityModel
 }
-
-//endregion
+type SampleDeleteResponseDoc struct {
+	Body struct {
+		Meta res.Meta             `json:"meta"`
+		Data SampleDeleteResponse `json:"data"`
+	} `json:"body"`
+}

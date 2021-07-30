@@ -1,96 +1,60 @@
 package repository
 
 import (
-	"code-boiler/internal/abstractions"
-	"code-boiler/internal/model"
+	"codeid-boiler/internal/abstraction"
+	"codeid-boiler/internal/model"
 
 	"gorm.io/gorm"
 )
 
 type User interface {
-	FindByID(id int) (*model.User, error)
-	FindByEmail(email string) (*model.User, error)
-	Create(data *model.User) (*model.User, error)
-	Update(id int, data *model.User) (*model.User, error)
-	Delete(id int) (*model.User, error)
-
-	WithTrx(trx *gorm.DB) *user
+	FindByEmail(ctx *abstraction.Context, email *string) (*model.UserEntityModel, error)
+	Create(ctx *abstraction.Context, data *model.UserEntity) (*model.UserEntityModel, error)
+	checkTrx(ctx *abstraction.Context) *gorm.DB
 }
 
 type user struct {
-	abstractions.Repository
+	abstraction.Repository
 }
 
-func NewUser(dbConnection *gorm.DB) *user {
+func NewUser(db *gorm.DB) *user {
 	return &user{
-		abstractions.Repository{
-			DBConnection: dbConnection,
+		abstraction.Repository{
+			Db: db,
 		},
 	}
 }
 
-func (r *user) WithTrx(trx *gorm.DB) *user {
-	new := &user{
-		abstractions.Repository{
-			DBConnection: trx,
-		},
-	}
-	return new
-}
+func (r *user) FindByEmail(ctx *abstraction.Context, email *string) (*model.UserEntityModel, error) {
+	conn := r.checkTrx(ctx)
 
-func (r *user) FindByID(id int) (*model.User, error) {
-	var data *model.User
-	err := r.DBConnection.Where("id = ?", id).First(&data).Error
-	if err != nil {
-		return data, err
-	}
-	return data, nil
-}
-
-func (r *user) FindByEmail(email string) (*model.User, error) {
-	var data model.User
-	err := r.DBConnection.Where("email = ?", email).First(&data).Error
+	var data model.UserEntityModel
+	err := conn.Where("email = ?", email).First(&data).Error
 	if err != nil {
 		return nil, err
 	}
 	return &data, nil
 }
 
-func (r *user) Create(payload *model.User) (*model.User, error) {
-	err := r.DBConnection.Create(&payload).Error
+func (r *user) Create(ctx *abstraction.Context, e *model.UserEntity) (*model.UserEntityModel, error) {
+	conn := r.checkTrx(ctx)
+
+	var data model.UserEntityModel
+	data.UserEntity = *e
+	err := conn.Create(&data).Error
 	if err != nil {
-		return payload, err
+		return nil, err
 	}
-	err = r.DBConnection.Model(&payload).First(&payload).Error
+	err = conn.Model(&data).First(&data).Error
 	if err != nil {
-		return payload, err
+		return nil, err
 	}
-	return payload, nil
+	return &data, nil
 }
 
-func (r *user) Update(id int, data *model.User) (*model.User, error) {
-	var user *model.User
-	err := r.DBConnection.Where("id = ?", id).First(&user).Error
-	if err != nil {
-		return nil, err
+func (r *user) checkTrx(ctx *abstraction.Context) *gorm.DB {
+	if ctx.Trx != nil {
+		return ctx.Trx.Db
 	}
-	err = r.DBConnection.Model(&user).Updates(data).Error
-	if err != nil {
-		return nil, err
-	}
-	return user, nil
-}
-
-func (r *user) Delete(id int) (*model.User, error) {
-	var data *model.User
-	data, err := r.FindByID(id)
-	if err != nil {
-		return nil, err
-	}
-	err = r.DBConnection.Where("id = ?", id).Delete(&data).Error
-	if err != nil {
-		return nil, err
-	}
-
-	return data, nil
+	return r.Db
 }

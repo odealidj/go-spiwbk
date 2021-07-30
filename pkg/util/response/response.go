@@ -1,19 +1,9 @@
 package response
 
-import "code-boiler/internal/abstractions"
+import "codeid-boiler/internal/abstraction"
 
 type Meta struct {
-	Success bool                         `json:"success" default:"true"`
-	Message string                       `json:"message" default:"true"`
-	Info    *abstractions.PaginationInfo `json:"info"`
-}
-
-type responseHelper struct {
-	Error   errorHelper
-	Success successHelper
-}
-
-var Constant responseHelper = responseHelper{
-	Error:   errorConstant,
-	Success: successConstant,
+	Success bool                        `json:"success" default:"true"`
+	Message string                      `json:"message" default:"true"`
+	Info    *abstraction.PaginationInfo `json:"info"`
 }

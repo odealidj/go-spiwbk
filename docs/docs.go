@@ -26,7 +26,7 @@ var doc = `{
     "paths": {
         "/auth/login": {
             "post": {
-                "description": "Login user account",
+                "description": "Login user",
                 "consumes": [
                     "application/json"
                 ],
@@ -36,11 +36,11 @@ var doc = `{
                 "tags": [
                     "auth"
                 ],
-                "summary": "Login user account",
+                "summary": "Login user",
                 "parameters": [
                     {
-                        "description": "request body login",
-                        "name": "login",
+                        "description": "request body",
+                        "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -52,7 +52,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.successResponse"
+                            "$ref": "#/definitions/dto.AuthLoginResponseDoc"
                         }
                     },
                     "400": {
@@ -78,7 +78,12 @@ var doc = `{
         },
         "/auth/register": {
             "post": {
-                "description": "Register user account",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Register user",
                 "consumes": [
                     "application/json"
                 ],
@@ -88,11 +93,11 @@ var doc = `{
                 "tags": [
                     "auth"
                 ],
-                "summary": "Register user account",
+                "summary": "Register user",
                 "parameters": [
                     {
-                        "description": "request body register",
-                        "name": "register",
+                        "description": "request body",
+                        "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -104,7 +109,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.successResponse"
+                            "$ref": "#/definitions/dto.AuthRegisterResponseDoc"
                         }
                     },
                     "400": {
@@ -132,7 +137,7 @@ var doc = `{
             "get": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Get samples",
@@ -148,21 +153,53 @@ var doc = `{
                 "summary": "Get samples",
                 "parameters": [
                     {
+                        "type": "string",
+                        "name": "created_at",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "created_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "key",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "modified_at",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "modified_by",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
-                        "description": "Page of pagination",
                         "name": "page",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Page Size of pagination",
                         "name": "page_size",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Sort",
                         "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "value",
                         "in": "query"
                     }
                 ],
@@ -170,7 +207,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.successResponse"
+                            "$ref": "#/definitions/dto.SampleGetResponseDoc"
                         }
                     },
                     "400": {
@@ -196,7 +233,7 @@ var doc = `{
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Create samples",
@@ -213,11 +250,11 @@ var doc = `{
                 "parameters": [
                     {
                         "description": "request body",
-                        "name": "create",
+                        "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.SampleStoreRequest"
+                            "$ref": "#/definitions/dto.SampleCreateRequest"
                         }
                     }
                 ],
@@ -225,7 +262,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.successResponse"
+                            "$ref": "#/definitions/dto.SampleCreateResponseDoc"
                         }
                     },
                     "400": {
@@ -250,63 +287,10 @@ var doc = `{
             }
         },
         "/samples/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Get samples by id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "samples"
-                ],
-                "summary": "Get samples by id",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "resource id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.successResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.errorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/response.errorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/response.errorResponse"
-                        }
-                    }
-                }
-            },
             "delete": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Delete samples",
@@ -323,7 +307,7 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "resource id",
+                        "description": "id path",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -333,7 +317,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.successResponse"
+                            "$ref": "#/definitions/dto.SampleDeleteResponseDoc"
                         }
                     },
                     "400": {
@@ -359,7 +343,7 @@ var doc = `{
             "patch": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Update samples",
@@ -375,17 +359,72 @@ var doc = `{
                 "summary": "Update samples",
                 "parameters": [
                     {
+                        "type": "integer",
+                        "description": "id path",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "request body",
-                        "name": "update",
+                        "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/dto.SampleUpdateRequest"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SampleUpdateResponseDoc"
+                        }
                     },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/samples/{id}/{child}/{child_id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get samples by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "samples"
+                ],
+                "summary": "Get samples by id",
+                "parameters": [
                     {
                         "type": "integer",
-                        "description": "resource id",
+                        "description": "id path",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -395,7 +434,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.successResponse"
+                            "$ref": "#/definitions/dto.SampleGetByIDResponseDoc"
                         }
                     },
                     "400": {
@@ -421,23 +460,26 @@ var doc = `{
         }
     },
     "definitions": {
-        "abstractions.PaginationInfo": {
+        "abstraction.PaginationInfo": {
             "type": "object",
             "properties": {
                 "count": {
                     "type": "integer"
                 },
+                "more_records": {
+                    "type": "boolean"
+                },
                 "page": {
                     "type": "integer"
                 },
-                "pageSize": {
+                "page_size": {
                     "type": "integer"
                 },
                 "sort": {
                     "type": "string"
                 },
-                "total": {
-                    "type": "integer"
+                "sort_by": {
+                    "type": "string"
                 }
             }
         },
@@ -456,6 +498,67 @@ var doc = `{
                 }
             }
         },
+        "dto.AuthLoginResponse": {
+            "type": "object",
+            "required": [
+                "email",
+                "is_active",
+                "name",
+                "password",
+                "phone"
+            ],
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "modified_at": {
+                    "type": "string"
+                },
+                "modified_by": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.AuthLoginResponseDoc": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "data": {
+                            "$ref": "#/definitions/dto.AuthLoginResponse"
+                        },
+                        "meta": {
+                            "$ref": "#/definitions/response.Meta"
+                        }
+                    }
+                }
+            }
+        },
         "dto.AuthRegisterRequest": {
             "type": "object",
             "required": [
@@ -463,8 +566,7 @@ var doc = `{
                 "is_active",
                 "name",
                 "password",
-                "phone",
-                "status"
+                "phone"
             ],
             "properties": {
                 "email": {
@@ -481,35 +583,266 @@ var doc = `{
                 },
                 "phone": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.AuthRegisterResponse": {
+            "type": "object",
+            "required": [
+                "email",
+                "is_active",
+                "name",
+                "password",
+                "phone"
+            ],
+            "properties": {
+                "created_at": {
+                    "type": "string"
                 },
-                "status": {
+                "created_by": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "modified_at": {
+                    "type": "string"
+                },
+                "modified_by": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
                     "type": "string"
                 }
             }
         },
-        "dto.SampleStoreRequest": {
+        "dto.AuthRegisterResponseDoc": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "data": {
+                            "$ref": "#/definitions/dto.AuthRegisterResponse"
+                        },
+                        "meta": {
+                            "$ref": "#/definitions/response.Meta"
+                        }
+                    }
+                }
+            }
+        },
+        "dto.SampleCreateRequest": {
             "type": "object",
             "required": [
                 "key",
-                "user_id",
                 "value"
             ],
             "properties": {
                 "key": {
                     "type": "string"
                 },
-                "user_id": {
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SampleCreateResponse": {
+            "type": "object",
+            "required": [
+                "key",
+                "value"
+            ],
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "id": {
                     "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "modified_at": {
+                    "type": "string"
+                },
+                "modified_by": {
+                    "type": "string"
+                },
+                "sample_childs": {
+                    "description": "relations",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SampleChildEntityModel"
+                    }
                 },
                 "value": {
                     "type": "string"
                 }
             }
         },
+        "dto.SampleCreateResponseDoc": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "data": {
+                            "$ref": "#/definitions/dto.SampleCreateResponse"
+                        },
+                        "meta": {
+                            "$ref": "#/definitions/response.Meta"
+                        }
+                    }
+                }
+            }
+        },
+        "dto.SampleDeleteResponse": {
+            "type": "object",
+            "required": [
+                "key",
+                "value"
+            ],
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "modified_at": {
+                    "type": "string"
+                },
+                "modified_by": {
+                    "type": "string"
+                },
+                "sample_childs": {
+                    "description": "relations",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SampleChildEntityModel"
+                    }
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SampleDeleteResponseDoc": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "data": {
+                            "$ref": "#/definitions/dto.SampleDeleteResponse"
+                        },
+                        "meta": {
+                            "$ref": "#/definitions/response.Meta"
+                        }
+                    }
+                }
+            }
+        },
+        "dto.SampleGetByIDResponse": {
+            "type": "object",
+            "required": [
+                "key",
+                "value"
+            ],
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "modified_at": {
+                    "type": "string"
+                },
+                "modified_by": {
+                    "type": "string"
+                },
+                "sample_childs": {
+                    "description": "relations",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SampleChildEntityModel"
+                    }
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SampleGetByIDResponseDoc": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "data": {
+                            "$ref": "#/definitions/dto.SampleGetByIDResponse"
+                        },
+                        "meta": {
+                            "$ref": "#/definitions/response.Meta"
+                        }
+                    }
+                }
+            }
+        },
+        "dto.SampleGetResponseDoc": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "data": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SampleEntityModel"
+                            }
+                        },
+                        "meta": {
+                            "$ref": "#/definitions/response.Meta"
+                        }
+                    }
+                }
+            }
+        },
         "dto.SampleUpdateRequest": {
             "type": "object",
             "required": [
-                "id"
+                "id",
+                "key",
+                "value"
             ],
             "properties": {
                 "id": {
@@ -518,7 +851,168 @@ var doc = `{
                 "key": {
                     "type": "string"
                 },
-                "user_id": {
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SampleUpdateResponse": {
+            "type": "object",
+            "required": [
+                "key",
+                "value"
+            ],
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "modified_at": {
+                    "type": "string"
+                },
+                "modified_by": {
+                    "type": "string"
+                },
+                "sample_childs": {
+                    "description": "relations",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SampleChildEntityModel"
+                    }
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SampleUpdateResponseDoc": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "data": {
+                            "$ref": "#/definitions/dto.SampleUpdateResponse"
+                        },
+                        "meta": {
+                            "$ref": "#/definitions/response.Meta"
+                        }
+                    }
+                }
+            }
+        },
+        "model.SampleChildEntityModel": {
+            "type": "object",
+            "required": [
+                "key",
+                "value"
+            ],
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "modified_at": {
+                    "type": "string"
+                },
+                "modified_by": {
+                    "type": "string"
+                },
+                "sample_grand_childs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SampleGrandChildEntityModel"
+                    }
+                },
+                "sample_id": {
+                    "description": "relations",
+                    "type": "integer"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.SampleEntityModel": {
+            "type": "object",
+            "required": [
+                "key",
+                "value"
+            ],
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "modified_at": {
+                    "type": "string"
+                },
+                "modified_by": {
+                    "type": "string"
+                },
+                "sample_childs": {
+                    "description": "relations",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SampleChildEntityModel"
+                    }
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.SampleGrandChildEntityModel": {
+            "type": "object",
+            "required": [
+                "key",
+                "value"
+            ],
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "modified_at": {
+                    "type": "string"
+                },
+                "modified_by": {
+                    "type": "string"
+                },
+                "sample_child_id": {
+                    "description": "relations",
                     "type": "integer"
                 },
                 "value": {
@@ -530,7 +1024,7 @@ var doc = `{
             "type": "object",
             "properties": {
                 "info": {
-                    "$ref": "#/definitions/abstractions.PaginationInfo"
+                    "$ref": "#/definitions/abstraction.PaginationInfo"
                 },
                 "message": {
                     "type": "string",
@@ -552,21 +1046,10 @@ var doc = `{
                     "$ref": "#/definitions/response.Meta"
                 }
             }
-        },
-        "response.successResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "object"
-                },
-                "meta": {
-                    "$ref": "#/definitions/response.Meta"
-                }
-            }
         }
     },
     "securityDefinitions": {
-        "ApiKeyAuth": {
+        "BearerAuth": {
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
@@ -589,8 +1072,8 @@ var SwaggerInfo = swaggerInfo{
 	Host:        "localhost:3030",
 	BasePath:    "/",
 	Schemes:     []string{},
-	Title:       "code-boiler",
-	Description: "This is a doc for code-boiler.",
+	Title:       "codeid-boiler",
+	Description: "This is a doc for codeid-boiler.",
 }
 
 type s struct{}

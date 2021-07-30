@@ -7,49 +7,49 @@ import (
 	"gorm.io/gorm"
 )
 
-type SampleEntity struct {
-	Key   string `json:"key" validate:"required" gorm:"index:idx_sample_key,unique"`
+type SampleGrandChildEntity struct {
+	Key   string `json:"key" validate:"required" gorm:"index:idx_sample_grand_child_key,unique"`
 	Value string `json:"value" validate:"required"`
 }
 
-type SampleFilter struct {
+type SampleGrandChildFilter struct {
 	Key   *string `query:"key" filter:"ILIKE"`
 	Value *string `query:"value"`
 }
 
-type SampleEntityModel struct {
+type SampleGrandChildEntityModel struct {
 	// abstraction
 	abstraction.Entity
 
 	// entity
-	SampleEntity
+	SampleGrandChildEntity
 
 	// relations
-	SampleChilds []SampleChildEntityModel `json:"sample_childs" gorm:"foreignKey:SampleId"`
+	SampleChildId int `json:"sample_child_id"`
 
 	// context
 	Context *abstraction.Context `json:"-" gorm:"-"`
 }
 
-type SampleFilterModel struct {
+type SampleGrandChildFilterModel struct {
 	// abstraction
 	abstraction.Filter
 
 	// filter
-	SampleFilter
+	SampleGrandChildFilter
 }
 
-func (SampleEntityModel) TableName() string {
-	return "samples"
+func (SampleGrandChildEntityModel) TableName() string {
+	return "sample_grand_childs"
 }
 
-func (m *SampleEntityModel) BeforeCreate(tx *gorm.DB) (err error) {
+func (m *SampleGrandChildEntityModel) BeforeCreate(tx *gorm.DB) (err error) {
 	m.CreatedAt = *date.DateTodayLocal()
 	m.CreatedBy = m.Context.Auth.Name
 	return
 }
 
-func (m *SampleEntityModel) BeforeUpdate(tx *gorm.DB) (err error) {
+func (m *SampleGrandChildEntityModel) BeforeUpdate(tx *gorm.DB) (err error) {
 	m.ModifiedAt = date.DateTodayLocal()
 	m.ModifiedBy = &m.Context.Auth.Name
 	return

@@ -1,107 +1,88 @@
 package sample
 
 import (
-	"code-boiler/database"
-	"code-boiler/internal/abstractions"
-	"code-boiler/internal/dto"
-	res "code-boiler/pkg/util/response"
-	"strings"
+	"codeid-boiler/internal/abstraction"
+	"codeid-boiler/internal/dto"
+	"codeid-boiler/internal/factory"
+	res "codeid-boiler/pkg/util/response"
+	"fmt"
 
 	"github.com/labstack/echo/v4"
-	"gorm.io/gorm"
 )
 
 type handler struct {
-	service      *service
-	dbConnection *gorm.DB
+	service *service
 }
 
 var err error
 
-func NewHandler() *handler {
-	dbConnection, err := database.DBManager(strings.ToUpper("sample2"))
-	if err != nil {
-		panic("there is no database for your account, Please contact admin handler")
-	}
-	return &handler{dbConnection: dbConnection}
+func NewHandler(f *factory.Factory) *handler {
+	service := NewService(f)
+	return &handler{service}
 }
 
-// Get godoc
+// Get
 // @Summary Get samples
 // @Description Get samples
 // @Tags samples
-// @Accept  json
-// @Produce  json
-// @Security ApiKeyAuth
-// @Param page query int false "Page of pagination"
-// @Param page_size query int false "Page Size of pagination"
-// @Param sort query string false "Sort"
-// @Success 200 {object} res.successResponse
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @param request query dto.SampleGetRequest true "request query"
+// @Success 200 {object} dto.SampleGetResponseDoc
 // @Failure 400 {object} res.errorResponse
 // @Failure 404 {object} res.errorResponse
 // @Failure 500 {object} res.errorResponse
 // @Router /samples [get]
 func (h *handler) Get(c echo.Context) error {
-	h.service = NewService(h.dbConnection)
+	cc := c.(*abstraction.Context)
 
-	//logic
 	payload := new(dto.SampleGetRequest)
 	if err := c.Bind(payload); err != nil {
-		return res.ErrorBuilder(res.Constant.Error.BadRequest, err).Send(c)
+		return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err).Send(c)
+	}
+	if err = c.Validate(payload); err != nil {
+		return res.ErrorBuilder(&res.ErrorConstant.Validation, err).Send(c)
 	}
 
-	data, info, err := h.service.Find(payload)
+	result, err := h.service.Find(cc, payload)
 	if err != nil {
 		return res.ErrorResponse(err).Send(c)
 	}
 
-	// return res.SuccessResponse(data).Send(c)
-	return res.CustomSuccessBuilder(200, data, "Data has been retrieve", info).Send(c)
+	return res.CustomSuccessBuilder(200, result.Datas, "Get datas success", &result.PaginationInfo).Send(c)
 }
 
-// Get By ID godoc
+// Get By ID
 // @Summary Get samples by id
 // @Description Get samples by id
 // @Tags samples
-// @Accept  json
-// @Produce  json
-// @Security ApiKeyAuth
-// @Param id path int true "resource id"
-// @Success 200 {object} res.successResponse
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "id path"
+// @Success 200 {object} dto.SampleGetByIDResponseDoc
 // @Failure 400 {object} res.errorResponse
 // @Failure 404 {object} res.errorResponse
 // @Failure 500 {object} res.errorResponse
-// @Router /samples/{id} [get]
+// @Router /samples/{id}/{child}/{child_id} [get]
 func (h *handler) GetByID(c echo.Context) error {
-	h.service = NewService(h.dbConnection)
+	cc := c.(*abstraction.Context)
 
-	//logic
 	payload := new(dto.SampleGetByIDRequest)
 	if err = c.Bind(payload); err != nil {
-		return res.ErrorBuilder(res.Constant.Error.BadRequest, err).Send(c)
+		return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err).Send(c)
 	}
 	if err = c.Validate(payload); err != nil {
-		response := res.ErrorBuilder(res.Constant.Error.Validation, err)
+		response := res.ErrorBuilder(&res.ErrorConstant.Validation, err)
 		return response.Send(c)
 	}
 
-	data, err := h.service.FindByID(payload.ID)
+	fmt.Printf("%+v", payload)
+
+	result, err := h.service.FindByID(cc, payload)
 	if err != nil {
 		return res.ErrorResponse(err).Send(c)
-	}
-
-	result := dto.SampleGetByIDResponse{
-		abstractions.Model{
-			ID:         data.ID,
-			CreatedAt:  data.CreatedAt,
-			CreatedBy:  data.CreatedBy,
-			ModifiedAt: data.ModifiedAt,
-			ModifiedBy: data.ModifiedBy,
-		},
-		dto.Sample{
-			Key:   data.Key,
-			Value: data.Value,
-		},
 	}
 
 	return res.SuccessResponse(result).Send(c)
@@ -113,46 +94,27 @@ func (h *handler) GetByID(c echo.Context) error {
 // @Tags samples
 // @Accept  json
 // @Produce  json
-// @Security ApiKeyAuth
-// @Param create body dto.SampleStoreRequest true "request body"
-// @Success 200 {object} res.successResponse
+// @Security BearerAuth
+// @Param request body dto.SampleCreateRequest true "request body"
+// @Success 200 {object} dto.SampleCreateResponseDoc
 // @Failure 400 {object} res.errorResponse
 // @Failure 404 {object} res.errorResponse
 // @Failure 500 {object} res.errorResponse
 // @Router /samples [post]
-func (h *handler) Store(c echo.Context) error {
-	h.service = NewService(h.dbConnection)
-	trx := h.dbConnection.Begin()
-	c.Set("db_transaction", trx)
+func (h *handler) Create(c echo.Context) error {
+	cc := c.(*abstraction.Context)
 
-	//logic
-	payload := new(dto.SampleStoreRequest)
+	payload := new(dto.SampleCreateRequest)
 	if err := c.Bind(payload); err != nil {
-		return res.ErrorBuilder(res.Constant.Error.BadRequest, err).Send(c)
+		return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err).Send(c)
 	}
-
 	if err := c.Validate(payload); err != nil {
-		return res.ErrorBuilder(res.Constant.Error.Validation, err).Send(c)
+		return res.ErrorBuilder(&res.ErrorConstant.Validation, err).Send(c)
 	}
 
-	data, err := h.service.WithTrx(trx).Create(payload)
+	result, err := h.service.Create(cc, payload)
 	if err != nil {
 		return res.ErrorResponse(err).Send(c)
-	}
-
-	result := dto.SampleStoreResponse{
-		abstractions.Model{
-			ID:         data.ID,
-			CreatedAt:  data.CreatedAt,
-			CreatedBy:  data.CreatedBy,
-			ModifiedAt: data.ModifiedAt,
-			ModifiedBy: data.ModifiedBy,
-		},
-		dto.Sample{
-			Key:    data.Key,
-			Value:  data.Value,
-			UserId: data.UserId,
-		},
 	}
 
 	return res.SuccessResponse(result).Send(c)
@@ -164,49 +126,28 @@ func (h *handler) Store(c echo.Context) error {
 // @Tags samples
 // @Accept  json
 // @Produce  json
-// @Security ApiKeyAuth
-// @Param update body dto.SampleUpdateRequest true "request body"
-// @Param id path int true "resource id"
-// @Success 200 {object} res.successResponse
+// @Security BearerAuth
+// @Param id path int true "id path"
+// @Param request body dto.SampleUpdateRequest true "request body"
+// @Success 200 {object} dto.SampleUpdateResponseDoc
 // @Failure 400 {object} res.errorResponse
 // @Failure 404 {object} res.errorResponse
 // @Failure 500 {object} res.errorResponse
 // @Router /samples/{id} [patch]
 func (h *handler) Update(c echo.Context) error {
-	h.service = NewService(h.dbConnection)
-	trx := h.dbConnection.Begin()
-	c.Set("db_transaction", trx)
+	cc := c.(*abstraction.Context)
 
-	//logic
 	payload := new(dto.SampleUpdateRequest)
-	// id, _ := strconv.Atoi(c.Param("id"))
-
 	if err := c.Bind(&payload); err != nil {
-		return res.ErrorBuilder(res.Constant.Error.BadRequest, err).Send(c)
+		return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err).Send(c)
 	}
-
 	if err := c.Validate(payload); err != nil {
-		return res.ErrorBuilder(res.Constant.Error.Validation, err).Send(c)
+		return res.ErrorBuilder(&res.ErrorConstant.Validation, err).Send(c)
 	}
 
-	data, err := h.service.WithTrx(trx).Update(payload.ID, payload)
+	result, err := h.service.Update(cc, payload)
 	if err != nil {
 		return res.ErrorResponse(err).Send(c)
-	}
-
-	result := dto.SampleUpdateResponse{
-		abstractions.Model{
-			ID:         data.ID,
-			CreatedAt:  data.CreatedAt,
-			CreatedBy:  data.CreatedBy,
-			ModifiedAt: data.ModifiedAt,
-			ModifiedBy: data.ModifiedBy,
-		},
-		dto.Sample{
-			Key:    data.Key,
-			Value:  data.Value,
-			UserId: data.UserId,
-		},
 	}
 
 	return res.SuccessResponse(result).Send(c)
@@ -218,46 +159,27 @@ func (h *handler) Update(c echo.Context) error {
 // @Tags samples
 // @Accept  json
 // @Produce  json
-// @Security ApiKeyAuth
-// @Param id path int true "resource id"
-// @Success 200 {object} res.successResponse
+// @Security BearerAuth
+// @Param id path int true "id path"
+// @Success 200 {object}  dto.SampleDeleteResponseDoc
 // @Failure 400 {object} res.errorResponse
 // @Failure 404 {object} res.errorResponse
 // @Failure 500 {object} res.errorResponse
 // @Router /samples/{id} [delete]
 func (h *handler) Delete(c echo.Context) error {
-	h.service = NewService(h.dbConnection)
-	trx := h.dbConnection.Begin()
-	c.Set("db_transaction", trx)
+	cc := c.(*abstraction.Context)
 
-	//logic
 	payload := new(dto.SampleDeleteRequest)
 	if err := c.Bind(payload); err != nil {
-		return res.ErrorBuilder(res.Constant.Error.BadRequest, err).Send(c)
+		return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err).Send(c)
 	}
-
 	if err := c.Validate(payload); err != nil {
-		return res.ErrorBuilder(res.Constant.Error.Validation, err).Send(c)
+		return res.ErrorBuilder(&res.ErrorConstant.Validation, err).Send(c)
 	}
 
-	data, err := h.service.WithTrx(trx).Delete(payload.ID)
+	result, err := h.service.Delete(cc, payload)
 	if err != nil {
 		return res.ErrorResponse(err).Send(c)
-	}
-
-	result := dto.SampleUpdateResponse{
-		abstractions.Model{
-			ID:         data.ID,
-			CreatedAt:  data.CreatedAt,
-			CreatedBy:  data.CreatedBy,
-			ModifiedAt: data.ModifiedAt,
-			ModifiedBy: data.ModifiedBy,
-		},
-		dto.Sample{
-			Key:    data.Key,
-			Value:  data.Value,
-			UserId: data.UserId,
-		},
 	}
 
 	return res.SuccessResponse(result).Send(c)

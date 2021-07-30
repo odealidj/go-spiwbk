@@ -1,11 +1,19 @@
 package response
 
 import (
+	"codeid-boiler/pkg/log"
+	"codeid-boiler/pkg/util/date"
+	"context"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
+	"github.com/teris-io/shortid"
 )
 
 type errorResponse struct {
@@ -28,7 +36,7 @@ const (
 	E_SERVER_ERROR         = "server_error"
 )
 
-type errorHelper struct {
+type errorConstant struct {
 	Duplicate           Error
 	NotFound            Error
 	RouteNotFound       Error
@@ -39,7 +47,7 @@ type errorHelper struct {
 	InternalServerError Error
 }
 
-var errorConstant errorHelper = errorHelper{
+var ErrorConstant errorConstant = errorConstant{
 	Duplicate: Error{
 		Response: errorResponse{
 			Meta: Meta{
@@ -122,9 +130,9 @@ var errorConstant errorHelper = errorHelper{
 	},
 }
 
-func ErrorBuilder(res Error, message error) *Error {
+func ErrorBuilder(res *Error, message error) *Error {
 	res.ErrorMessage = message
-	return &res
+	return res
 }
 
 func CustomErrorBuilder(code int, err string, message string) *Error {
@@ -145,7 +153,7 @@ func ErrorResponse(err error) *Error {
 	if ok {
 		return re
 	} else {
-		return ErrorBuilder(Constant.Error.InternalServerError, err)
+		return ErrorBuilder(&ErrorConstant.InternalServerError, err)
 	}
 }
 
@@ -158,30 +166,44 @@ func (e *Error) ParseToError() error {
 }
 
 func (e *Error) Send(c echo.Context) error {
-	logrus.Error(e)
-	// body, err := ioutil.ReadAll(c.Request().Body)
-	// if err != nil {
-	// 	logrus.Warn("error read body, message: ", e.Error())
-	// }
+	var errorMessage string
+	if e.ErrorMessage != nil {
+		errorMessage = fmt.Sprintf("%+v", errors.WithStack(e.ErrorMessage))
+	}
+	logrus.Error(errorMessage)
 
-	// bHeader, err := json.Marshal(c.Request().Header)
-	// if err != nil {
-	// 	logrus.Warn("error read header, message: ", e.Error())
-	// }
+	body, err := ioutil.ReadAll(c.Request().Body)
+	if err != nil {
+		logrus.Warn("error read body, message : ", e.Error())
+	}
 
-	// log.InsertErrorLog(c.Request().Context(), &log.LogError{
-	// 	ID:           shortid.MustGenerate(),
-	// 	Header:       string(bHeader),
-	// 	Body:         string(body),
-	// 	URL:          c.Request().URL.Path,
-	// 	HttpMethod:   c.Request().Method,
-	// 	ErrorMessage: e.ErrorMessage.Error(),
-	// 	Level:        "Error",
-	// 	AppName:      os.Getenv("APP"),
-	// 	Version:      os.Getenv("VERSION"),
-	// 	Env:          os.Getenv("ENV"),
-	// 	CreatedAt:    time.Now().Local().UTC(),
-	// })
+	bHeader, err := json.Marshal(c.Request().Header)
+	if err != nil {
+		logrus.Warn("error read header, message : ", e.Error())
+	}
+
+	go func() {
+		retries := 3
+		logError := log.LogError{
+			ID:           shortid.MustGenerate(),
+			Header:       string(bHeader),
+			Body:         string(body),
+			URL:          c.Request().URL.Path,
+			HttpMethod:   c.Request().Method,
+			ErrorMessage: errorMessage,
+			Level:        "Error",
+			AppName:      os.Getenv("APP"),
+			Version:      os.Getenv("VERSION"),
+			Env:          os.Getenv("ENV"),
+			CreatedAt:    *date.DateTodayLocal(),
+		}
+		for i := 0; i < retries; i++ {
+			err := log.InsertErrorLog(context.Background(), &logError)
+			if err == nil {
+				break
+			}
+		}
+	}()
 
 	return c.JSON(e.Code, e.Response)
 }

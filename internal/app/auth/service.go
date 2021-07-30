@@ -1,78 +1,78 @@
 package auth
 
 import (
-	"code-boiler/internal/dto"
-	"code-boiler/internal/model"
-	"code-boiler/internal/repository"
-	res "code-boiler/pkg/util/response"
+	"codeid-boiler/internal/abstraction"
+	"codeid-boiler/internal/dto"
+	"codeid-boiler/internal/factory"
+	"codeid-boiler/internal/model"
+	"codeid-boiler/internal/repository"
+	res "codeid-boiler/pkg/util/response"
+	"codeid-boiler/pkg/util/trxmanager"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 type Service interface {
-	Register(payload *dto.AuthRegisterRequest) (model.User, error)
-	Login(payload *dto.AuthLoginRequest) (*model.User, string, error)
-
-	WithTrx(trx *gorm.DB) *service
+	Login(ctx *abstraction.Context, payload *dto.AuthLoginRequest) (*dto.AuthLoginResponse, error)
+	Register(ctx *abstraction.Context, payload *dto.AuthRegisterRequest) (*dto.AuthRegisterResponse, error)
 }
 
 type service struct {
 	Repository repository.User
+	Db         *gorm.DB
 }
 
-func NewService(dbConnection *gorm.DB) *service {
-	repository := repository.NewUser(dbConnection)
-	return &service{Repository: repository}
+func NewService(f *factory.Factory) *service {
+	repository := f.UserRepository
+	db := f.Db
+	return &service{repository, db}
 }
 
-func (s *service) WithTrx(trx *gorm.DB) *service {
-	repository := repository.NewUser(trx)
-	return &service{
-		Repository: repository,
-	}
-}
+func (s *service) Login(ctx *abstraction.Context, payload *dto.AuthLoginRequest) (*dto.AuthLoginResponse, error) {
+	var result *dto.AuthLoginResponse
 
-func (s *service) Login(payload *dto.AuthLoginRequest) (*model.User, string, error) {
-	user, err := s.Repository.FindByEmail(payload.Email)
-	if user == nil {
-		return nil, "", res.ErrorBuilder(res.Constant.Error.Unauthorized, err)
-	}
-	if bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(payload.Password)) != nil {
-		return nil, "", res.ErrorBuilder(res.Constant.Error.InternalServerError, err)
+	data, err := s.Repository.FindByEmail(ctx, &payload.Email)
+	if data == nil {
+		return result, res.ErrorBuilder(&res.ErrorConstant.Unauthorized, err)
 	}
 
-	token, err := user.GenerateToken()
+	if err = bcrypt.CompareHashAndPassword([]byte(data.PasswordHash), []byte(payload.Password)); err != nil {
+		return result, res.ErrorBuilder(&res.ErrorConstant.InternalServerError, err)
+	}
+
+	token, err := data.GenerateToken()
+
 	if err != nil {
-		return nil, "", res.ErrorBuilder(res.Constant.Error.InternalServerError, err)
+		return result, res.ErrorBuilder(&res.ErrorConstant.InternalServerError, err)
 	}
 
-	return user, token, nil
+	result = &dto.AuthLoginResponse{
+		Token:           token,
+		UserEntityModel: *data,
+	}
+
+	return result, nil
 }
 
-func (s *service) Register(payload *dto.AuthRegisterRequest) (*model.User, error) {
-	user, err := s.Repository.FindByEmail(payload.Phone)
-	if user != nil {
-		return nil, res.ErrorBuilder(res.Constant.Error.Duplicate, err)
-	}
-	if err != nil {
-		if err.Error() != "record not found" {
-			return nil, res.ErrorBuilder(res.Constant.Error.InternalServerError, err)
+func (s *service) Register(ctx *abstraction.Context, payload *dto.AuthRegisterRequest) (*dto.AuthRegisterResponse, error) {
+	var result *dto.AuthRegisterResponse
+	var data *model.UserEntityModel
+
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+		data, err = s.Repository.Create(ctx, &payload.UserEntity)
+		if err != nil {
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
 		}
+
+		return nil
+	}); err != nil {
+		return result, err
 	}
 
-	user = &model.User{}
-	user.Name = payload.Name
-	user.Email = payload.Email
-	user.Phone = payload.Phone
-	user.Status = payload.Status
-	user.IsActive = payload.IsActive
-	user.Password = payload.Password
-
-	user, err = s.Repository.Create(user)
-	if err != nil {
-		return user, res.ErrorBuilder(res.Constant.Error.UnprocessableEntity, err)
+	result = &dto.AuthRegisterResponse{
+		UserEntityModel: *data,
 	}
 
-	return user, nil
+	return result, nil
 }

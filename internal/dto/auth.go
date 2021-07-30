@@ -1,43 +1,36 @@
 package dto
 
-import "code-boiler/internal/abstractions"
+import (
+	"codeid-boiler/internal/model"
+	res "codeid-boiler/pkg/util/response"
+)
 
-//TODO: use this pattern {Module}{Method}{Category(Request/Response)}
-
-type User struct {
-	Name     string `json:"name"`
-	Phone    string `json:"phone"`
-	Email    string `json:"email"`
-	Status   string `json:"status"`
-	IsActive bool   `json:"is_active"`
-}
-
-//region Login
+// Login
 type AuthLoginRequest struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required"`
 }
-
 type AuthLoginResponse struct {
 	Token string `json:"token"`
-	User  User   `json:"user"`
+	model.UserEntityModel
+}
+type AuthLoginResponseDoc struct {
+	Body struct {
+		Meta res.Meta          `json:"meta"`
+		Data AuthLoginResponse `json:"data"`
+	} `json:"body"`
 }
 
-//endregion
-
-//region Register
+// Register
 type AuthRegisterRequest struct {
-	Name     string `json:"name" validate:"required"`
-	Phone    string `json:"phone" validate:"required"`
-	Email    string `json:"email" validate:"required"`
-	Password string `json:"password" validate:"required"`
-	Status   string `json:"status" validate:"required"`
-	IsActive bool   `json:"is_active"  validate:"required"`
+	model.UserEntity
 }
-
 type AuthRegisterResponse struct {
-	abstractions.Model
-	User
+	model.UserEntityModel
 }
-
-//endregion
+type AuthRegisterResponseDoc struct {
+	Body struct {
+		Meta res.Meta             `json:"meta"`
+		Data AuthRegisterResponse `json:"data"`
+	} `json:"body"`
+}

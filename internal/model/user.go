@@ -1,7 +1,9 @@
 package model
 
 import (
-	"code-boiler/internal/abstractions"
+	"codeid-boiler/internal/abstraction"
+	"codeid-boiler/pkg/constant"
+	"codeid-boiler/pkg/util/date"
 	"os"
 	"time"
 
@@ -10,46 +12,57 @@ import (
 	"gorm.io/gorm"
 )
 
-type User struct {
-	//model standart design
-	abstractions.Model
-
-	Name         string `json:"name"`
-	Phone        string `json:"phone"`
-	Email        string `json:"email"`
-	PasswordHash string `json:"password_hash"`
-	Password     string `json:"password" gorm:"-"`
-	Status       string `json:"status"`
-	IsActive     bool   `json:"is_active"`
-
-	//relations definitions
-	Samples []Sample `json:"samples" gorm:"foreignKey:UserId"`
+type UserEntity struct {
+	Name         string `json:"name" validate:"required"`
+	Phone        string `json:"phone" validate:"required"`
+	Email        string `json:"email" validate:"required,email" gorm:"index:idx_user_email,unique"`
+	PasswordHash string `json:"-"`
+	Password     string `json:"password" validate:"required" gorm:"-"`
+	IsActive     bool   `json:"is_active" validate:"required"`
 }
 
-func (m *User) BeforeUpdate(tx *gorm.DB) (err error) {
-	m.ModifiedAt = time.Now()
-	if m.Password != "" {
-		m.hashPassword()
-	}
-	return
+type UserEntityModel struct {
+	// abstraction
+	abstraction.Entity
+
+	// entity
+	UserEntity
+
+	// context
+	Context *abstraction.Context `json:"-" gorm:"-"`
 }
 
-func (m *User) BeforeCreate(tx *gorm.DB) (err error) {
+func (UserEntityModel) TableName() string {
+	return "users"
+}
+
+func (m *UserEntityModel) BeforeCreate(tx *gorm.DB) (err error) {
+	m.CreatedAt = *date.DateTodayLocal()
+	m.CreatedBy = constant.DB_DEFAULT_CREATED_BY
+
 	m.hashPassword()
+	m.Password = ""
 	return
 }
 
-func (m *User) hashPassword() {
+func (m *UserEntityModel) BeforeUpdate(tx *gorm.DB) (err error) {
+	m.ModifiedAt = date.DateTodayLocal()
+	m.ModifiedBy = &m.Context.Auth.Name
+	return
+}
+
+func (m *UserEntityModel) hashPassword() {
 	bytes, _ := bcrypt.GenerateFromPassword([]byte(m.Password), bcrypt.DefaultCost)
 	m.PasswordHash = string(bytes)
 }
 
-func (m *User) GenerateToken() (string, error) {
+func (m *UserEntityModel) GenerateToken() (string, error) {
 	var (
 		jwtKey = os.Getenv("JWT_KEY")
 	)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"id":    m.ID,
 		"email": m.Email,
 		"name":  m.Name,
 		"phone": m.Phone,
