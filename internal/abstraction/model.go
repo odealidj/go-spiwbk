@@ -1,7 +1,7 @@
 package abstraction
 
 import (
-	"code-boiler/pkg/util/date"
+	"codeid-boiler/pkg/util/date"
 	"time"
 
 	"gorm.io/gorm"

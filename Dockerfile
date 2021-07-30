@@ -18,6 +18,6 @@ WORKDIR /usr/app
 
 COPY --from=build /go/src/app/bin /go/bin
 COPY --from=build /go/src/app/ ./
-COPY ./.env.staging /
+COPY ./.env.development /
 EXPOSE 3030
 ENTRYPOINT ENV=STAGING /go/bin/api

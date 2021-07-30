@@ -1,12 +1,13 @@
 package main
 
 import (
-	db "code-boiler/database"
-	"code-boiler/database/migration"
-	"code-boiler/internal/factory"
-	"code-boiler/internal/http"
-	"code-boiler/internal/middleware"
-	"code-boiler/pkg/util/env"
+	db "codeid-boiler/database"
+	"codeid-boiler/database/migration"
+	"codeid-boiler/internal/factory"
+	"codeid-boiler/internal/http"
+	"codeid-boiler/internal/middleware"
+	"codeid-boiler/pkg/elasticsearch"
+	"codeid-boiler/pkg/util/env"
 	"os"
 
 	"github.com/labstack/echo/v4"
@@ -21,9 +22,9 @@ func init() {
 	logrus.Info("Choosen environment " + ENV)
 }
 
-// @title code-boiler
+// @title codeid-boiler
 // @version 0.0.1
-// @description This is a doc for code-boiler.
+// @description This is a doc for codeid-boiler.
 
 // @securityDefinitions.apikey BearerAuth
 // @in header
@@ -36,6 +37,7 @@ func main() {
 
 	db.Init()
 	migration.Init()
+	elasticsearch.Init()
 
 	e := echo.New()
 	middleware.Init(e)

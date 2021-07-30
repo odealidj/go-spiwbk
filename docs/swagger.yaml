@@ -373,8 +373,8 @@ definitions:
 host: localhost:3030
 info:
   contact: {}
-  description: This is a doc for code-boiler.
-  title: code-boiler
+  description: This is a doc for codeid-boiler.
+  title: codeid-boiler
   version: 0.0.1
 paths:
   /auth/login:

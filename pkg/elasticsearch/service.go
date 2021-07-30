@@ -14,12 +14,12 @@ var (
 
 var Client *el.Client
 
-func init() {
+func Init() {
 	var err error
 	Client, err = el.NewClient(
-		el.SetURL(os.Getenv("ELASTIC_URL_1"), os.Getenv("ELASTIC_URL_2")),
+		el.SetURL(os.Getenv("ELASTIC_URL_1")),
 		el.SetSniff(false),
-		el.SetBasicAuth(os.Getenv("ELASTIC_USERNAME"), os.Getenv("ELASTIC_PASSWORD")),
+		// el.SetBasicAuth(os.Getenv("ELASTIC_USERNAME"), os.Getenv("ELASTIC_PASSWORD")),
 	)
 	if err != nil {
 		panic(err)
@@ -28,7 +28,6 @@ func init() {
 }
 
 func Insert(ctx context.Context, index string, log interface{}) error {
-
 	if _, err := Client.Index().Index(ELASTIC_INDEX_NAME).
 		Type("_doc").
 		BodyJson(log).
@@ -50,7 +49,6 @@ func Get(ctx context.Context) (interface{}, error) {
 }
 
 func Update(ctx context.Context, index, ID string, update map[string]interface{}) error {
-
 	if _, err := Client.Update().
 		Index(index).
 		Type("_doc").

@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strconv"
 
-	"code-boiler/pkg/constant"
+	"codeid-boiler/pkg/constant"
 
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
@@ -31,6 +31,8 @@ func (e *env) Load(env string) {
 
 	var envFile string
 	switch env {
+	case "LOCAL":
+		envFile = "local"
 	case "DEV":
 		envFile = "development"
 	case "STAGING":

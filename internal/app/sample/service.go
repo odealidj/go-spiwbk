@@ -1,13 +1,13 @@
 package sample
 
 import (
-	"code-boiler/internal/abstraction"
-	"code-boiler/internal/dto"
-	"code-boiler/internal/factory"
-	"code-boiler/internal/model"
-	"code-boiler/internal/repository"
-	res "code-boiler/pkg/util/response"
-	"code-boiler/pkg/util/trxmanager"
+	"codeid-boiler/internal/abstraction"
+	"codeid-boiler/internal/dto"
+	"codeid-boiler/internal/factory"
+	"codeid-boiler/internal/model"
+	"codeid-boiler/internal/repository"
+	res "codeid-boiler/pkg/util/response"
+	"codeid-boiler/pkg/util/trxmanager"
 	"errors"
 
 	"gorm.io/gorm"
@@ -72,7 +72,9 @@ func (s *service) Create(ctx *abstraction.Context, payload *dto.SampleCreateRequ
 	var data *model.SampleEntityModel
 
 	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
-		data, err = s.Repository.Create(ctx, &payload.SampleEntity)
+		data.Context = ctx
+		data.SampleEntity = payload.SampleEntity
+		data, err = s.Repository.Create(ctx, data)
 		if err != nil {
 			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
 		}
@@ -100,7 +102,9 @@ func (s *service) Update(ctx *abstraction.Context, payload *dto.SampleUpdateRequ
 			return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err)
 		}
 
-		data, err = s.Repository.Update(ctx, &payload.ID, &payload.SampleEntity)
+		data.Context = ctx
+		data.SampleEntity = payload.SampleEntity
+		data, err = s.Repository.Update(ctx, &payload.ID, data)
 		if err != nil {
 			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
 		}
@@ -121,12 +125,13 @@ func (s *service) Delete(ctx *abstraction.Context, payload *dto.SampleDeleteRequ
 	var data *model.SampleEntityModel
 
 	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
-		_, err := s.Repository.FindByID(ctx, &payload.ID)
+		data, err = s.Repository.FindByID(ctx, &payload.ID)
 		if err != nil {
 			return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err)
 		}
 
-		data, err = s.Repository.Delete(ctx, &payload.ID)
+		data.Context = ctx
+		data, err = s.Repository.Delete(ctx, &payload.ID, data)
 		if err != nil {
 			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
 		}

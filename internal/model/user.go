@@ -1,9 +1,9 @@
 package model
 
 import (
-	"code-boiler/internal/abstraction"
-	"code-boiler/pkg/constant"
-	"code-boiler/pkg/util/date"
+	"codeid-boiler/internal/abstraction"
+	"codeid-boiler/pkg/constant"
+	"codeid-boiler/pkg/util/date"
 	"os"
 	"time"
 

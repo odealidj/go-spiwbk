@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"code-boiler/internal/abstraction"
-	res "code-boiler/pkg/util/response"
+	"codeid-boiler/internal/abstraction"
+	res "codeid-boiler/pkg/util/response"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"

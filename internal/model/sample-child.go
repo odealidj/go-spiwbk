@@ -1,8 +1,8 @@
 package model
 
 import (
-	"code-boiler/internal/abstraction"
-	"code-boiler/pkg/util/date"
+	"codeid-boiler/internal/abstraction"
+	"codeid-boiler/pkg/util/date"
 
 	"gorm.io/gorm"
 )

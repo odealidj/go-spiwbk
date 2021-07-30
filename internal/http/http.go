@@ -1,10 +1,10 @@
 package http
 
 import (
-	docs "code-boiler/docs"
-	"code-boiler/internal/app/auth"
-	"code-boiler/internal/app/sample"
-	"code-boiler/internal/factory"
+	docs "codeid-boiler/docs"
+	"codeid-boiler/internal/app/auth"
+	"codeid-boiler/internal/app/sample"
+	"codeid-boiler/internal/factory"
 	"fmt"
 	"net/http"
 	"os"

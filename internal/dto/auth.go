@@ -1,8 +1,8 @@
 package dto
 
 import (
-	"code-boiler/internal/model"
-	res "code-boiler/pkg/util/response"
+	"codeid-boiler/internal/model"
+	res "codeid-boiler/pkg/util/response"
 )
 
 // Login

@@ -1,8 +1,8 @@
 package factory
 
 import (
-	"code-boiler/database"
-	"code-boiler/internal/repository"
+	"codeid-boiler/database"
+	"codeid-boiler/internal/repository"
 
 	"gorm.io/gorm"
 )

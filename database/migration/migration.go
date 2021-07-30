@@ -1,8 +1,8 @@
 package migration
 
 import (
-	"code-boiler/database"
-	"code-boiler/internal/model"
+	"codeid-boiler/database"
+	"codeid-boiler/internal/model"
 	"fmt"
 
 	"github.com/sirupsen/logrus"

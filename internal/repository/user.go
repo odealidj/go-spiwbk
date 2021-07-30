@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"code-boiler/internal/abstraction"
-	"code-boiler/internal/model"
+	"codeid-boiler/internal/abstraction"
+	"codeid-boiler/internal/model"
 
 	"gorm.io/gorm"
 )

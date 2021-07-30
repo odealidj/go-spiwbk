@@ -1,9 +1,9 @@
 package dto
 
 import (
-	"code-boiler/internal/abstraction"
-	"code-boiler/internal/model"
-	res "code-boiler/pkg/util/response"
+	"codeid-boiler/internal/abstraction"
+	"codeid-boiler/internal/model"
+	res "codeid-boiler/pkg/util/response"
 )
 
 // Get

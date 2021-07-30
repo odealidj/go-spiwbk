@@ -1040,8 +1040,8 @@ var SwaggerInfo = swaggerInfo{
 	Host:        "localhost:3030",
 	BasePath:    "/",
 	Schemes:     []string{},
-	Title:       "code-boiler",
-	Description: "This is a doc for code-boiler.",
+	Title:       "codeid-boiler",
+	Description: "This is a doc for codeid-boiler.",
 }
 
 type s struct{}

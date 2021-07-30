@@ -1,10 +1,10 @@
 package sample
 
 import (
-	"code-boiler/internal/abstraction"
-	"code-boiler/internal/dto"
-	"code-boiler/internal/factory"
-	res "code-boiler/pkg/util/response"
+	"codeid-boiler/internal/abstraction"
+	"codeid-boiler/internal/dto"
+	"codeid-boiler/internal/factory"
+	res "codeid-boiler/pkg/util/response"
 	"fmt"
 
 	"github.com/labstack/echo/v4"

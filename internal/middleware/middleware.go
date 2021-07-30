@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"code-boiler/pkg/util/validator"
+	"codeid-boiler/pkg/util/validator"
 	"fmt"
 	"net/http"
 	"os"

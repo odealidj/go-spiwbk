@@ -1,7 +1,7 @@
 package trxmanager
 
 import (
-	"code-boiler/internal/abstraction"
+	"codeid-boiler/internal/abstraction"
 	"errors"
 	"fmt"
 

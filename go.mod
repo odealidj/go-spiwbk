@@ -1,4 +1,4 @@
-module code-boiler
+module codeid-boiler
 
 go 1.16
 

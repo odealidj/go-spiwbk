@@ -1,4 +1,4 @@
-# code-boiler
+# codeid-boiler
 This project is code.id boilerplate to create API in Golang Echo Framework
 - PORT : 3030
 - PATH : /
