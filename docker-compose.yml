@@ -14,9 +14,9 @@ services:
     container_name: codeid-postgres
     image: postgres:12-alpine 
     environment: 
-      - POSTGRES_USER=gank_ecommerce
+      - POSTGRES_USER=codeid_user
       - POSTGRES_PASSWORD=f72d8509-c70a-485a-a471-23f899b988ab
-      - POSTGRES_DB=gank_ecommerce_db
+      - POSTGRES_DB=codeid_db
     volumes: 
       - codeid-postgres:/var/lib/postgresql
     ports:
