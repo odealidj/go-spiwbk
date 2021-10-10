@@ -50,7 +50,12 @@ func (c *dbPostgreSQL) Init() (*gorm.DB, error) {
 }
 
 func (c *dbMySQL) Init() (*gorm.DB, error) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=%s&loc=%s", c.User, c.Pass, c.Host, c.Port, c.Name, c.Charset, c.ParseTime, c.Loc)
+	//Heroku
+	//dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?reconnect=true", c.User, c.Pass, c.Host, c.Port, c.Name)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?reconnect=true", c.User, c.Pass, c.Host, c.Name)
+	//mysql://b34b5824ee06f6:923f1590@us-cdbr-east-04.cleardb.com/heroku_08b64deef14c329?reconnect=true
+	//dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=%s&loc=%s", c.User, c.Pass, c.Host, c.Port, c.Name, c.Charset, c.ParseTime, c.Loc)
+
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: false,
 		Logger:                                   logger.Default.LogMode(logger.Info),
