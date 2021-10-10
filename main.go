@@ -2,7 +2,6 @@ package main
 
 import (
 	db "codeid-boiler/database"
-	"codeid-boiler/database/migration"
 	"codeid-boiler/internal/factory"
 	"codeid-boiler/internal/http"
 	"codeid-boiler/internal/middleware"
