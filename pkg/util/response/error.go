@@ -1,19 +1,18 @@
 package response
 
 import (
-	"codeid-boiler/pkg/log"
-	"codeid-boiler/pkg/util/date"
-	"context"
-	"encoding/json"
+	//"codeid-boiler/pkg/log"
+	//"codeid-boiler/pkg/util/date"
+	//"context"
+	//"encoding/json"
 	"fmt"
-	"io/ioutil"
+	//"io/ioutil"
 	"net/http"
-	"os"
+	//"os"
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"github.com/teris-io/shortid"
 )
 
 type errorResponse struct {
@@ -172,16 +171,18 @@ func (e *Error) Send(c echo.Context) error {
 	}
 	logrus.Error(errorMessage)
 
+	/*
 	body, err := ioutil.ReadAll(c.Request().Body)
 	if err != nil {
 		logrus.Warn("error read body, message : ", e.Error())
 	}
-
+	
 	bHeader, err := json.Marshal(c.Request().Header)
 	if err != nil {
 		logrus.Warn("error read header, message : ", e.Error())
 	}
 
+	
 	go func() {
 		retries := 3
 		logError := log.LogError{
@@ -204,6 +205,7 @@ func (e *Error) Send(c echo.Context) error {
 			}
 		}
 	}()
+	*/
 
 	return c.JSON(e.Code, e.Response)
 }

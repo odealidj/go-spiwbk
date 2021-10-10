@@ -5,6 +5,6 @@ import (
 )
 
 func (h *handler) Route(g *echo.Group) {
-	g.POST("/login", h.Login)
+	//g.POST("/login", h.Login)
 	g.POST("/register", h.Register)
 }

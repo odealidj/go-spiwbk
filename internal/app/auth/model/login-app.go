@@ -13,23 +13,20 @@ import (
 )
 
 type LoginAppEntity struct {
-	Username     string `json:"username" validate:"required" gorm:"index:idx_login_app_name,unique"`
+	//Relation
+	UserAppId    uint16 `json:"user_app_Id" validate:"required"`
+	Username     string `json:"username" validate:"required" gorm:"index:idx_login_app_username,unique"`
 	Passwordhash string `json:"-"`
 	Password     string `json:"password" validate:"required" gorm:"-"`
 }
 
 type LoginApp struct {
-
-	abstraction.Entity 
+	abstraction.EntityInc
 
 	LoginAppEntity
 
-	//Relation
-	UserApp UserApp `json:"user_app" gorm:"foreignKey:ID"`
-
 	// context
 	Context *abstraction.Context `json:"-" gorm:"-"`
-	
 }
 
 func (m *LoginApp) BeforeCreate(tx *gorm.DB) (err error) {
@@ -57,9 +54,9 @@ func (m *LoginApp) GenerateToken() (string, error) {
 	)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id":          m.ID,
-		"username":    m.Username,
-		"exp":         time.Now().Add(time.Hour * 72).Unix(),
+		"id":       m.ID,
+		"username": m.Username,
+		"exp":      time.Now().Add(time.Hour * 72).Unix(),
 	})
 
 	tokenString, err := token.SignedString([]byte(jwtKey))

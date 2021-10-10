@@ -6,16 +6,15 @@ import (
 	"codeid-boiler/internal/app/auth/model"
 	"codeid-boiler/internal/app/auth/repository"
 	"codeid-boiler/internal/factory"
-
+	
 	res "codeid-boiler/pkg/util/response"
 	"codeid-boiler/pkg/util/trxmanager"
 
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 type Service interface {
-	Login(*abstraction.Context, *dto.LoginRequest) (*dto.LoginResponse, error)
+	//Login(*abstraction.Context, *dto.LoginRequest) (*dto.LoginResponse, error)
 	Register(*abstraction.Context, *dto.RegisterRequest) (*dto.RegisterResponse, error)
 }
 
@@ -30,6 +29,7 @@ func NewService(f *factory.Factory) *service {
 	return &service{repository, db}
 }
 
+/*
 func (s *service) Login(ctx *abstraction.Context, payload *dto.LoginRequest) (*dto.LoginResponse, error) {
 	var result *dto.LoginResponse
 
@@ -55,6 +55,7 @@ func (s *service) Login(ctx *abstraction.Context, payload *dto.LoginRequest) (*d
 
 	return result, nil
 }
+*/
 
 func (s *service) Register(ctx *abstraction.Context, payload *dto.RegisterRequest) (*dto.RegisterResponse, error) {
 	var result *dto.RegisterResponse
@@ -62,20 +63,9 @@ func (s *service) Register(ctx *abstraction.Context, payload *dto.RegisterReques
 
 	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
 
-		/*
-			data, err = s.Repository.Create(ctx, &payload.UserAppEntity, &model.LoginAppEntity{
-				Username: payload.Username,
-				Password: payload.Password,
-			} )
-		*/
-
-		dataLogin := model.LoginApp{
-			LoginAppEntity: model.LoginAppEntity{
-				Username: payload.Username, Password: payload.Password,
-			}, UserApp: model.UserApp{UserAppEntity: payload.UserAppEntity},
-		}
-
-		data, err = s.Repository.Create(ctx, &dataLogin)
+		data, err = s.Repository.Create(ctx,&model.UserApp{UserAppEntity: payload.UserAppEntity},
+			&model.LoginApp{LoginAppEntity: model.LoginAppEntity{Username: payload.Username, Password: payload.Password}} ,
+		)
 		if err != nil {
 			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
 		}

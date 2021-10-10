@@ -7,12 +7,8 @@ import (
 	"codeid-boiler/internal/http"
 	"codeid-boiler/internal/middleware"
 
-	//"codeid-boiler/pkg/elasticsearch"
-	//"codeid-boiler/pkg/util/env"
 	"os"
 
-	//"github.com/joho/godotenv"
-	//"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 )
 
