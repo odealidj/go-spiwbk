@@ -13,8 +13,6 @@ import (
 )
 
 type LoginAppEntity struct {
-	//Relation
-	UserAppId    uint16 `json:"user_app_Id" validate:"required"`
 	Username     string `json:"username" validate:"required" gorm:"index:idx_login_app_username,unique"`
 	Passwordhash string `json:"-"`
 	Password     string `json:"password" validate:"required" gorm:"-"`
@@ -24,6 +22,9 @@ type LoginApp struct {
 	abstraction.EntityInc
 
 	LoginAppEntity
+
+	//Relation
+	UserAppId uint16 `json:"user_app_id" validate:"required"`
 
 	// context
 	Context *abstraction.Context `json:"-" gorm:"-"`

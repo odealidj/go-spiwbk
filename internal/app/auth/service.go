@@ -6,10 +6,11 @@ import (
 	"codeid-boiler/internal/app/auth/model"
 	"codeid-boiler/internal/app/auth/repository"
 	"codeid-boiler/internal/factory"
-	
+
 	res "codeid-boiler/pkg/util/response"
 	"codeid-boiler/pkg/util/trxmanager"
 
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -29,7 +30,6 @@ func NewService(f *factory.Factory) *service {
 	return &service{repository, db}
 }
 
-/*
 func (s *service) Login(ctx *abstraction.Context, payload *dto.LoginRequest) (*dto.LoginResponse, error) {
 	var result *dto.LoginResponse
 
@@ -38,11 +38,11 @@ func (s *service) Login(ctx *abstraction.Context, payload *dto.LoginRequest) (*d
 		return result, res.ErrorBuilder(&res.ErrorConstant.Unauthorized, err)
 	}
 
-	if err = bcrypt.CompareHashAndPassword([]byte(data.Passwordhash), []byte(payload.Password)); err != nil {
+	if err = bcrypt.CompareHashAndPassword([]byte(data.LoginApp[0].Passwordhash), []byte(payload.Password)); err != nil {
 		return result, res.ErrorBuilder(&res.ErrorConstant.InternalServerError, err)
 	}
 
-	token, err := data.GenerateToken()
+	token, err := data.LoginApp[0].GenerateToken()
 
 	if err != nil {
 		return result, res.ErrorBuilder(&res.ErrorConstant.InternalServerError, err)
@@ -50,12 +50,11 @@ func (s *service) Login(ctx *abstraction.Context, payload *dto.LoginRequest) (*d
 
 	result = &dto.LoginResponse{
 		Token:         token,
-		UserAppEntity: data.UserApp.UserAppEntity,
+		UserAppEntity: data.UserAppEntity,
 	}
 
 	return result, nil
 }
-*/
 
 func (s *service) Register(ctx *abstraction.Context, payload *dto.RegisterRequest) (*dto.RegisterResponse, error) {
 	var result *dto.RegisterResponse
@@ -63,8 +62,8 @@ func (s *service) Register(ctx *abstraction.Context, payload *dto.RegisterReques
 
 	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
 
-		data, err = s.Repository.Create(ctx,&model.UserApp{UserAppEntity: payload.UserAppEntity},
-			&model.LoginApp{LoginAppEntity: model.LoginAppEntity{Username: payload.Username, Password: payload.Password}} ,
+		data, err = s.Repository.Create(ctx, &model.UserApp{UserAppEntity: payload.UserAppEntity},
+			&model.LoginApp{LoginAppEntity: model.LoginAppEntity{Username: payload.Username, Password: payload.Password}},
 		)
 		if err != nil {
 			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)

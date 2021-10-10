@@ -19,8 +19,7 @@ type UserAppEntity struct {
 	PhoneNumber  string `json:"phone_number" validate:"required"`
 	MobileNumber string `json:"mobile_number" validate:"required"`
 	Email        string `json:"email" validate:"required,email"`
-	//Relation
-	LoginApp []LoginApp `json:"login_app" gorm:"foreignKey:user_app_id"`
+	
 }
 
 type UserApp struct {
@@ -30,19 +29,22 @@ type UserApp struct {
 	// entity
 	UserAppEntity
 
+	//Relation
+	LoginApp    []LoginApp `json:"login_app" gorm:"foreignKey:user_app_id"`
+
 	// context
 	Context *abstraction.Context `json:"-" gorm:"-"`
 }
 
 func (m *UserApp) BeforeCreate(tx *gorm.DB) (err error) {
-	m.CreatedAt = *date.DateTodayLocal()
+	m.CreatedAt = *date.DateToday()
 	m.CreatedBy = constant.DB_DEFAULT_CREATED_BY
 
 	return
 }
 
 func (m *UserApp) BeforeUpdate(tx *gorm.DB) (err error) {
-	m.ModifiedAt = date.DateTodayLocal()
+	m.ModifiedAt = date.DateToday()
 	m.ModifiedBy = &m.Context.Auth.Name
 	return
 }

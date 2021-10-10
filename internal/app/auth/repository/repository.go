@@ -11,7 +11,7 @@ import (
 )
 
 type Auth interface {
-	FindByUsername(*abstraction.Context, *string) (*model.LoginApp, error)
+	FindByUsername(*abstraction.Context, *string) (*model.UserApp, error)
 	//Create(*abstraction.Context, *model.UserApp) (*model.UserApp, error)
 	Create(*abstraction.Context, *model.UserApp, *model.LoginApp) (*model.UserApp, error)
 	checkTrx(*abstraction.Context) *gorm.DB
@@ -79,35 +79,34 @@ func (r *auth) Create(ctx *abstraction.Context, u *model.UserAppEntity , l *mode
 
 */
 
-func (r *auth) FindByUsername(ctx *abstraction.Context, username *string) (*model.LoginApp, error) {
+func (r *auth) FindByUsername(ctx *abstraction.Context, username *string) (*model.UserApp, error) {
 	conn := r.CheckTrx(ctx)
 
 	//var user model.UserApp
-	var l model.LoginApp
-	
-	
-	err := conn.Preload("UserApp").Where("username = ?",username).Find(&l).Error
+	var data *model.UserApp
+
+	//"Orders", "state NOT IN (?)", "cancelled"
+
+	err := conn.Preload("LoginApp", "username = ? ", username).Find(&data).Error
 	if err != nil {
+		fmt.Println(0)
 		return nil, err
 	}
-	
+
 	/*
-	err := conn.Joins("UserApp").Find(&login, "login_app.username = ?", username).Error
-	if err != nil {
-		return nil, err
-	}
+		err := conn.Joins("UserApp").Find(&login, "login_app.username = ?", username).Error
+		if err != nil {
+			return nil, err
+		}
 	*/
 	/*
-	err := conn.Joins("UserApp").Find(&login, "login_app.username = ?", username).Error
-	if err != nil {
-		return nil, err
-	}
+		err := conn.Joins("UserApp").Find(&login, "login_app.username = ?", username).Error
+		if err != nil {
+			return nil, err
+		}
 	*/
-	fmt.Println("Password")
-	fmt.Println(l.Password)
-	fmt.Println("Password Hash")
-	fmt.Println(l.Passwordhash)
-	return &l, nil
+	fmt.Println(1)
+	return data, nil
 }
 
 func (r *auth) Create(ctx *abstraction.Context, u *model.UserApp, l *model.LoginApp) (*model.UserApp, error) {
@@ -120,8 +119,8 @@ func (r *auth) Create(ctx *abstraction.Context, u *model.UserApp, l *model.Login
 	if err != nil {
 		return nil, err
 	}
-	
-	login := *l 
+
+	login := *l
 	login.UserAppId = u.ID
 	err = conn.Create(&login).
 		WithContext(ctx.Request().Context()).Error
