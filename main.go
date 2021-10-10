@@ -11,11 +11,10 @@ import (
 	//"codeid-boiler/pkg/util/env"
 	"os"
 
-	"github.com/joho/godotenv"
+	//"github.com/joho/godotenv"
+	//"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
-	"github.com/sirupsen/logrus"
 )
-
 
 /*
 func init() {
@@ -26,7 +25,7 @@ func init() {
 	err:=godotenv.Load(".env.local")
 	if err != nil {
 		panic("Failed to load .env file, Make sure .env is exists")
-		
+
 	}
 	ENV := os.Getenv("ENV")
 	logrus.Info("Choosen environment " + ENV)
