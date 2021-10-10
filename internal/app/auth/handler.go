@@ -2,8 +2,8 @@ package auth
 
 import (
 	"codeid-boiler/internal/abstraction"
-	"codeid-boiler/internal/dto"
 	"codeid-boiler/internal/factory"
+	"codeid-boiler/internal/app/auth/dto"
 	res "codeid-boiler/pkg/util/response"
 
 	"github.com/labstack/echo/v4"
@@ -35,7 +35,7 @@ func NewHandler(f *factory.Factory) *handler {
 func (h *handler) Login(c echo.Context) error {
 	cc := c.(*abstraction.Context)
 
-	payload := new(dto.AuthLoginRequest)
+	payload := new(dto.LoginRequest)
 	if err = c.Bind(payload); err != nil {
 		return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err).Send(c)
 	}
@@ -67,7 +67,7 @@ func (h *handler) Login(c echo.Context) error {
 func (h *handler) Register(c echo.Context) error {
 	cc := c.(*abstraction.Context)
 
-	payload := new(dto.AuthRegisterRequest)
+	payload := new(dto.RegisterRequest)
 	if err = c.Bind(payload); err != nil {
 		return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err).Send(c)
 	}

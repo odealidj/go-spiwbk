@@ -3,7 +3,6 @@ package http
 import (
 	docs "codeid-boiler/docs"
 	"codeid-boiler/internal/app/auth"
-	"codeid-boiler/internal/app/sample"
 	"codeid-boiler/internal/factory"
 	"fmt"
 	"net/http"
@@ -36,5 +35,4 @@ func Init(e *echo.Echo, f *factory.Factory) {
 
 	// routes
 	auth.NewHandler(f).Route(e.Group("/auth"))
-	sample.NewHandler(f).Route(e.Group("/samples"))
 }

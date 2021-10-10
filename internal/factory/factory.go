@@ -2,15 +2,17 @@ package factory
 
 import (
 	"codeid-boiler/database"
-	"codeid-boiler/internal/repository"
+	"codeid-boiler/internal/app/auth/repository"
+
+	"os"
+	"strings"
 
 	"gorm.io/gorm"
 )
 
 type Factory struct {
 	Db               *gorm.DB
-	UserRepository   repository.User
-	SampleRepository repository.Sample
+	AuthRepository    repository.Auth
 }
 
 func NewFactory() *Factory {
@@ -22,7 +24,7 @@ func NewFactory() *Factory {
 }
 
 func (f *Factory) SetupDb() {
-	db, err := database.Connection("SAMPLE1")
+	db, err := database.Connection(strings.ToUpper(os.Getenv("DB_NAME_MIGRATION")))
 	if err != nil {
 		panic("Failed setup db, connection is undefined")
 	}
@@ -34,6 +36,5 @@ func (f *Factory) SetupRepository() {
 		panic("Failed setup repository, db is undefined")
 	}
 
-	f.UserRepository = repository.NewUser(f.Db)
-	f.SampleRepository = repository.NewSample(f.Db)
+	f.AuthRepository = repository.NewAuth(f.Db)
 }

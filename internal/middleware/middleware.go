@@ -22,6 +22,7 @@ func Init(e *echo.Echo) {
 		echoMiddleware.Recover(),
 		echoMiddleware.CORSWithConfig(echoMiddleware.CORSConfig{
 			AllowOrigins: []string{"*"},
+			AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 			AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
 		}),
 		echoMiddleware.LoggerWithConfig(echoMiddleware.LoggerConfig{

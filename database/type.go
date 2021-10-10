@@ -7,6 +7,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+	"gorm.io/gorm/schema"
 )
 
 type Db interface {
@@ -35,9 +36,12 @@ type dbMySQL struct {
 }
 
 func (c *dbPostgreSQL) Init() (*gorm.DB, error) {
+	//heroku sslmode=require
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s", c.Host, c.User, c.Pass, c.Name, c.Port, c.SslMode, c.Tz)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		DisableForeignKeyConstraintWhenMigrating: false,
+		Logger:                                   logger.Default.LogMode(logger.Info),
+		NamingStrategy:                           schema.NamingStrategy{SingularTable: true},
 	})
 	if err != nil {
 		return nil, err
@@ -48,7 +52,9 @@ func (c *dbPostgreSQL) Init() (*gorm.DB, error) {
 func (c *dbMySQL) Init() (*gorm.DB, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=%s&loc=%s", c.User, c.Pass, c.Host, c.Port, c.Name, c.Charset, c.ParseTime, c.Loc)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		DisableForeignKeyConstraintWhenMigrating: false,
+		Logger:                                   logger.Default.LogMode(logger.Info),
+		NamingStrategy:                           schema.NamingStrategy{SingularTable: true},
 	})
 	if err != nil {
 		return nil, err

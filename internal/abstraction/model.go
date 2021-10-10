@@ -7,15 +7,29 @@ import (
 	"gorm.io/gorm"
 )
 
-type Entity struct {
-	ID int `json:"id" gorm:"primaryKey;autoIncrement;"`
+type IDInc struct {
+	ID uint16 `json:"id" validate:"number" gorm:"primaryKey;"`
+}
+type ID struct {
+	ID uint16 `json:"id" validate:"number" gorm:"primaryKey;autoIncrement:false;"`
+}
 
+type CreateBy struct {
 	CreatedAt  time.Time  `json:"created_at"`
 	CreatedBy  string     `json:"created_by"`
 	ModifiedAt *time.Time `json:"modified_at"`
 	ModifiedBy *string    `json:"modified_by"`
 
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+}
+type EntityInc struct {
+	IDInc
+	CreateBy
+}
+
+type Entity struct {
+	ID
+	CreateBy
 }
 
 type Filter struct {
@@ -26,11 +40,21 @@ type Filter struct {
 }
 
 func (m *Entity) BeforeUpdate(tx *gorm.DB) (err error) {
-	m.ModifiedAt = date.DateTodayLocal()
+	m.ModifiedAt = date.DateToday()
 	return
 }
 
 func (m *Entity) BeforeCreate(tx *gorm.DB) (err error) {
-	m.CreatedAt = *date.DateTodayLocal()
+	m.CreatedAt = *date.DateToday()
+	return
+}
+
+func (m *EntityInc) BeforeUpdate(tx *gorm.DB) (err error) {
+	m.ModifiedAt = date.DateToday()
+	return
+}
+
+func (m *EntityInc) BeforeCreate(tx *gorm.DB) (err error) {
+	m.CreatedAt = *date.DateToday()
 	return
 }
