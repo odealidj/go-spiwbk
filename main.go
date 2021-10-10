@@ -42,7 +42,7 @@ func main() {
 	var PORT = os.Getenv("PORT")
 
 	db.Init()
-	migration.Init()
+	//migration.Init()
 	//elasticsearch.Init()
 
 	e := echo.New()
