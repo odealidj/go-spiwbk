@@ -3,7 +3,6 @@ package repository
 import (
 	"codeid-boiler/internal/abstraction"
 	"codeid-boiler/internal/app/auth/model"
-	"fmt"
 
 	//"fmt"
 
@@ -87,9 +86,8 @@ func (r *auth) FindByUsername(ctx *abstraction.Context, username *string) (*mode
 
 	//"Orders", "state NOT IN (?)", "cancelled"
 
-	err := conn.Preload("LoginApp", "username = ? ", username).Find(&data).Error
+	err := conn.Preload("LoginApp", "username = ? ", username).First(&data).Error
 	if err != nil {
-		fmt.Println(0)
 		return nil, err
 	}
 
@@ -105,7 +103,6 @@ func (r *auth) FindByUsername(ctx *abstraction.Context, username *string) (*mode
 			return nil, err
 		}
 	*/
-	fmt.Println(1)
 	return data, nil
 }
 

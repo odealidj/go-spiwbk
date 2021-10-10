@@ -2,6 +2,7 @@ package main
 
 import (
 	db "codeid-boiler/database"
+	"codeid-boiler/database/migration"
 	"codeid-boiler/internal/factory"
 	"codeid-boiler/internal/http"
 	"codeid-boiler/internal/middleware"
@@ -41,7 +42,7 @@ func main() {
 	var PORT = os.Getenv("PORT")
 
 	db.Init()
-	//migration.Init()
+	migration.Init()
 	//elasticsearch.Init()
 
 	e := echo.New()
