@@ -4,13 +4,14 @@ import (
 	"codeid-boiler/internal/abstraction"
 	"codeid-boiler/internal/app/auth/model"
 
+
 	//"fmt"
 
 	"gorm.io/gorm"
 )
 
 type Auth interface {
-	FindByUsername(*abstraction.Context, *string) (*model.UserApp, error)
+	FindByUsername(*abstraction.Context, *string) (*model.LoginApp, error)
 	//Create(*abstraction.Context, *model.UserApp) (*model.UserApp, error)
 	Create(*abstraction.Context, *model.UserApp, *model.LoginApp) (*model.UserApp, error)
 	checkTrx(*abstraction.Context) *gorm.DB
@@ -78,31 +79,47 @@ func (r *auth) Create(ctx *abstraction.Context, u *model.UserAppEntity , l *mode
 
 */
 
-func (r *auth) FindByUsername(ctx *abstraction.Context, username *string) (*model.UserApp, error) {
+
+func (r *auth) FindByUsername(ctx *abstraction.Context, username *string) (*model.LoginApp, error) {
 	conn := r.CheckTrx(ctx)
 
-	//var user model.UserApp
-	var data *model.UserApp
+	var data *model.LoginApp
 
-	//"Orders", "state NOT IN (?)", "cancelled"
+	//var loginapp *model.LoginApp
+	//var ID uint16
+	//var RoleUserId int
+	//var UserName string
+	//var Passwordhash string
+	/*
+	   "role_user_id": 1,
+	   "satker_id": 1,
+	   "jabatan_id": 1,
+	   "nip": "nip93",
+	   "name": "name",
+	   "address": "address",
+	   "postal_code": "postal_code",
+	   "phone_number": "phone_number",
+	   "mobile_number": "mobile_number",
+	   "email": "odealidj@gmail.com" */
 
-	err := conn.Preload("LoginApp", "username = ? ", username).First(&data).Error
+
+	   /*
+	type Test struct {
+		ID int
+		Nip string
+		Name string
+	}
+	*/
+
+	//var ts Test
+
+	//err := conn.Raw("SELECT id, nip, name FROM user_app WHERE id = ?", 7).Find(&ts).Error
+	//err := row.Scan(&Test).Error
+
+	err := conn.Where("username = ?", username).Preload("UserApp").Limit(1).Find(&data).Error
 	if err != nil {
 		return nil, err
 	}
-
-	/*
-		err := conn.Joins("UserApp").Find(&login, "login_app.username = ?", username).Error
-		if err != nil {
-			return nil, err
-		}
-	*/
-	/*
-		err := conn.Joins("UserApp").Find(&login, "login_app.username = ?", username).Error
-		if err != nil {
-			return nil, err
-		}
-	*/
 	return data, nil
 }
 
@@ -110,7 +127,6 @@ func (r *auth) Create(ctx *abstraction.Context, u *model.UserApp, l *model.Login
 	conn := r.CheckTrx(ctx)
 	//var userapp *model.UserApp
 
-	//userapp.UserAppEntity = *u
 	err := conn.Create(&u).
 		WithContext(ctx.Request().Context()).Error
 	if err != nil {

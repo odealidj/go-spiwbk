@@ -6,6 +6,7 @@ import (
 	"codeid-boiler/internal/app/auth/model"
 	"codeid-boiler/internal/app/auth/repository"
 	"codeid-boiler/internal/factory"
+	"fmt"
 
 	res "codeid-boiler/pkg/util/response"
 	"codeid-boiler/pkg/util/trxmanager"
@@ -33,24 +34,28 @@ func NewService(f *factory.Factory) *service {
 func (s *service) Login(ctx *abstraction.Context, payload *dto.LoginRequest) (*dto.LoginResponse, error) {
 	var result *dto.LoginResponse
 
+	fmt.Println("s0")
 	data, err := s.Repository.FindByUsername(ctx, &payload.Username)
-	if data == nil {
+	if err != nil {
+		fmt.Println("s1")
 		return result, res.ErrorBuilder(&res.ErrorConstant.Unauthorized, err)
 	}
 
-	if err = bcrypt.CompareHashAndPassword([]byte(data.LoginApp[0].Passwordhash), []byte(payload.Password)); err != nil {
+	fmt.Println(data.Username)
+	
+	if err = bcrypt.CompareHashAndPassword([]byte(data.Passwordhash), []byte(payload.Password)); err != nil {
 		return result, res.ErrorBuilder(&res.ErrorConstant.InternalServerError, err)
 	}
+	
 
-	token, err := data.LoginApp[0].GenerateToken()
-
+	token, err := data.GenerateToken()
 	if err != nil {
 		return result, res.ErrorBuilder(&res.ErrorConstant.InternalServerError, err)
 	}
 
 	result = &dto.LoginResponse{
 		Token:         token,
-		UserAppEntity: data.UserAppEntity,
+		UserAppEntity: data.UserApp.UserAppEntity,
 	}
 
 	return result, nil

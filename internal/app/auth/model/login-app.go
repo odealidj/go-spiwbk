@@ -25,6 +25,7 @@ type LoginApp struct {
 
 	//Relation
 	UserAppId uint16 `json:"user_app_id" validate:"required"`
+	UserApp   UserApp
 
 	// context
 	Context *abstraction.Context `json:"-" gorm:"-"`

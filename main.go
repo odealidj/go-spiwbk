@@ -9,7 +9,9 @@ import (
 
 	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
 )
 
 /*
@@ -18,7 +20,7 @@ func init() {
 	//env := env.NewEnv()
 	//env.Load(ENV)
 
-	err := godotenv.Load(".env.development")
+	err := godotenv.Load(".env.local")
 	if err != nil {
 		panic("Failed to load .env file, Make sure .env is exists")
 
