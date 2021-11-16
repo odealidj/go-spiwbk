@@ -7,11 +7,10 @@ import (
 	"codeid-boiler/internal/middleware"
 	"os"
 
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
-	"github.com/sirupsen/logrus"
 )
 
+/*
 func init() {
 
 	//env := env.NewEnv()
@@ -25,6 +24,8 @@ func init() {
 	ENV := os.Getenv("ENV")
 	logrus.Info("Choosen environment " + ENV)
 }
+/*
+
 
 // @title codeid-boiler
 // @version 0.0.1

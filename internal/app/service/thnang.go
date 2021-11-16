@@ -185,7 +185,18 @@ func (s *thnAngService) Delete(ctx *abstraction.Context, payload *abstraction.ID
 	var result *dto.ThnAngResponse
 
 	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
-		data, err := s.Repository.Delete(ctx, &model.ThnAng{Context: ctx, EntityInc: abstraction.EntityInc{
+
+		data, err := s.Repository.FindByID(ctx, &model.ThnAng{Context: ctx, EntityInc: abstraction.EntityInc{
+			IDInc: abstraction.IDInc{ID: payload.ID},
+		}})
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return res.ErrorBuilder(&res.ErrorConstant.NotFound, err)
+			}
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+
+		data, err = s.Repository.Delete(ctx, &model.ThnAng{Context: ctx, EntityInc: abstraction.EntityInc{
 			IDInc: abstraction.IDInc{ID: payload.ID},
 		}})
 		if err != nil {

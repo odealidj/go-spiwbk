@@ -112,7 +112,18 @@ func (s *spiSdmItemService) Delete(ctx *abstraction.Context, payload *dto.SpiSdm
 	var result *dto.SpiSdmItemResponse
 
 	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
-		spiSdmItem, err := s.Repository.Delete(ctx, &model.SpiSdmItem{Context: ctx, EntityInc: abstraction.EntityInc{
+
+		spiSdmItem, err := s.Repository.FindByID(ctx, &model.SpiSdmItem{Context: ctx, EntityInc: abstraction.EntityInc{
+			IDInc: abstraction.IDInc{ID: payload.ID.ID},
+		}})
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return res.ErrorBuilder(&res.ErrorConstant.NotFound, err)
+			}
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+
+		spiSdmItem, err = s.Repository.Delete(ctx, &model.SpiSdmItem{Context: ctx, EntityInc: abstraction.EntityInc{
 			IDInc: abstraction.IDInc{ID: payload.ID.ID},
 		}})
 		if err != nil {
