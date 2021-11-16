@@ -6,7 +6,6 @@ import (
 	"codeid-boiler/internal/app/service"
 	"codeid-boiler/internal/factory"
 	res "codeid-boiler/pkg/util/response"
-	"fmt"
 	"github.com/labstack/echo/v4"
 )
 
@@ -64,11 +63,9 @@ func (h *handler) Get2(c echo.Context) error {
 
 	payload := new(dto.SatkerGet2Request)
 	if err := c.Bind(payload); err != nil {
-		fmt.Println(1)
 		return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err).Send(c)
 	}
 	if err = c.Validate(payload); err != nil {
-		fmt.Println(2)
 		return res.ErrorBuilder(&res.ErrorConstant.Validation, err).Send(c)
 	}
 
