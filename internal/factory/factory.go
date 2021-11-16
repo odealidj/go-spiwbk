@@ -2,7 +2,7 @@ package factory
 
 import (
 	"codeid-boiler/database"
-	"codeid-boiler/internal/app/auth/repository"
+	"codeid-boiler/internal/app/repository"
 
 	"os"
 	"strings"
@@ -11,8 +11,16 @@ import (
 )
 
 type Factory struct {
-	Db               *gorm.DB
-	AuthRepository    repository.Auth
+	Db                         *gorm.DB
+	LoginAppRepository         repository.LoginApp
+	UserAppRepository          repository.UserApp
+	ThnAngRepository           repository.ThnAng
+	SatkerRepository           repository.Satker
+	SpiSdmRepository           repository.SpiSdm
+	JenisSdmRepository         repository.JenisSdm
+	JenisCertificateRepository repository.JenisCertificate
+	PegawaiRepository          repository.Pegawai
+	SpiSdmItemRepository       repository.SpiSdmItem
 }
 
 func NewFactory() *Factory {
@@ -36,5 +44,13 @@ func (f *Factory) SetupRepository() {
 		panic("Failed setup repository, db is undefined")
 	}
 
-	f.AuthRepository = repository.NewAuth(f.Db)
+	f.LoginAppRepository = repository.NewLoginApp(f.Db)
+	f.UserAppRepository = repository.NewUserApp(f.Db)
+	f.ThnAngRepository = repository.NewThnAng(f.Db)
+	f.SatkerRepository = repository.NewSatker(f.Db)
+	f.SpiSdmRepository = repository.NewSpiSdm(f.Db)
+	f.JenisSdmRepository = repository.NewJenisSdm(f.Db)
+	f.JenisCertificateRepository = repository.NewJenisCertificate(f.Db)
+	f.PegawaiRepository = repository.NewPegawai(f.Db)
+	f.SpiSdmItemRepository = repository.NewSpiSdmItem(f.Db)
 }

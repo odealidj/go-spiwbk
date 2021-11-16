@@ -172,39 +172,39 @@ func (e *Error) Send(c echo.Context) error {
 	logrus.Error(errorMessage)
 
 	/*
-	body, err := ioutil.ReadAll(c.Request().Body)
-	if err != nil {
-		logrus.Warn("error read body, message : ", e.Error())
-	}
-	
-	bHeader, err := json.Marshal(c.Request().Header)
-	if err != nil {
-		logrus.Warn("error read header, message : ", e.Error())
-	}
+		body, err := ioutil.ReadAll(c.Request().Body)
+		if err != nil {
+			logrus.Warn("error read body, message : ", e.Error())
+		}
 
-	
-	go func() {
-		retries := 3
-		logError := log.LogError{
-			ID:           shortid.MustGenerate(),
-			Header:       string(bHeader),
-			Body:         string(body),
-			URL:          c.Request().URL.Path,
-			HttpMethod:   c.Request().Method,
-			ErrorMessage: errorMessage,
-			Level:        "Error",
-			AppName:      os.Getenv("APP"),
-			Version:      os.Getenv("VERSION"),
-			Env:          os.Getenv("ENV"),
-			CreatedAt:    *date.DateTodayLocal(),
+		bHeader, err := json.Marshal(c.Request().Header)
+		if err != nil {
+			logrus.Warn("error read header, message : ", e.Error())
 		}
-		for i := 0; i < retries; i++ {
-			err := log.InsertErrorLog(context.Background(), &logError)
-			if err == nil {
-				break
+
+
+		go func() {
+			retries := 3
+			logError := log.LogError{
+				ID:           shortid.MustGenerate(),
+				Header:       string(bHeader),
+				Body:         string(body),
+				URL:          c.Request().URL.Path,
+				HttpMethod:   c.Request().Method,
+				ErrorMessage: errorMessage,
+				Level:        "Error",
+				AppName:      os.Getenv("APP"),
+				Version:      os.Getenv("VERSION"),
+				Env:          os.Getenv("ENV"),
+				CreatedAt:    *date.DateTodayLocal(),
 			}
-		}
-	}()
+			for i := 0; i < retries; i++ {
+				err := log.InsertErrorLog(context.Background(), &logError)
+				if err == nil {
+					break
+				}
+			}
+		}()
 	*/
 
 	return c.JSON(e.Code, e.Response)

@@ -2,8 +2,7 @@ package migration
 
 import (
 	"codeid-boiler/database"
-	//"codeid-boiler/internal/model"
-	"codeid-boiler/internal/app/auth/model"
+	"codeid-boiler/internal/app/model"
 	"fmt"
 	"os"
 	"strings"
@@ -32,6 +31,7 @@ func Init() {
 				//&model.SampleEntityModel{},
 				//&model.SampleChildEntityModel{},
 				//&model.SampleGrandChildEntityModel{},
+				&model.ThnAng{},
 				&model.UserApp{},
 				&model.LoginApp{},
 			},

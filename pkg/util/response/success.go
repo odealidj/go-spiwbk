@@ -33,6 +33,15 @@ type Success struct {
 	Response successResponse `json:"response"`
 	Code     int             `json:"code"`
 }
+type successResponse2 struct {
+	Meta Meta2       `json:"meta"`
+	Data interface{} `json:"data"`
+}
+
+type Success2 struct {
+	Response successResponse2 `json:"response"`
+	Code     int              `json:"code"`
+}
 
 func SuccessBuilder(res *Success, data interface{}) *Success {
 	res.Response.Data = data
@@ -53,10 +62,28 @@ func CustomSuccessBuilder(code int, data interface{}, message string, info *abst
 	}
 }
 
+func CustomSuccessBuilder2(code int, data interface{}, message string, info *abstraction.PaginationInfoArr) *Success2 {
+	return &Success2{
+		Response: successResponse2{
+			Meta: Meta2{
+				Success: true,
+				Message: message,
+				Info:    info,
+			},
+			Data: data,
+		},
+		Code: code,
+	}
+}
+
 func SuccessResponse(data interface{}) *Success {
 	return SuccessBuilder(&SuccessConstant.OK, data)
 }
 
 func (s *Success) Send(c echo.Context) error {
+	return c.JSON(s.Code, s.Response)
+}
+
+func (s *Success2) Send(c echo.Context) error {
 	return c.JSON(s.Code, s.Response)
 }

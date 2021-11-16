@@ -11,13 +11,13 @@ type IDInc struct {
 	ID uint16 `json:"id" validate:"number" gorm:"primaryKey;"`
 }
 type ID struct {
-	ID uint16 `json:"id" validate:"number" gorm:"primaryKey;autoIncrement:false;"`
+	ID uint16 `json:"id" param:"id" form:"id" query:"id" validate:"number" gorm:"primaryKey;autoIncrement:false;"`
 }
 
 type CreateBy struct {
-	CreatedAt  time.Time  `json:"created_at"`
+	CreatedAt  time.Time  `json:"created_at" gorm:"<-:create"`
 	CreatedBy  string     `json:"created_by"`
-	ModifiedAt *time.Time `json:"modified_at"`
+	ModifiedAt *time.Time `json:"modified_at" gorm:"<-:update"`
 	ModifiedBy *string    `json:"modified_by"`
 
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
@@ -40,21 +40,21 @@ type Filter struct {
 }
 
 func (m *Entity) BeforeUpdate(tx *gorm.DB) (err error) {
-	m.ModifiedAt = date.DateToday()
+	m.ModifiedAt = date.DateTodayLocal()
 	return
 }
 
 func (m *Entity) BeforeCreate(tx *gorm.DB) (err error) {
-	m.CreatedAt = *date.DateToday()
+	m.CreatedAt = *date.DateTodayLocal()
 	return
 }
 
 func (m *EntityInc) BeforeUpdate(tx *gorm.DB) (err error) {
-	m.ModifiedAt = date.DateToday()
+	m.ModifiedAt = date.DateTodayLocal()
 	return
 }
 
 func (m *EntityInc) BeforeCreate(tx *gorm.DB) (err error) {
-	m.CreatedAt = *date.DateToday()
+	m.CreatedAt = *date.DateTodayLocal()
 	return
 }

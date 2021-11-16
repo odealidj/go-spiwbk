@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	dbConnections map[string]*gorm.DB
+	dbConnections    map[string]*gorm.DB
 	dbConnectionName string
 )
 
@@ -27,10 +27,9 @@ func Init() {
 			},
 			//SslMode: os.Getenv("DB_SSLMODE"),
 			//Tz:      os.Getenv("DB_TZ"),
-			Charset: os.Getenv("DB_Charset") ,
+			Charset:   os.Getenv("DB_Charset"),
 			ParseTime: os.Getenv("DB_ParseTime"),
-			Loc: os.Getenv("DB_LOC"),
-
+			Loc:       os.Getenv("DB_LOC"),
 		},
 		strings.ToUpper(os.Getenv("DB_NAME_MIGRATION")): &dbMySQL{
 			db: db{
@@ -42,10 +41,9 @@ func Init() {
 			},
 			//SslMode: os.Getenv("DB_SSLMODE"),
 			//Tz:      os.Getenv("DB_TZ"),
-			Charset: os.Getenv("DB_Charset") ,
+			Charset:   os.Getenv("DB_Charset"),
 			ParseTime: os.Getenv("DB_ParseTime"),
-			Loc: os.Getenv("DB_LOC"),
-			
+			Loc:       os.Getenv("DB_LOC"),
 		},
 	}
 

@@ -37,6 +37,7 @@ func (r *Repository) Filter(ctx *Context, query *gorm.DB, payload interface{}) *
 			val := mValChild.Field(j)
 
 			if !val.IsNil() {
+
 				if val.Kind() == reflect.Ptr {
 					val = mValChild.Field(j).Elem()
 				}
