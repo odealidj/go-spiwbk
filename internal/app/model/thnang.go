@@ -8,7 +8,7 @@ import (
 )
 
 type ThnAngEntityFilter struct {
-	Year *string `json:"year" query:"year"`
+	Year *string `json:"year" query:"year" filter:"FLIKE"`
 }
 
 type ThnAngEntity struct {

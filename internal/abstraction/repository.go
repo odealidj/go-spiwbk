@@ -52,6 +52,10 @@ func (r *Repository) Filter(ctx *Context, query *gorm.DB, payload interface{}) *
 					query = query.Where(fmt.Sprintf("%s LIKE ?", key), "%"+val.String()+"%")
 				case "ILIKE":
 					query = query.Where(fmt.Sprintf("%s ILIKE ?", key), "%"+val.String()+"%")
+				case "FLIKE":
+					query = query.Where(fmt.Sprintf("%s LIKE ?", key), val.String()+"%")
+				case "LLIKE":
+					query = query.Where(fmt.Sprintf("%s LIKE ?", key), "%"+val.String())
 				case "DATE":
 					// TODO we need build custom type first
 					// dateStart, dateEnd := date.StringDateToDateRange(val.String())
