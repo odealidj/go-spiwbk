@@ -19,7 +19,8 @@ type ThnAngService interface {
 	SaveBatch(*abstraction.Context, []dto.ThnAngRequests) ([]dto.ThnAngResponse, error)
 	Update(*abstraction.Context, *dto.ThnAngUpdateRequest) (*dto.ThnAngResponse, error)
 	Delete(*abstraction.Context, *abstraction.ID) (*dto.ThnAngResponse, error)
-	GetAll(*abstraction.Context) ([]dto.ThnAngResponse, error)
+	GetAll(*abstraction.Context, *dto.ThnAngGetAllRequest) (*dto.ThnAngGetAllResponse, error)
+	Get(*abstraction.Context, *dto.ThnAngGetRequest) (*dto.ThnAngResponse, error)
 }
 
 type thnAngService struct {
@@ -216,24 +217,61 @@ func (s *thnAngService) Delete(ctx *abstraction.Context, payload *abstraction.ID
 
 }
 
-func (s *thnAngService) GetAll(ctx *abstraction.Context) ([]dto.ThnAngResponse, error) {
-	var result []dto.ThnAngResponse
+func (s *thnAngService) GetAll(ctx *abstraction.Context, payload *dto.ThnAngGetAllRequest) (*dto.ThnAngGetAllResponse, error) {
+	var result *dto.ThnAngGetAllResponse
 
 	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
-		thnAngs, err := s.Repository.Find(ctx)
+
+		thnAngs, info, err := s.Repository.Find(ctx, &payload.ThnAngFilter, &payload.Pagination)
 		if err != nil {
 			return res.ErrorBuilder(&res.ErrorConstant.InternalServerError, err)
 		}
+		if len(*thnAngs) == 0 {
+			return res.ErrorBuilder(&res.ErrorConstant.NotFound, errors.New("Data Not Found!"))
+		}
 
-		for _, thnAng := range thnAngs {
-			result = append(result, dto.ThnAngResponse{
-				ID: abstraction.ID{ID: thnAng.ID}, ThnAngEntity: thnAng.ThnAngEntity,
-			})
+		thnAngResponses := &[]dto.ThnAngResponse{}
+		thnAngResponse := &dto.ThnAngResponse{}
+		for _, thnAng := range *thnAngs {
+			thnAngResponse.ID.ID = thnAng.ID
+			thnAngResponse.ThnAngEntity = thnAng.ThnAngEntity
+			*thnAngResponses = append(*thnAngResponses, *thnAngResponse)
+		}
+		result = &dto.ThnAngGetAllResponse{
+			Datas:          thnAngResponses,
+			PaginationInfo: info,
 		}
 
 		return nil
 	}); err != nil {
 		return result, err
+	}
+
+	return result, nil
+
+}
+
+func (s *thnAngService) Get(ctx *abstraction.Context, payload *dto.ThnAngGetRequest) (*dto.ThnAngResponse, error) {
+	var result *dto.ThnAngResponse
+
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+		thnang, err := s.Repository.FindByID(ctx, &model.ThnAng{Context: ctx,
+			EntityInc: abstraction.EntityInc{IDInc: abstraction.IDInc{ID: payload.ID.ID}}})
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return res.ErrorBuilder(&res.ErrorConstant.NotFound, err)
+			}
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+
+		result = &dto.ThnAngResponse{
+			ID:           abstraction.ID{ID: thnang.ID},
+			ThnAngEntity: thnang.ThnAngEntity,
+		}
+
+		return nil
+	}); err != nil {
+		return nil, err
 	}
 
 	return result, nil

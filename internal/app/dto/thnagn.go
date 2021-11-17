@@ -27,3 +27,19 @@ type ThnAngRequestForm struct {
 	Year  string  `json:"year" form:"year"`
 	Group []int16 `json:"group" form:"group"`
 }
+
+//Get
+type ThnAngGetRequest struct {
+	abstraction.ID
+}
+
+//Get All
+type ThnAngGetAllRequest struct {
+	abstraction.Pagination
+	model.ThnAngFilter
+}
+
+type ThnAngGetAllResponse struct {
+	Datas          *[]ThnAngResponse
+	PaginationInfo *abstraction.PaginationInfo
+}
