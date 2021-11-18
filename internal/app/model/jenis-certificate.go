@@ -35,6 +35,6 @@ func (m *JenisCertificate) BeforeCreate(tx *gorm.DB) (err error) {
 
 func (m *JenisCertificate) BeforeUpdate(tx *gorm.DB) (err error) {
 	m.ModifiedAt = date.DateTodayLocal()
-	m.ModifiedBy = &m.Context.Auth.Name
+	//m.ModifiedBy = &m.Context.Auth.Name
 	return
 }

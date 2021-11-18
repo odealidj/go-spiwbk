@@ -39,6 +39,6 @@ func (m *Pegawai) BeforeCreate(tx *gorm.DB) (err error) {
 
 func (m *Pegawai) BeforeUpdate(tx *gorm.DB) (err error) {
 	m.ModifiedAt = date.DateTodayLocal()
-	m.ModifiedBy = &m.Context.Auth.Name
+	//m.ModifiedBy = &m.Context.Auth.Name
 	return
 }

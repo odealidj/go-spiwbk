@@ -34,6 +34,6 @@ func (m *JenisSdm) BeforeCreate(tx *gorm.DB) (err error) {
 
 func (m *JenisSdm) BeforeUpdate(tx *gorm.DB) (err error) {
 	m.ModifiedAt = date.DateTodayLocal()
-	m.ModifiedBy = &m.Context.Auth.Name
+	//m.ModifiedBy = &m.Context.Auth.Name
 	return
 }

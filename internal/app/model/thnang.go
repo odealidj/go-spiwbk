@@ -12,7 +12,7 @@ type ThnAngEntityFilter struct {
 }
 
 type ThnAngEntity struct {
-	Year string `json:"year" form:"year" gorm:"type:varchar(4);uniqueIndex"`
+	Year string `json:"year"`
 }
 
 type ThnAng struct {
@@ -34,6 +34,6 @@ func (m *ThnAng) BeforeCreate(tx *gorm.DB) (err error) {
 
 func (m *ThnAng) BeforeUpdate(tx *gorm.DB) (err error) {
 	m.ModifiedAt = date.DateTodayLocal()
-	m.ModifiedBy = &m.Context.Auth.Name
+	//m.ModifiedBy = &m.Context.Auth.Name
 	return
 }

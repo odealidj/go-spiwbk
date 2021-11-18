@@ -53,11 +53,12 @@ func (r *thnang) CreateBatch(ctx *abstraction.Context, m []model.ThnAng) ([]mode
 
 func (r *thnang) Update(ctx *abstraction.Context, m *model.ThnAng) (*model.ThnAng, error) {
 	conn := r.CheckTrx(ctx)
-
 	err := conn.Save(&m).WithContext(ctx.Request().Context()).Error
 	if err != nil {
+
 		return nil, err
 	}
+
 	return m, nil
 }
 

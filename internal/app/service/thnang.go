@@ -138,7 +138,6 @@ func (s *thnAngService) SaveBatch(ctx *abstraction.Context, payloads []dto.ThnAn
 func (s *thnAngService) Update(ctx *abstraction.Context, payload *dto.ThnAngUpdateRequest) (*dto.ThnAngResponse, error) {
 
 	var result *dto.ThnAngResponse
-	var data *model.ThnAng
 
 	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
 
@@ -154,7 +153,7 @@ func (s *thnAngService) Update(ctx *abstraction.Context, payload *dto.ThnAngUpda
 			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
 		}
 
-		data, err = s.Repository.Update(ctx, &model.ThnAng{Context: ctx,
+		data, err := s.Repository.Update(ctx, &model.ThnAng{Context: ctx,
 			EntityInc: abstraction.EntityInc{
 				IDInc: abstraction.IDInc{
 					ID: thnAng.EntityInc.IDInc.ID,
@@ -168,13 +167,14 @@ func (s *thnAngService) Update(ctx *abstraction.Context, payload *dto.ThnAngUpda
 			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
 		}
 
+		result = &dto.ThnAngResponse{
+			ID: abstraction.ID{ID: data.EntityInc.ID}, ThnAngEntity: data.ThnAngEntity,
+		}
+
 		return nil
 	}); err != nil {
-		return result, err
-	}
 
-	result = &dto.ThnAngResponse{
-		ID: abstraction.ID{ID: data.EntityInc.ID}, ThnAngEntity: data.ThnAngEntity,
+		return result, err
 	}
 
 	return result, nil

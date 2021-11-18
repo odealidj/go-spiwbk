@@ -25,6 +25,7 @@ func init() {
 	logrus.Info("Choosen environment " + ENV)
 }
 */
+
 // @title codeid-boiler
 // @version 0.0.1
 // @description This is a doc for codeid-boiler.

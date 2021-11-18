@@ -8,7 +8,7 @@ import (
 )
 
 type IDInc struct {
-	ID uint16 `json:"id" validate:"number" gorm:"primaryKey;"`
+	ID uint16 `json:"id" param:"id" form:"id" query:"id" validate:"number" gorm:"primaryKey;"`
 }
 type ID struct {
 	ID uint16 `json:"id" param:"id" form:"id" query:"id" validate:"number" gorm:"primaryKey;autoIncrement:false;"`

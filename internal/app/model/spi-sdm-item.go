@@ -43,6 +43,6 @@ func (m *SpiSdmItem) BeforeCreate(tx *gorm.DB) (err error) {
 
 func (m *SpiSdmItem) BeforeUpdate(tx *gorm.DB) (err error) {
 	m.ModifiedAt = date.DateTodayLocal()
-	m.ModifiedBy = &m.Context.Auth.Name
+	//m.ModifiedBy = &m.Context.Auth.Name
 	return
 }
