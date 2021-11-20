@@ -8,18 +8,21 @@ import (
 )
 
 type SpiSdmEntityFilter struct {
-	ThnAgnID *uint16 `json:"thn_agn_id" query:"thn_agn_id"`
+	ThnAngID *uint16 `json:"thn_ang_id" query:"thn_ang_id"`
 	SatkerID *uint16 `json:"satker_id" query:"satker_id"`
 }
 
 type SpiSdmEntity struct {
-	ThnAgnID uint16 `json:"thn_agn_id"`
+	ThnAngID uint16 `json:"thn_ang_id"`
 	SatkerID uint16 `json:"satker_id"`
 }
 
 type SpiSdm struct {
 	abstraction.EntityInc
 	SpiSdmEntity
+	//Year    string               `json:"year"`
+	ThnAng  ThnAng //`gorm:"foreignKey:thn_ang_id"`
+	Satker  Satker
 	Context *abstraction.Context `json:"-" gorm:"-"`
 }
 

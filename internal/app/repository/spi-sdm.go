@@ -67,8 +67,15 @@ func (r *spisdm) Find(ctx *abstraction.Context, m *model.SpiSdmFilter, p *abstra
 	var result []model.SpiSdm
 	var info abstraction.PaginationInfo
 
-	query := conn.Model(&model.SpiSdm{})
-
+	/*
+		sql := `SELECT  ss.*, ta.year as year, s.name FROM spi_sdm ss
+				INNER JOIN thn_ang ta ON ss.thn_agn_id = ta.id
+				INNER JOIN satker s on ss.satker_id = s.id
+				WHERE ss.deleted_at IS NULL`
+	*/
+	//query := conn.Model(&model.SpiSdm{})
+	//query := conn.Raw(sql)
+	query := conn.Preload("ThnAng").Preload("Satker").Find(&model.SpiSdm{})
 	//filter
 	query = r.Filter(ctx, query, *m)
 	queryCount := query

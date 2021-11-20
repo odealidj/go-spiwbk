@@ -80,6 +80,8 @@ func (s *spiSdmService) Get(ctx *abstraction.Context, payload *dto.SpiSdmGetRequ
 		for _, spisdm := range *spisdms {
 			spiSdmResponse.ID.ID = spisdm.ID
 			spiSdmResponse.SpiSdmEntity = spisdm.SpiSdmEntity
+			spiSdmResponse.ThnAngYear = spisdm.ThnAng.Year
+			spiSdmResponse.SatkerName = spisdm.Satker.Name
 			*spiSdmResponses = append(*spiSdmResponses, *spiSdmResponse)
 		}
 		result = &dto.SpiSdmGetResponse{

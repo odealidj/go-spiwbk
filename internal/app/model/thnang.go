@@ -18,6 +18,7 @@ type ThnAngEntity struct {
 type ThnAng struct {
 	abstraction.EntityInc
 	ThnAngEntity
+	//SpiSdm  []SpiSdm
 	Context *abstraction.Context `json:"-" gorm:"-"`
 }
 

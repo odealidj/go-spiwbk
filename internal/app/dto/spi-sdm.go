@@ -8,6 +8,8 @@ import (
 type SpiSdmResponse struct {
 	abstraction.ID
 	model.SpiSdmEntity
+	ThnAngYear string `json:"thn_ang_year"`
+	SatkerName string `json:"satker_name"`
 }
 
 //Save
