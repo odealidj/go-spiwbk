@@ -12,6 +12,7 @@ import (
 type Pegawai interface {
 	Create(*abstraction.Context, *model.Pegawai) (*model.Pegawai, error)
 	Update(*abstraction.Context, *model.Pegawai) (*model.Pegawai, error)
+	Delete(*abstraction.Context, *model.Pegawai) (*model.Pegawai, error)
 	FindByID(*abstraction.Context, *model.Pegawai) (*model.Pegawai, error)
 	Find(*abstraction.Context, *model.PegawaiFilter, *abstraction.Pagination) (*[]model.Pegawai, *abstraction.PaginationInfo, error)
 	checkTrx(*abstraction.Context) *gorm.DB
@@ -43,6 +44,16 @@ func (r *pegawai) Update(ctx *abstraction.Context, m *model.Pegawai) (*model.Peg
 	conn := r.CheckTrx(ctx)
 
 	err := conn.Save(&m).WithContext(ctx.Request().Context()).Error
+	if err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (r *pegawai) Delete(ctx *abstraction.Context, m *model.Pegawai) (*model.Pegawai, error) {
+	conn := r.CheckTrx(ctx)
+
+	err := conn.Delete(&m).WithContext(ctx.Request().Context()).Error
 	if err != nil {
 		return nil, err
 	}

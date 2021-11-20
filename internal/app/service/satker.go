@@ -15,8 +15,8 @@ import (
 
 type SatkerService interface {
 	Save(*abstraction.Context, *dto.SatkerSaveRequest) (*dto.SatkerResponse, error)
-	//Update(*abstraction.Context, *dto.SatkerUpdateRequest) (*dto.SatkerResponse, error)
-	//Delete(*abstraction.Context, *dto.SatkerID) (*dto.SatkerResponse, error)
+	Update(*abstraction.Context, *dto.SatkerUpdateRequest) (*dto.SatkerResponse, error)
+	Delete(*abstraction.Context, *dto.SatkerDeleteRequest) (*dto.SatkerResponse, error)
 	Get(ctx *abstraction.Context, payload *dto.SatkerGetRequest) (*dto.SatkerGetResponse, error)
 	Get2(ctx *abstraction.Context, payload *dto.SatkerGet2Request) (*dto.SatkerGet2Response, error)
 }
@@ -47,6 +47,90 @@ func (s *satkerService) Save(ctx *abstraction.Context, payload *dto.SatkerSaveRe
 			if strings.Contains(strings.ToLower(err.Error()), "duplicate") {
 				return res.ErrorBuilder(&res.ErrorConstant.Duplicate, err)
 			}
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+
+		result = &dto.SatkerResponse{
+			ID:           abstraction.ID{ID: satker.ID},
+			SatkerEntity: satker.SatkerEntity,
+		}
+
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+
+}
+
+func (s *satkerService) Update(ctx *abstraction.Context, payload *dto.SatkerUpdateRequest) (*dto.SatkerResponse, error) {
+
+	var result *dto.SatkerResponse
+	//var data *model.ThnAng
+
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+
+		satker, err := s.Repository.FindByID(ctx, &model.Satker{
+			Context:   ctx,
+			EntityInc: abstraction.EntityInc{IDInc: abstraction.IDInc{ID: payload.ID.ID}},
+		})
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return res.ErrorBuilder(&res.ErrorConstant.NotFound, err)
+			}
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+
+		satker, err = s.Repository.Update(ctx, &model.Satker{
+			Context:      ctx,
+			EntityInc:    abstraction.EntityInc{IDInc: abstraction.IDInc{ID: satker.ID}},
+			SatkerEntity: payload.SatkerEntity,
+		})
+		if err != nil {
+			if strings.Contains(strings.ToLower(err.Error()), "duplicate") {
+				return res.ErrorBuilder(&res.ErrorConstant.Duplicate, err)
+			}
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+
+		result = &dto.SatkerResponse{
+			ID:           abstraction.ID{ID: satker.ID},
+			SatkerEntity: satker.SatkerEntity,
+		}
+
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+
+}
+
+func (s *satkerService) Delete(ctx *abstraction.Context, payload *dto.SatkerDeleteRequest) (*dto.SatkerResponse, error) {
+
+	var result *dto.SatkerResponse
+	//var data *model.ThnAng
+
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+
+		satker, err := s.Repository.FindByID(ctx, &model.Satker{
+			Context:   ctx,
+			EntityInc: abstraction.EntityInc{IDInc: abstraction.IDInc{ID: payload.ID.ID}},
+		})
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return res.ErrorBuilder(&res.ErrorConstant.NotFound, err)
+			}
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+
+		satker, err = s.Repository.Delete(ctx, &model.Satker{
+			Context:   ctx,
+			EntityInc: abstraction.EntityInc{IDInc: abstraction.IDInc{ID: satker.ID}},
+		})
+		if err != nil {
 			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
 		}
 

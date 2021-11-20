@@ -21,6 +21,11 @@ type PegawaiUpdateRequest struct {
 	model.PegawaiEntity
 }
 
+//Update
+type PegawaiDeleteRequest struct {
+	abstraction.ID
+}
+
 //Get
 type PegawaiGetRequest struct {
 	abstraction.Pagination

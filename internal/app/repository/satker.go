@@ -12,6 +12,7 @@ import (
 type Satker interface {
 	Create(*abstraction.Context, *model.Satker) (*model.Satker, error)
 	Update(*abstraction.Context, *model.Satker) (*model.Satker, error)
+	Delete(*abstraction.Context, *model.Satker) (*model.Satker, error)
 	FindByID(*abstraction.Context, *model.Satker) (*model.Satker, error)
 	Find(*abstraction.Context, model.SatkerFilter, *abstraction.Pagination) (*[]model.Satker, *abstraction.PaginationInfo, error)
 	Find2(*abstraction.Context, model.SatkerFilter, *abstraction.PaginationArr) (*[]model.Satker, *abstraction.PaginationInfoArr, error)
@@ -44,6 +45,16 @@ func (r *satker) Update(ctx *abstraction.Context, m *model.Satker) (*model.Satke
 	conn := r.CheckTrx(ctx)
 
 	err := conn.Save(&m).WithContext(ctx.Request().Context()).Error
+	if err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (r *satker) Delete(ctx *abstraction.Context, m *model.Satker) (*model.Satker, error) {
+	conn := r.CheckTrx(ctx)
+
+	err := conn.Delete(&m).WithContext(ctx.Request().Context()).Error
 	if err != nil {
 		return nil, err
 	}

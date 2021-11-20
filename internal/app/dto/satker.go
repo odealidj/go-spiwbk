@@ -21,6 +21,11 @@ type SatkerUpdateRequest struct {
 	model.SatkerEntity
 }
 
+//Delete
+type SatkerDeleteRequest struct {
+	abstraction.ID
+}
+
 //Get
 type SatkerGetRequest struct {
 	abstraction.Pagination
