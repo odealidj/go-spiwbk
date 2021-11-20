@@ -12,6 +12,7 @@ import (
 type SpiSdm interface {
 	Create(*abstraction.Context, *model.SpiSdm) (*model.SpiSdm, error)
 	Update(*abstraction.Context, *model.SpiSdm) (*model.SpiSdm, error)
+	Delete(*abstraction.Context, *model.SpiSdm) (*model.SpiSdm, error)
 	FindByID(*abstraction.Context, *model.SpiSdm) (*model.SpiSdm, error)
 	Find(*abstraction.Context, *model.SpiSdmFilter, *abstraction.Pagination) (*[]model.SpiSdm, *abstraction.PaginationInfo, error)
 	checkTrx(*abstraction.Context) *gorm.DB
@@ -49,6 +50,16 @@ func (r *spisdm) Update(ctx *abstraction.Context, m *model.SpiSdm) (*model.SpiSd
 	return m, nil
 }
 
+func (r *spisdm) Delete(ctx *abstraction.Context, m *model.SpiSdm) (*model.SpiSdm, error) {
+	conn := r.CheckTrx(ctx)
+
+	err := conn.Delete(&m).WithContext(ctx.Request().Context()).Error
+	if err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (r *spisdm) FindByID(ctx *abstraction.Context, m *model.SpiSdm) (*model.SpiSdm, error) {
 	conn := r.CheckTrx(ctx)
 
@@ -75,7 +86,9 @@ func (r *spisdm) Find(ctx *abstraction.Context, m *model.SpiSdmFilter, p *abstra
 	*/
 	//query := conn.Model(&model.SpiSdm{})
 	//query := conn.Raw(sql)
-	query := conn.Preload("ThnAng").Preload("Satker").Find(&model.SpiSdm{})
+	//query := conn.Preload("ThnAng").Preload("Satker").Find(&model.SpiSdm{})
+	query := conn.Joins("ThnAng").Joins("Satker").Find(&model.SpiSdm{})
+
 	//filter
 	query = r.Filter(ctx, query, *m)
 	queryCount := query

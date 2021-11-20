@@ -8,6 +8,11 @@ import (
 type SpiSdmResponse struct {
 	abstraction.ID
 	model.SpiSdmEntity
+}
+
+type SpiSdmResponses struct {
+	abstraction.ID
+	model.SpiSdmEntity
 	ThnAngYear string `json:"thn_ang_year"`
 	SatkerName string `json:"satker_name"`
 }
@@ -23,6 +28,11 @@ type SpiSdmUpdateRequest struct {
 	model.SpiSdmEntity
 }
 
+//Delete
+type SpiSdmDeleteRequest struct {
+	abstraction.ID
+}
+
 //Get
 type SpiSdmGetRequest struct {
 	abstraction.Pagination
@@ -30,6 +40,6 @@ type SpiSdmGetRequest struct {
 }
 
 type SpiSdmGetResponse struct {
-	Datas          *[]SpiSdmResponse
+	Datas          *[]SpiSdmResponses
 	PaginationInfo *abstraction.PaginationInfo
 }

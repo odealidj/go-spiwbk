@@ -15,8 +15,8 @@ import (
 
 type SpiSdmService interface {
 	Save(*abstraction.Context, *dto.SpiSdmSaveRequest) (*dto.SpiSdmResponse, error)
-	//Update(*abstraction.Context, *dto.SatkerUpdateRequest) (*dto.SatkerResponse, error)
-	//Delete(*abstraction.Context, *dto.SatkerID) (*dto.SatkerResponse, error)
+	Update(*abstraction.Context, *dto.SpiSdmUpdateRequest) (*dto.SpiSdmResponse, error)
+	Delete(*abstraction.Context, *dto.SpiSdmDeleteRequest) (*dto.SpiSdmResponse, error)
 	Get(ctx *abstraction.Context, payload *dto.SpiSdmGetRequest) (*dto.SpiSdmGetResponse, error)
 }
 
@@ -63,6 +63,94 @@ func (s *spiSdmService) Save(ctx *abstraction.Context, payload *dto.SpiSdmSaveRe
 
 }
 
+func (s *spiSdmService) Update(ctx *abstraction.Context, payload *dto.SpiSdmUpdateRequest) (*dto.SpiSdmResponse, error) {
+
+	var result *dto.SpiSdmResponse
+	//var data *model.ThnAng
+
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+
+		spiSdm, err := s.Repository.FindByID(ctx, &model.SpiSdm{
+			Context:   ctx,
+			EntityInc: abstraction.EntityInc{IDInc: abstraction.IDInc{ID: payload.ID.ID}},
+		})
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return res.ErrorBuilder(&res.ErrorConstant.NotFound, err)
+			}
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+
+		spiSdm, err = s.Repository.Update(ctx, &model.SpiSdm{
+			Context:      ctx,
+			EntityInc:    abstraction.EntityInc{IDInc: abstraction.IDInc{ID: spiSdm.ID}},
+			SpiSdmEntity: payload.SpiSdmEntity,
+		})
+		if err != nil {
+			if strings.Contains(strings.ToLower(err.Error()), "duplicate") {
+				return res.ErrorBuilder(&res.ErrorConstant.Duplicate, err)
+			}
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+
+		result = &dto.SpiSdmResponse{
+			ID:           abstraction.ID{ID: spiSdm.ID},
+			SpiSdmEntity: spiSdm.SpiSdmEntity,
+			//ThnAngYear:   spiSdm.ThnAng.Year,
+			//SatkerName:   spiSdm.Satker.Name,
+		}
+
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+
+}
+
+func (s *spiSdmService) Delete(ctx *abstraction.Context, payload *dto.SpiSdmDeleteRequest) (*dto.SpiSdmResponse, error) {
+
+	var result *dto.SpiSdmResponse
+	//var data *model.ThnAng
+
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+
+		spiSdm, err := s.Repository.FindByID(ctx, &model.SpiSdm{
+			Context:   ctx,
+			EntityInc: abstraction.EntityInc{IDInc: abstraction.IDInc{ID: payload.ID.ID}},
+		})
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return res.ErrorBuilder(&res.ErrorConstant.NotFound, err)
+			}
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+
+		spiSdm, err = s.Repository.Delete(ctx, &model.SpiSdm{
+			Context:   ctx,
+			EntityInc: abstraction.EntityInc{IDInc: abstraction.IDInc{ID: spiSdm.ID}},
+		})
+		if err != nil {
+			if strings.Contains(strings.ToLower(err.Error()), "duplicate") {
+				return res.ErrorBuilder(&res.ErrorConstant.Duplicate, err)
+			}
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+
+		result = &dto.SpiSdmResponse{
+			ID: abstraction.ID{ID: spiSdm.ID},
+		}
+
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+
+}
+
 func (s *spiSdmService) Get(ctx *abstraction.Context, payload *dto.SpiSdmGetRequest) (*dto.SpiSdmGetResponse, error) {
 	var result *dto.SpiSdmGetResponse
 
@@ -75,8 +163,8 @@ func (s *spiSdmService) Get(ctx *abstraction.Context, payload *dto.SpiSdmGetRequ
 			return res.ErrorBuilder(&res.ErrorConstant.NotFound, errors.New("Data Not Found!"))
 		}
 
-		spiSdmResponses := &[]dto.SpiSdmResponse{}
-		spiSdmResponse := &dto.SpiSdmResponse{}
+		spiSdmResponses := &[]dto.SpiSdmResponses{}
+		spiSdmResponse := &dto.SpiSdmResponses{}
 		for _, spisdm := range *spisdms {
 			spiSdmResponse.ID.ID = spisdm.ID
 			spiSdmResponse.SpiSdmEntity = spisdm.SpiSdmEntity
