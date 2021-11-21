@@ -32,6 +32,11 @@ type PegawaiGetRequest struct {
 	model.PegawaiFilter
 }
 
+//GetByID
+type PegawaiGetByIDRequest struct {
+	abstraction.ID
+}
+
 type PegawaiGetResponse struct {
 	Datas          *[]PegawaiResponse
 	PaginationInfo *abstraction.PaginationInfo

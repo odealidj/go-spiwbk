@@ -9,5 +9,6 @@ func (h *handler) Route(g *echo.Group) {
 	g.PUT("/:id", h.Update)
 	g.DELETE("/:id", h.Delete)
 	g.GET("", h.Get)
+	g.POST("/id", h.GetByID)
 
 }

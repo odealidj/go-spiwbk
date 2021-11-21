@@ -32,6 +32,11 @@ type SatkerGetRequest struct {
 	model.SatkerFilter
 }
 
+//GetByID
+type SatkerGetByIDRequest struct {
+	abstraction.ID
+}
+
 type SatkerGet2Request struct {
 	abstraction.PaginationArr
 	model.SatkerFilter

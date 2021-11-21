@@ -18,6 +18,7 @@ type SpiSdmService interface {
 	Update(*abstraction.Context, *dto.SpiSdmUpdateRequest) (*dto.SpiSdmResponse, error)
 	Delete(*abstraction.Context, *dto.SpiSdmDeleteRequest) (*dto.SpiSdmResponse, error)
 	Get(ctx *abstraction.Context, payload *dto.SpiSdmGetRequest) (*dto.SpiSdmGetResponse, error)
+	GetByID(*abstraction.Context, *dto.SpiSdmGetByIDRequest) (*dto.SpiSdmResponse, error)
 }
 
 type spiSdmService struct {
@@ -175,6 +176,32 @@ func (s *spiSdmService) Get(ctx *abstraction.Context, payload *dto.SpiSdmGetRequ
 		result = &dto.SpiSdmGetResponse{
 			Datas:          spiSdmResponses,
 			PaginationInfo: info,
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (s *spiSdmService) GetByID(ctx *abstraction.Context, payload *dto.SpiSdmGetByIDRequest) (*dto.SpiSdmResponse, error) {
+	var result *dto.SpiSdmResponse
+
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+		spisdm, err := s.Repository.FindByID(ctx, &model.SpiSdm{
+			Context:   ctx,
+			EntityInc: abstraction.EntityInc{IDInc: abstraction.IDInc{ID: payload.ID.ID}},
+		})
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return res.ErrorBuilder(&res.ErrorConstant.NotFound, err)
+			}
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+		result = &dto.SpiSdmResponse{
+			ID:           abstraction.ID{ID: spisdm.ID},
+			SpiSdmEntity: spisdm.SpiSdmEntity,
 		}
 		return nil
 	}); err != nil {

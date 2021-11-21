@@ -19,6 +19,7 @@ type SatkerService interface {
 	Delete(*abstraction.Context, *dto.SatkerDeleteRequest) (*dto.SatkerResponse, error)
 	Get(ctx *abstraction.Context, payload *dto.SatkerGetRequest) (*dto.SatkerGetResponse, error)
 	Get2(ctx *abstraction.Context, payload *dto.SatkerGet2Request) (*dto.SatkerGet2Response, error)
+	GetByID(*abstraction.Context, *dto.SatkerGetByIDRequest) (*dto.SatkerResponse, error)
 }
 
 type satkerService struct {
@@ -210,6 +211,32 @@ func (s *satkerService) Get2(ctx *abstraction.Context, payload *dto.SatkerGet2Re
 	}); err != nil {
 		result = &dto.SatkerGet2Response{}
 		return result, err
+	}
+
+	return result, nil
+}
+
+func (s *satkerService) GetByID(ctx *abstraction.Context, payload *dto.SatkerGetByIDRequest) (*dto.SatkerResponse, error) {
+	var result *dto.SatkerResponse
+
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+		satker, err := s.Repository.FindByID(ctx, &model.Satker{
+			Context:   ctx,
+			EntityInc: abstraction.EntityInc{IDInc: abstraction.IDInc{ID: payload.ID.ID}},
+		})
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return res.ErrorBuilder(&res.ErrorConstant.NotFound, err)
+			}
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+		result = &dto.SatkerResponse{
+			ID:           abstraction.ID{ID: satker.ID},
+			SatkerEntity: satker.SatkerEntity,
+		}
+		return nil
+	}); err != nil {
+		return nil, err
 	}
 
 	return result, nil

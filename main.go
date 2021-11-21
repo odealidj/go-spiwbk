@@ -24,7 +24,6 @@ func init() {
 	ENV := os.Getenv("ENV")
 	logrus.Info("Choosen environment " + ENV)
 }
-
 */
 
 // @title codeid-boiler

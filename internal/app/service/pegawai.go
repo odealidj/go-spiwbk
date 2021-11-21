@@ -18,6 +18,7 @@ type PegawaiService interface {
 	Update(*abstraction.Context, *dto.PegawaiUpdateRequest) (*dto.PegawaiResponse, error)
 	Delete(*abstraction.Context, *dto.PegawaiDeleteRequest) (*dto.PegawaiResponse, error)
 	Get(ctx *abstraction.Context, payload *dto.PegawaiGetRequest) (*dto.PegawaiGetResponse, error)
+	GetByID(*abstraction.Context, *dto.PegawaiGetByIDRequest) (*dto.PegawaiResponse, error)
 }
 
 type pegawaiservice struct {
@@ -163,6 +164,32 @@ func (s *pegawaiservice) Get(ctx *abstraction.Context, payload *dto.PegawaiGetRe
 		result = &dto.PegawaiGetResponse{
 			Datas:          pegawaiResponses,
 			PaginationInfo: info,
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (s *pegawaiservice) GetByID(ctx *abstraction.Context, payload *dto.PegawaiGetByIDRequest) (*dto.PegawaiResponse, error) {
+	var result *dto.PegawaiResponse
+
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+		pegawai, err := s.Repository.FindByID(ctx, &model.Pegawai{
+			Context:   ctx,
+			EntityInc: abstraction.EntityInc{IDInc: abstraction.IDInc{ID: payload.ID.ID}},
+		})
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return res.ErrorBuilder(&res.ErrorConstant.NotFound, err)
+			}
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+		result = &dto.PegawaiResponse{
+			ID:            abstraction.ID{ID: pegawai.ID},
+			PegawaiEntity: pegawai.PegawaiEntity,
 		}
 		return nil
 	}); err != nil {

@@ -39,6 +39,11 @@ type SpiSdmGetRequest struct {
 	model.SpiSdmFilter
 }
 
+//GetByID
+type SpiSdmGetByIDRequest struct {
+	abstraction.ID
+}
+
 type SpiSdmGetResponse struct {
 	Datas          *[]SpiSdmResponses
 	PaginationInfo *abstraction.PaginationInfo
