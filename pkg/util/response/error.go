@@ -44,9 +44,77 @@ type errorConstant struct {
 	BadRequest          Error
 	Validation          Error
 	InternalServerError Error
+
+	NoFileUpload          Error
+	UploadFileSrcError    Error
+	UploadFileCreateError Error
+	UploadFileDestError   Error
+	UploadFileError       Error
+	NotXLSXFileError      Error
 }
 
 var ErrorConstant errorConstant = errorConstant{
+	NoFileUpload: Error{
+		Response: errorResponse{
+			Meta: Meta{
+				Success: false,
+				Message: "No files to upload",
+			},
+			Error: E_SERVER_ERROR,
+		},
+		Code: http.StatusInternalServerError,
+	},
+	UploadFileSrcError: Error{
+		Response: errorResponse{
+			Meta: Meta{
+				Success: false,
+				Message: "Failed to open uploaded file",
+			},
+			Error: E_SERVER_ERROR,
+		},
+		Code: http.StatusInternalServerError,
+	},
+	UploadFileCreateError: Error{
+		Response: errorResponse{
+			Meta: Meta{
+				Success: false,
+				Message: "Failed to create uploaded file",
+			},
+			Error: E_SERVER_ERROR,
+		},
+		Code: http.StatusInternalServerError,
+	},
+	UploadFileDestError: Error{
+		Response: errorResponse{
+			Meta: Meta{
+				Success: false,
+				Message: "Failed destination uploaded file",
+			},
+			Error: E_SERVER_ERROR,
+		},
+		Code: http.StatusInternalServerError,
+	},
+	UploadFileError: Error{
+		Response: errorResponse{
+			Meta: Meta{
+				Success: false,
+				Message: "Failed to upload file",
+			},
+			Error: E_SERVER_ERROR,
+		},
+		Code: http.StatusInternalServerError,
+	},
+	NotXLSXFileError: Error{
+		Response: errorResponse{
+			Meta: Meta{
+				Success: false,
+				Message: "Document is not a xlsx file",
+			},
+			Error: E_SERVER_ERROR,
+		},
+		Code: http.StatusInternalServerError,
+	},
+
 	Duplicate: Error{
 		Response: errorResponse{
 			Meta: Meta{

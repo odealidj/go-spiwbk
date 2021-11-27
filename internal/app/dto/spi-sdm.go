@@ -8,6 +8,7 @@ import (
 type SpiSdmResponse struct {
 	abstraction.ID
 	model.SpiSdmEntity
+	FilePath string `json:"file_path"`
 }
 
 type SpiSdmResponses struct {
@@ -20,6 +21,7 @@ type SpiSdmResponses struct {
 //Save
 type SpiSdmSaveRequest struct {
 	model.SpiSdmEntity
+	FilePath string `json:"file_path" form:"file_path"`
 }
 
 //Update

@@ -13,8 +13,8 @@ type SpiSdmEntityFilter struct {
 }
 
 type SpiSdmEntity struct {
-	ThnAngID uint16 `json:"thn_ang_id"`
-	SatkerID uint16 `json:"satker_id"`
+	ThnAngID uint16 `json:"thn_ang_id" form:"thn_ang_id"`
+	SatkerID uint16 `json:"satker_id" form:"satker_id"`
 }
 
 type SpiSdm struct {

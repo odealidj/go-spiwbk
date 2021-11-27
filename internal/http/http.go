@@ -28,6 +28,9 @@ func Init(e *echo.Echo, f *factory.Factory) {
 		SCHEME  = os.Getenv("SCHEME")
 	)
 
+	//static
+	e.Static("/upload", "./upload")
+
 	// index
 	e.GET("/", func(c echo.Context) error {
 		message := fmt.Sprintf("Welcome to %s version %s", APP, VERSION)

@@ -21,6 +21,7 @@ type Factory struct {
 	JenisCertificateRepository repository.JenisCertificate
 	PegawaiRepository          repository.Pegawai
 	SpiSdmItemRepository       repository.SpiSdmItem
+	SpiSdmFileRepository       repository.SpiSdmFile
 }
 
 func NewFactory() *Factory {
@@ -53,4 +54,5 @@ func (f *Factory) SetupRepository() {
 	f.JenisCertificateRepository = repository.NewJenisCertificate(f.Db)
 	f.PegawaiRepository = repository.NewPegawai(f.Db)
 	f.SpiSdmItemRepository = repository.NewSpiSdmItem(f.Db)
+	f.SpiSdmFileRepository = repository.NewSpiSdmFile(f.Db)
 }
