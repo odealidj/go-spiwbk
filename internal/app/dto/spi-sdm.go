@@ -9,6 +9,7 @@ type SpiSdmResponse struct {
 	abstraction.ID
 	model.SpiSdmEntity
 	FilePath string `json:"file_path"`
+	Title    string `json:"title"`
 }
 
 type SpiSdmResponses struct {

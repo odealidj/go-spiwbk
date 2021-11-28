@@ -10,6 +10,7 @@ import (
 	"codeid-boiler/pkg/util/trxmanager"
 	"errors"
 	"fmt"
+	"github.com/xuri/excelize/v2"
 	"gorm.io/gorm"
 	"io"
 	"mime/multipart"
@@ -79,6 +80,32 @@ func (s *spiSdmService) SaveWithFile(ctx *abstraction.Context, payload *dto.SpiS
 	//var data *model.ThnAng
 
 	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+		/*
+			src, err := file.Open()
+			if err != nil {
+				return res.ErrorBuilder(&res.ErrorConstant.UploadFileSrcError, err)
+			}
+			defer src.Close()
+
+			fmt.Println(file.Filename)
+
+			f, err := excelize.OpenFile(file.Filename)
+			if err != nil {
+				fmt.Println(22)
+				fmt.Println(err)
+				//return
+			}
+
+			rows, err := f.GetRows("SPI-SDM")
+			for _, row := range rows {
+				for _, colCell := range row {
+					fmt.Print(colCell, "\t")
+				}
+				fmt.Println()
+			}
+
+			time.Sleep(time.Minute * 5)
+		*/
 
 		src, err := file.Open()
 		if err != nil {
@@ -97,7 +124,7 @@ func (s *spiSdmService) SaveWithFile(ctx *abstraction.Context, payload *dto.SpiS
 			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
 		}
 
-		fileName := fmt.Sprintf("%d%s", spisdm.ID, filepath.Ext(file.Filename))
+		fileName := fmt.Sprintf("%d%s", 1111, filepath.Ext(file.Filename))
 
 		//pathApp, _ := os.Getwd()
 
@@ -119,9 +146,48 @@ func (s *spiSdmService) SaveWithFile(ctx *abstraction.Context, payload *dto.SpiS
 
 		payload.FilePath = destinationPath
 
+		/*
+			//myContext := context.Background()
+
+			cld, _ := cloudinary.NewFromParams("da5nxfgry", "269244427528594", "uRKEzy_DOOXeFaWY6Nn9SDcq_2Y")
+			// Upload the my_picture.jpg image and set the public_id to "my_image".
+			resp, err := cld.Upload.Upload(ctx.Request().Context(), "prod.xlsx", uploader.UploadParams{PublicID: "spisdm"})
+			if err != nil {
+				fmt.Println("err clo1")
+				return res.ErrorBuilder(&res.ErrorConstant.UploadFileDestError, err)
+			}
+
+			asset, err := cld.Admin.Asset(ctx.Request().Context(), admin.AssetParams{PublicID: "spisdm"})
+			if err != nil {
+				fmt.Println("err clo2")
+				return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+			}
+			fmt.Println(asset.Info)
+
+			fmt.Println("Public ID: %s, URL: %s\n, URL1: %s\n, URL2: %s\n", asset.PublicID, asset.Info, resp.SecureURL, resp.OriginalFilename)
+
+		*/
+
+		//time.Sleep(time.Minute * 5)
+
+		f, err := excelize.OpenFile("./" + payload.FilePath)
+		if err != nil {
+			//fmt.Println(22)
+			//fmt.Println(err)
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+			//return
+		}
+
+		cell, err := f.GetCellValue("SPI-SDM", "B2")
+		if err != nil {
+			//fmt.Println(err)
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+
 		spiSdmFile, err := s.SpiSdmFileRepository.Create(ctx, &model.SpiSdmFile{
-			Entity:           abstraction.Entity{ID: abstraction.ID{ID: spisdm.ID}},
-			SpiSdmFileEntity: model.SpiSdmFileEntity{FilePath: payload.FilePath},
+			Entity: abstraction.Entity{ID: abstraction.ID{ID: spisdm.ID}},
+			SpiSdmFileEntity: model.SpiSdmFileEntity{FilePath: payload.FilePath,
+				Title: cell},
 		})
 
 		if err != nil {
@@ -135,6 +201,7 @@ func (s *spiSdmService) SaveWithFile(ctx *abstraction.Context, payload *dto.SpiS
 			ID:           abstraction.ID{ID: spisdm.ID},
 			SpiSdmEntity: spisdm.SpiSdmEntity,
 			FilePath:     spiSdmFile.FilePath,
+			Title:        cell,
 		}
 
 		return nil
