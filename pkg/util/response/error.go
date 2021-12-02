@@ -36,6 +36,7 @@ const (
 )
 
 type errorConstant struct {
+	ForeignKey          Error
 	Duplicate           Error
 	NotFound            Error
 	RouteNotFound       Error
@@ -114,7 +115,16 @@ var ErrorConstant errorConstant = errorConstant{
 		},
 		Code: http.StatusInternalServerError,
 	},
-
+	ForeignKey: Error{
+		Response: errorResponse{
+			Meta: Meta{
+				Success: false,
+				Message: "Foreign key constraint fails",
+			},
+			Error: E_DUPLICATE,
+		},
+		Code: http.StatusConflict,
+	},
 	Duplicate: Error{
 		Response: errorResponse{
 			Meta: Meta{

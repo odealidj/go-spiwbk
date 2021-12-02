@@ -2,6 +2,7 @@ package repository
 
 import (
 	"codeid-boiler/internal/abstraction"
+	"codeid-boiler/internal/app/dto"
 	"codeid-boiler/internal/app/model"
 	"fmt"
 	"gorm.io/gorm"
@@ -9,27 +10,28 @@ import (
 	"sync"
 )
 
-type JenisCertificate interface {
-	Create(*abstraction.Context, *model.JenisCertificate) (*model.JenisCertificate, error)
-	Update(*abstraction.Context, *model.JenisCertificate) (*model.JenisCertificate, error)
-	FindByID(*abstraction.Context, *model.JenisCertificate) (*model.JenisCertificate, error)
-	Find(*abstraction.Context, *model.JenisCertificateFilter, *abstraction.Pagination) (*[]model.JenisCertificate, *abstraction.PaginationInfo, error)
+type Rkakl interface {
+	Create(*abstraction.Context, *model.Rkakl) (*model.Rkakl, error)
+	Update(*abstraction.Context, *model.Rkakl) (*model.Rkakl, error)
+	Delete(*abstraction.Context, *model.Rkakl) (*model.Rkakl, error)
+	FindByID(*abstraction.Context, *model.Rkakl) (*model.Rkakl, error)
+	Find(*abstraction.Context, *model.RkaklFilter, *abstraction.Pagination) ([]dto.RkaklResponse, *abstraction.PaginationInfo, error)
 	checkTrx(*abstraction.Context) *gorm.DB
 }
 
-type jeniscertificate struct {
+type rkakl struct {
 	abstraction.Repository
 }
 
-func NewJenisCertificate(db *gorm.DB) *jeniscertificate {
-	return &jeniscertificate{
+func NewRkakl(db *gorm.DB) *rkakl {
+	return &rkakl{
 		abstraction.Repository{
 			Db: db,
 		},
 	}
 }
 
-func (r *jeniscertificate) Create(ctx *abstraction.Context, m *model.JenisCertificate) (*model.JenisCertificate, error) {
+func (r *rkakl) Create(ctx *abstraction.Context, m *model.Rkakl) (*model.Rkakl, error) {
 	conn := r.CheckTrx(ctx)
 
 	err := conn.Create(&m).WithContext(ctx.Request().Context()).Error
@@ -39,7 +41,7 @@ func (r *jeniscertificate) Create(ctx *abstraction.Context, m *model.JenisCertif
 	return m, nil
 }
 
-func (r *jeniscertificate) Update(ctx *abstraction.Context, m *model.JenisCertificate) (*model.JenisCertificate, error) {
+func (r *rkakl) Update(ctx *abstraction.Context, m *model.Rkakl) (*model.Rkakl, error) {
 	conn := r.CheckTrx(ctx)
 
 	err := conn.Save(&m).WithContext(ctx.Request().Context()).Error
@@ -49,7 +51,17 @@ func (r *jeniscertificate) Update(ctx *abstraction.Context, m *model.JenisCertif
 	return m, nil
 }
 
-func (r *jeniscertificate) FindByID(ctx *abstraction.Context, m *model.JenisCertificate) (*model.JenisCertificate, error) {
+func (r *rkakl) Delete(ctx *abstraction.Context, m *model.Rkakl) (*model.Rkakl, error) {
+	conn := r.CheckTrx(ctx)
+
+	err := conn.Delete(&m).WithContext(ctx.Request().Context()).Error
+	if err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (r *rkakl) FindByID(ctx *abstraction.Context, m *model.Rkakl) (*model.Rkakl, error) {
 	conn := r.CheckTrx(ctx)
 
 	err := conn.Where("id = ?", m.ID).First(&m).WithContext(ctx.Request().Context()).Error
@@ -59,18 +71,26 @@ func (r *jeniscertificate) FindByID(ctx *abstraction.Context, m *model.JenisCert
 	return m, nil
 }
 
-func (r *jeniscertificate) Find(ctx *abstraction.Context, m *model.JenisCertificateFilter, p *abstraction.Pagination) (*[]model.JenisCertificate, *abstraction.PaginationInfo, error) {
+func (r *rkakl) Find(ctx *abstraction.Context, m *model.RkaklFilter, p *abstraction.Pagination) ([]dto.RkaklResponse, *abstraction.PaginationInfo, error) {
 	conn := r.CheckTrx(ctx)
 
 	var err error
 	var count int64
-	var result []model.JenisCertificate
+	var result []dto.RkaklResponse
 	var info abstraction.PaginationInfo
 
-	query := conn.Model(&model.JenisCertificate{})
+	query := conn.Table("rkakl").
+		Select(`
+				rkakl.*, ta.year as thn_ang_year, s.name as satker_name, rf.filepath
+			`).
+		Joins("inner join thn_ang ta ON rkakl.thn_ang_id = ta.id").
+		Joins("INNER JOIN satker s on rkakl.satker_id = s.id").
+		Joins("INNER JOIN rkakl_file rf on rf.id = rkakl.id").
+		Find(&result)
 
 	//filter
-	query = r.Filter(ctx, query, *m)
+
+	query = r.Filter(ctx, query, *m).Where("rkakl.deleted_at is NULL")
 	queryCount := query
 
 	ChErr := make(chan error)
@@ -105,7 +125,7 @@ func (r *jeniscertificate) Find(ctx *abstraction.Context, m *model.JenisCertific
 	group.Wait()
 
 	if err != nil {
-		return &result, &info, err
+		return result, &info, err
 	}
 
 	// sort
@@ -115,9 +135,11 @@ func (r *jeniscertificate) Find(ctx *abstraction.Context, m *model.JenisCertific
 	}
 
 	if p.SortBy == nil {
-		sortBy := "id"
+		sortBy := "rkakl.id"
 		p.SortBy = &sortBy
 	}
+
+	p.Count = count
 
 	sort := fmt.Sprintf("%s %s", *p.SortBy, *p.Sort)
 	query = query.Order(sort)
@@ -157,7 +179,7 @@ func (r *jeniscertificate) Find(ctx *abstraction.Context, m *model.JenisCertific
 
 	err = query.Find(&result).WithContext(ctx.Request().Context()).Error
 	if err != nil {
-		return &result, &info, err
+		return result, &info, err
 	}
 
 	//if p.Page != nil && p.PageSize != nil {
@@ -177,11 +199,11 @@ func (r *jeniscertificate) Find(ctx *abstraction.Context, m *model.JenisCertific
 	}
 	//}
 
-	return &result, &info, nil
+	return result, &info, nil
 
 }
 
-func (r *jeniscertificate) checkTrx(ctx *abstraction.Context) *gorm.DB {
+func (r *rkakl) checkTrx(ctx *abstraction.Context) *gorm.DB {
 	if ctx.Trx != nil {
 		return ctx.Trx.Db
 	}

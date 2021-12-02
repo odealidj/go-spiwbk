@@ -5,6 +5,7 @@ import (
 	"codeid-boiler/internal/factory"
 	"codeid-boiler/internal/http"
 	"codeid-boiler/internal/middleware"
+	"github.com/sirupsen/logrus"
 	"os"
 
 	"github.com/labstack/echo/v4"
@@ -12,7 +13,6 @@ import (
 
 /*
 func init() {
-
 	//env := env.NewEnv()
 	//env.Load(ENV)
 
@@ -21,11 +21,8 @@ func init() {
 		panic("Failed to load .env file, Make sure .env is exists")
 
 	}
-	ENV := os.Getenv("ENV")
-	logrus.Info("Choosen environment " + ENV)
 }
 */
-
 // @title codeid-boiler
 // @version 0.0.1
 // @description This is a doc for codeid-boiler.
@@ -37,6 +34,9 @@ func init() {
 // @host localhost:3030
 // @BasePath /
 func main() {
+
+	ENV := os.Getenv("ENV")
+	logrus.Info("Choosen environment " + ENV)
 
 	var PORT = os.Getenv("PORT")
 

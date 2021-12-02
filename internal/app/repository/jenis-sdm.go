@@ -84,8 +84,9 @@ func (r *jenissdm) Find(ctx *abstraction.Context, m *model.JenisSdmFilter, p *ab
 
 		if err := queryCount.Count(&count).WithContext(ctx.Request().Context()).Error; err != nil {
 			ChErr <- err
+		} else {
+			ChErr <- nil
 		}
-		ChErr <- nil
 	}(group)
 	go func(group *sync.WaitGroup) {
 		defer group.Done()

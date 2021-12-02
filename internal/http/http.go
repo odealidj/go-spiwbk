@@ -6,6 +6,7 @@ import (
 	"codeid-boiler/internal/app/handler/jenis-certificate"
 	"codeid-boiler/internal/app/handler/jenis-sdm"
 	"codeid-boiler/internal/app/handler/pegawai"
+	"codeid-boiler/internal/app/handler/rkakl"
 	"codeid-boiler/internal/app/handler/satker"
 	"codeid-boiler/internal/app/handler/spi-sdm"
 	"codeid-boiler/internal/app/handler/spi-sdm-item"
@@ -54,4 +55,5 @@ func Init(e *echo.Echo, f *factory.Factory) {
 	jenis_certificate.NewHandler(f).Route(g.Group("/jenis-certificate"))
 	pegawai.NewHandler(f).Route(g.Group("/pegawai"))
 	spi_sdm_item.NewHandler(f).Route(g.Group("/spi-sdm_item"))
+	rkakl.NewHandler(f).Route(g.Group("/rkakl"))
 }

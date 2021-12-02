@@ -22,6 +22,8 @@ type Factory struct {
 	PegawaiRepository          repository.Pegawai
 	SpiSdmItemRepository       repository.SpiSdmItem
 	SpiSdmFileRepository       repository.SpiSdmFile
+	RkaklRepository            repository.Rkakl
+	RkaklFileRepository        repository.RkaklFile
 }
 
 func NewFactory() *Factory {
@@ -55,4 +57,7 @@ func (f *Factory) SetupRepository() {
 	f.PegawaiRepository = repository.NewPegawai(f.Db)
 	f.SpiSdmItemRepository = repository.NewSpiSdmItem(f.Db)
 	f.SpiSdmFileRepository = repository.NewSpiSdmFile(f.Db)
+	f.RkaklRepository = repository.NewRkakl(f.Db)
+	f.RkaklFileRepository = repository.NewRkaklFile(f.Db)
+
 }
