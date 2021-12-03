@@ -200,7 +200,8 @@ func (s *rkaklService) Update(ctx *abstraction.Context, payload *dto.RkaklUpdate
 				return res.ErrorBuilder(&res.ErrorConstant.UploadFileDestError, err)
 			}
 
-			oldFile = rkaklFile.Filepath
+			oldFile = path.Join("upload", rkaklFile.Filepath)
+
 			fileLocation = destinationPath
 			//payload.ImagePath = destinationPath
 		} else {
@@ -210,7 +211,7 @@ func (s *rkaklService) Update(ctx *abstraction.Context, payload *dto.RkaklUpdate
 
 		rkaklFile, err = s.RkaklFileRepository.Update(ctx, &model.RkaklFile{
 			Entity:          abstraction.Entity{ID: abstraction.ID{ID: rkakl.ID}},
-			RkaklFileEntity: model.RkaklFileEntity{Filepath: fileLocation},
+			RkaklFileEntity: model.RkaklFileEntity{Filepath: strings.TrimSpace(strings.Split(fileLocation, "/")[1])},
 		})
 
 		if err != nil {
@@ -222,9 +223,10 @@ func (s *rkaklService) Update(ctx *abstraction.Context, payload *dto.RkaklUpdate
 			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
 		}
 
-		if len(oldFile) > 0 {
-			_ = os.Remove(oldFile)
-		}
+		//tidak diperlukan karena nama file nya sama
+		//if len(oldFile) > 0 {
+		//	_ = os.Remove(oldFile)
+		//}
 
 		result = &dto.RkaklResponse{
 			ID:          abstraction.ID{ID: rkakl.ID},
@@ -264,8 +266,11 @@ func (s *rkaklService) Delete(ctx *abstraction.Context, payload *dto.RkaklDelete
 			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
 		}
 
+		fmt.Println(path.Join("upload", rkaklFile.Filepath))
+
 		if len(rkaklFile.Filepath) > 0 {
-			_ = os.Remove(rkaklFile.Filepath)
+
+			_ = os.Remove(path.Join("upload", rkaklFile.Filepath))
 		}
 
 		_, err = s.Repository.Delete(ctx, &model.Rkakl{Context: ctx,
