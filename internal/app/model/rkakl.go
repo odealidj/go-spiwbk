@@ -8,10 +8,11 @@ import (
 )
 
 type RkaklEntityFilter struct {
+	ID         *int    `json:"id,omitempty" query:"rkakl.id"`
 	ThnAngID   *int    `json:"thn_ang_id" query:"thn_ang_id"`
 	ThnAngYear *string `json:"thn_ang_year" query:"thn_ang_year"`
 	SatkerID   *int    `json:"satker_id" query:"satker_id"`
-	SatkerName *string `json:"satker_name" query:"satker_name"`
+	SatkerName *string `json:"satker_name" query:"satker_name" filter:"LIKE"`
 	Title      *string `json:"title" query:"title" filter:"LIKE"`
 }
 

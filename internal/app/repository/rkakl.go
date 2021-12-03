@@ -15,6 +15,7 @@ type Rkakl interface {
 	Update(*abstraction.Context, *model.Rkakl) (*model.Rkakl, error)
 	Delete(*abstraction.Context, *model.Rkakl) (*model.Rkakl, error)
 	FindByID(*abstraction.Context, *model.Rkakl) (*model.Rkakl, error)
+	FindThnAngSatkerByID(*abstraction.Context, *model.Rkakl) (*model.Rkakl, error)
 	Find(*abstraction.Context, *model.RkaklFilter, *abstraction.Pagination) ([]dto.RkaklResponse, *abstraction.PaginationInfo, error)
 	checkTrx(*abstraction.Context) *gorm.DB
 }
@@ -64,7 +65,19 @@ func (r *rkakl) Delete(ctx *abstraction.Context, m *model.Rkakl) (*model.Rkakl, 
 func (r *rkakl) FindByID(ctx *abstraction.Context, m *model.Rkakl) (*model.Rkakl, error) {
 	conn := r.CheckTrx(ctx)
 
-	err := conn.Where("id = ?", m.ID).First(&m).WithContext(ctx.Request().Context()).Error
+	err := conn.First(&m, m.ID).WithContext(ctx.Request().Context()).Error
+	if err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (r *rkakl) FindThnAngSatkerByID(ctx *abstraction.Context, m *model.Rkakl) (*model.Rkakl, error) {
+	conn := r.CheckTrx(ctx)
+
+	//var result *dto.RkaklResponse
+	//auto find by ID & delete_at is null
+	err := conn.Joins("Satker").Joins("ThnAng").First(&m).WithContext(ctx.Request().Context()).Error
 	if err != nil {
 		return nil, err
 	}

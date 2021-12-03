@@ -27,6 +27,11 @@ type RkaklDeleteResponse struct {
 	abstraction.ID
 }
 
+//GetByID
+type RkaklGetByIDRequest struct {
+	abstraction.ID
+}
+
 //Get
 type RkaklGetRequest struct {
 	abstraction.Pagination

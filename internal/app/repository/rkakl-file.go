@@ -60,8 +60,9 @@ func (r *rkaklFile) Delete(ctx *abstraction.Context, m *model.RkaklFile) (*model
 func (r *rkaklFile) FindByID(ctx *abstraction.Context, m *model.RkaklFile) (*model.RkaklFile, error) {
 	conn := r.CheckTrx(ctx)
 
-	err := conn.Where("id = ?", m.ID).First(&m).WithContext(ctx.Request().Context()).Error
+	err := conn.First(&m, m.ID).WithContext(ctx.Request().Context()).Error
 	if err != nil {
+
 		return nil, err
 	}
 	return m, nil

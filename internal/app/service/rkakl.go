@@ -24,8 +24,8 @@ type RkaklService interface {
 	Update(*abstraction.Context, *dto.RkaklUpdateRequest, *multipart.FileHeader) (*dto.RkaklResponse, error)
 	Delete(*abstraction.Context, *dto.RkaklDeleteRequest) (*dto.RkaklDeleteResponse, error)
 	Get(*abstraction.Context, *dto.RkaklGetRequest) (*dto.RkaklGetInfoResponse, error)
-	//Get(ctx *abstraction.Context, payload *dto.RkaklGetRequest) (*dto.RkaklGetResponse, error)
-	//GetByID(*abstraction.Context, *dto.SpiSdmGetByIDRequest) (*dto.SpiSdmResponse, error)
+	GetByID(*abstraction.Context, *dto.RkaklGetByIDRequest) (*dto.RkaklResponse, error)
+	GetByID2(*abstraction.Context, *dto.RkaklGetByIDRequest) (*dto.RkaklResponse, error)
 }
 
 type rkaklService struct {
@@ -165,8 +165,8 @@ func (s *rkaklService) Update(ctx *abstraction.Context, payload *dto.RkaklUpdate
 			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
 		}
 
-		rkaklFile, err := s.RkaklFileRepository.FindByID(ctx, &model.RkaklFile{Context: ctx, Entity: abstraction.Entity{
-			ID: abstraction.ID{ID: rkakl.ID}}})
+		rkaklFile, err := s.RkaklFileRepository.FindByID(ctx, &model.RkaklFile{Context: ctx,
+			Entity: abstraction.Entity{ID: abstraction.ID{ID: rkakl.ID}}})
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				return res.ErrorBuilder(&res.ErrorConstant.NotFound, err)
@@ -294,14 +294,97 @@ func (s *rkaklService) Get(ctx *abstraction.Context, payload *dto.RkaklGetReques
 			return res.ErrorBuilder(&res.ErrorConstant.InternalServerError, err)
 		}
 
-		if len(rkakls) <= 0 {
-			return res.ErrorBuilder(&res.ErrorConstant.NotFound, errors.New("Data not found"))
-		}
-
 		result = &dto.RkaklGetInfoResponse{
 			Datas:          &rkakls,
 			PaginationInfo: info,
 		}
+
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (s *rkaklService) GetByID(ctx *abstraction.Context, payload *dto.RkaklGetByIDRequest) (*dto.RkaklResponse, error) {
+	var result *dto.RkaklResponse
+
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+		rkakl, err := s.Repository.FindByID(ctx, &model.Rkakl{
+			Context:   ctx,
+			EntityInc: abstraction.EntityInc{IDInc: abstraction.IDInc{ID: payload.ID.ID}},
+		})
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return res.ErrorBuilder(&res.ErrorConstant.NotFound, err)
+			}
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+		rkaklFile, err := s.RkaklFileRepository.FindByID(ctx, &model.RkaklFile{
+			Context: ctx,
+			Entity:  abstraction.Entity{ID: abstraction.ID{ID: payload.ID.ID}},
+		})
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return res.ErrorBuilder(&res.ErrorConstant.NotFound, err)
+			}
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+
+		result = &dto.RkaklResponse{
+			ID:          abstraction.ID{ID: rkakl.ID},
+			RkaklEntity: rkakl.RkaklEntity,
+			Filepath:    &rkaklFile.Filepath,
+		}
+
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (s *rkaklService) GetByID2(ctx *abstraction.Context, payload *dto.RkaklGetByIDRequest) (*dto.RkaklResponse, error) {
+	var result *dto.RkaklResponse
+
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+		rkakl, err := s.Repository.FindThnAngSatkerByID(ctx, &model.Rkakl{
+			Context:   ctx,
+			EntityInc: abstraction.EntityInc{IDInc: abstraction.IDInc{ID: payload.ID.ID}},
+		})
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				//result = &dto.RkaklResponse{}
+				return nil
+			}
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+
+		//if rkakl.ID != 0 && rkakl.SatkerID != 0 {
+
+		rkaklFile, err := s.RkaklFileRepository.FindByID(ctx, &model.RkaklFile{
+			Context: ctx,
+			Entity:  abstraction.Entity{ID: abstraction.ID{ID: payload.ID.ID}},
+		})
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return res.ErrorBuilder(&res.ErrorConstant.NotFound, err)
+			}
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+
+		result = &dto.RkaklResponse{
+			ID:          abstraction.ID{ID: rkakl.ID},
+			RkaklEntity: rkakl.RkaklEntity,
+			ThnAngYear:  &rkakl.ThnAng.Year,
+			SatkerName:  &rkakl.Satker.Name,
+			Filepath:    &rkaklFile.Filepath,
+		}
+		//} else {
+		//result = &dto.RkaklResponse{}
+		//}
 
 		return nil
 	}); err != nil {

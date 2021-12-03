@@ -15,7 +15,7 @@ type RkaklFile struct {
 	abstraction.Entity
 	RkaklFileEntity
 
-	Rkakl Rkakl `gorm:"foreignKey:id"`
+	//Rkakl Rkakl `gorm:"foreignKey:id"`
 
 	Context *abstraction.Context `json:"-" gorm:"-"`
 }
