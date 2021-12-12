@@ -16,7 +16,7 @@ func init() {
 	//env := env.NewEnv()
 	//env.Load(ENV)
 
-	err := godotenv.Load(".env.local")
+	err := godotenv.Load(".env.development")
 	if err != nil {
 		panic("Failed to load .env file, Make sure .env is exists")
 
