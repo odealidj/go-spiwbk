@@ -8,6 +8,8 @@ import (
 type SpiAngResponse struct {
 	abstraction.ID
 	model.SpiAngEntity
+	Year       *string `json:"year,omitempty"`
+	SatkerName *string `json:"satker_name,omitempty"`
 }
 
 type SpiAngResponses struct {
@@ -47,5 +49,10 @@ type SpiAngGetByIDRequest struct {
 
 type SpiAngGetResponse struct {
 	Datas          *[]SpiAngResponses
+	PaginationInfo *abstraction.PaginationInfo
+}
+
+type SpiAngGetResponses struct {
+	Datas          *[]SpiAngResponse
 	PaginationInfo *abstraction.PaginationInfo
 }

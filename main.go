@@ -22,7 +22,6 @@ func init() {
 
 	}
 }
-
 */
 
 // @title codeid-boiler

@@ -7,6 +7,7 @@ func (h *handler) Route(g *echo.Group) {
 	g.PUT("/:id", h.Update)
 	g.DELETE("/:id", h.Delete)
 	g.GET("", h.Get)
+	g.GET("/exist-spi-ang-item", h.GetExistSpiAngItem)
 	g.POST("/id", h.GetByID)
 
 }

@@ -27,7 +27,7 @@ type SpiAng struct {
 }
 
 type SpiAngFilter struct {
-	SpiSdmEntityFilter
+	SpiAngEntityFilter
 }
 
 func (m *SpiAng) BeforeCreate(tx *gorm.DB) (err error) {

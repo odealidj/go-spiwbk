@@ -17,7 +17,8 @@ type SpiAngService interface {
 	Save(*abstraction.Context, *dto.SpiAngSaveRequest) (*dto.SpiAngResponse, error)
 	Update(*abstraction.Context, *dto.SpiAngUpdateRequest) (*dto.SpiAngResponse, error)
 	Delete(*abstraction.Context, *dto.SpiAngDeleteRequest) (*dto.SpiAngResponse, error)
-	Get(ctx *abstraction.Context, payload *dto.SpiAngGetRequest) (*dto.SpiAngGetResponse, error)
+	Get(*abstraction.Context, *dto.SpiAngGetRequest) (*dto.SpiAngGetResponse, error)
+	GetByThnAngIDAndSatkerIDExistSpiAngItem(*abstraction.Context, *dto.SpiAngGetRequest) (*dto.SpiAngGetResponses, error)
 	GetByID(*abstraction.Context, *dto.SpiAngGetByIDRequest) (*dto.SpiAngResponse, error)
 }
 
@@ -174,6 +175,39 @@ func (s *spiAngService) Get(ctx *abstraction.Context, payload *dto.SpiAngGetRequ
 			*spiAngResponses = append(*spiAngResponses, *spiAngResponse)
 		}
 		result = &dto.SpiAngGetResponse{
+			Datas:          spiAngResponses,
+			PaginationInfo: info,
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (s *spiAngService) GetByThnAngIDAndSatkerIDExistSpiAngItem(ctx *abstraction.Context, payload *dto.SpiAngGetRequest) (*dto.SpiAngGetResponses, error) {
+	var result *dto.SpiAngGetResponses
+
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+
+		spiAngs, info, err := s.Repository.FindByThnAngIDAndSatkerIDExistSpiAngItem(ctx, &payload.SpiAngFilter, &payload.Pagination)
+		if err != nil {
+			return res.ErrorBuilder(&res.ErrorConstant.InternalServerError, err)
+		}
+		//if len(*spisdms) == 0 {
+		//	return res.ErrorBuilder(&res.ErrorConstant.NotFound, errors.New("Data Not Found!"))
+		//}
+
+		spiAngResponses := &[]dto.SpiAngResponse{}
+		for _, data := range spiAngs {
+			*spiAngResponses = append(*spiAngResponses, dto.SpiAngResponse{
+				ID:           abstraction.ID{ID: data.ID.ID},
+				SpiAngEntity: data.SpiAngEntity,
+				Year:         data.Year, SatkerName: data.SatkerName,
+			})
+		}
+		result = &dto.SpiAngGetResponses{
 			Datas:          spiAngResponses,
 			PaginationInfo: info,
 		}
