@@ -4,31 +4,30 @@ import (
 	"codeid-boiler/internal/abstraction"
 	"codeid-boiler/pkg/constant"
 	"codeid-boiler/pkg/util/date"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
 
-type RkaklFileEntity struct {
-	Filepath  string `json:"filepath" form:"file"`
-	Sheetname string `json:"sheetname" form:"sheetname"`
+type ProgKegiatanEntity struct {
+	RkaklProgID int `json:"rkakl_prog_id"`
+	KegiatanID  int `json:"kegiatan_id"`
+	Biaya decimal.Decimal `json:"biaya"`
 }
 
-type RkaklFile struct {
-	abstraction.Entity
-	RkaklFileEntity
-
-	//Rkakl Rkakl `gorm:"foreignKey:id"`
-
+type ProgKegiatan struct {
+	abstraction.EntityInc
+	ProgKegiatanEntity
 	Context *abstraction.Context `json:"-" gorm:"-"`
 }
 
-func (m *RkaklFile) BeforeCreate(tx *gorm.DB) (err error) {
+func (m *ProgKegiatan) BeforeCreate(tx *gorm.DB) (err error) {
 	m.CreatedAt = *date.DateTodayLocal()
 	m.CreatedBy = constant.DB_DEFAULT_CREATED_BY
 
 	return
 }
 
-func (m *RkaklFile) BeforeUpdate(tx *gorm.DB) (err error) {
+func (m *ProgKegiatan) BeforeUpdate(tx *gorm.DB) (err error) {
 	m.ModifiedAt = date.DateTodayLocal()
 	//m.ModifiedBy = &m.Context.Auth.Name
 	return

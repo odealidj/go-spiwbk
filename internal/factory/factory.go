@@ -4,26 +4,43 @@ import (
 	"codeid-boiler/database"
 	"codeid-boiler/internal/app/repository"
 
-	"os"
-	"strings"
-
 	"gorm.io/gorm"
+	"os"
 )
 
 type Factory struct {
-	Db                         *gorm.DB
-	LoginAppRepository         repository.LoginApp
-	UserAppRepository          repository.UserApp
-	ThnAngRepository           repository.ThnAng
-	SatkerRepository           repository.Satker
-	SpiSdmRepository           repository.SpiSdm
-	JenisSdmRepository         repository.JenisSdm
-	JenisCertificateRepository repository.JenisCertificate
-	PegawaiRepository          repository.Pegawai
-	SpiSdmItemRepository       repository.SpiSdmItem
-	SpiSdmFileRepository       repository.SpiSdmFile
-	RkaklRepository            repository.Rkakl
-	RkaklFileRepository        repository.RkaklFile
+	Db                                *gorm.DB
+	LoginAppRepository                repository.LoginApp
+	UserAppRepository                 repository.UserApp
+	ThnAngRepository                  repository.ThnAng
+	SatkerRepository                  repository.Satker
+	SpiSdmRepository                  repository.SpiSdm
+	JenisSdmRepository                repository.JenisSdm
+	JenisCertificateRepository        repository.JenisCertificate
+	PegawaiRepository                 repository.Pegawai
+	SpiSdmItemRepository              repository.SpiSdmItem
+	SpiSdmFileRepository              repository.SpiSdmFile
+	RkaklRepository                   repository.Rkakl
+	RkaklFileRepository               repository.RkaklFile
+	ProgramRepository                 repository.Program
+	RkaklProgRepository               repository.RkaklProg
+	KegiatanRepository                repository.Kegiatan
+	ProgKegiatanRepository            repository.ProgKegiatan
+	OutputRepository                  repository.Output
+	KegiatanOutputRepository          repository.KegiatanOutput
+	KegiatanOutputLocationRepository  repository.KegiatanOutputLocation
+	SubOutputRepository               repository.SubOutput
+	KomponenRepository                repository.Komponen
+	SubKomponenRepository             repository.SubKomponen
+	AkunRepository                    repository.Akun
+	SubKomponenAkunRepository         repository.SubKomponenAkun
+	SubKomponenAkunLocationRepository repository.SubKomponenAkunLocation
+	RkaklItemRepository               repository.RkaklItem
+	SpiAngRepository                  repository.SpiAng
+	SpiAngItemRepository              repository.SpiAngItem
+	SpiAngKesesuaianRepository        repository.SpiAngKesesuaian
+	JenisKesesuaianRepository         repository.JenisKesesuaian
+	JenisPengendaliRepository         repository.JenisPengendali
 }
 
 func NewFactory() *Factory {
@@ -35,7 +52,7 @@ func NewFactory() *Factory {
 }
 
 func (f *Factory) SetupDb() {
-	db, err := database.Connection(strings.ToUpper(os.Getenv("DB_NAME_MIGRATION")))
+	db, err := database.Connection(os.Getenv("DB_CONN_NAME_DJPT_SPIWBK"))
 	if err != nil {
 		panic("Failed setup db, connection is undefined")
 	}
@@ -59,5 +76,23 @@ func (f *Factory) SetupRepository() {
 	f.SpiSdmFileRepository = repository.NewSpiSdmFile(f.Db)
 	f.RkaklRepository = repository.NewRkakl(f.Db)
 	f.RkaklFileRepository = repository.NewRkaklFile(f.Db)
-
+	f.ProgramRepository = repository.NewProgram(f.Db)
+	f.RkaklProgRepository = repository.NewRkaklProg(f.Db)
+	f.KegiatanRepository = repository.NewKegiatan(f.Db)
+	f.ProgKegiatanRepository = repository.NewProgKegiatan(f.Db)
+	f.OutputRepository = repository.NewOutput(f.Db)
+	f.KegiatanOutputRepository = repository.NewKegiatanOutput(f.Db)
+	f.KegiatanOutputLocationRepository = repository.NewKegiatanOuputLocation(f.Db)
+	f.SubOutputRepository = repository.NewSubOutput(f.Db)
+	f.KomponenRepository = repository.NewKomponen(f.Db)
+	f.SubKomponenRepository = repository.NewSubKomponen(f.Db)
+	f.AkunRepository = repository.NewAkun(f.Db)
+	f.SubKomponenAkunRepository = repository.NewSubKomponenAkun(f.Db)
+	f.SubKomponenAkunLocationRepository = repository.NewSubKomponenAkunLocation(f.Db)
+	f.RkaklItemRepository = repository.NewRkaklItem(f.Db)
+	f.SpiAngRepository = repository.NewSpiAng(f.Db)
+	f.SpiAngItemRepository = repository.NewSpiAngItem(f.Db)
+	f.SpiAngKesesuaianRepository = repository.NewSpiAngKesesuaian(f.Db)
+	f.JenisKesesuaianRepository = repository.NewJenisKesesuaian(f.Db)
+	f.JenisPengendaliRepository = repository.NewJenisPengendali(f.Db)
 }

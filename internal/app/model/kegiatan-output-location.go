@@ -7,28 +7,25 @@ import (
 	"gorm.io/gorm"
 )
 
-type RkaklFileEntity struct {
-	Filepath  string `json:"filepath" form:"file"`
-	Sheetname string `json:"sheetname" form:"sheetname"`
+type KegiatanOutputLocationEntity struct {
+	KegiatanOutputID int    `json:"kegiatan_output_id"`
+	Name             string `json:"name"`
 }
 
-type RkaklFile struct {
-	abstraction.Entity
-	RkaklFileEntity
-
-	//Rkakl Rkakl `gorm:"foreignKey:id"`
-
+type KegiatanOutputLocation struct {
+	abstraction.EntityInc
+	KegiatanOutputLocationEntity
 	Context *abstraction.Context `json:"-" gorm:"-"`
 }
 
-func (m *RkaklFile) BeforeCreate(tx *gorm.DB) (err error) {
+func (m *KegiatanOutputLocation) BeforeCreate(tx *gorm.DB) (err error) {
 	m.CreatedAt = *date.DateTodayLocal()
 	m.CreatedBy = constant.DB_DEFAULT_CREATED_BY
 
 	return
 }
 
-func (m *RkaklFile) BeforeUpdate(tx *gorm.DB) (err error) {
+func (m *KegiatanOutputLocation) BeforeUpdate(tx *gorm.DB) (err error) {
 	m.ModifiedAt = date.DateTodayLocal()
 	//m.ModifiedBy = &m.Context.Auth.Name
 	return

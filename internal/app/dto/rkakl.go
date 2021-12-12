@@ -8,14 +8,16 @@ import (
 //Save
 type RkaklSaveRequest struct {
 	model.RkaklEntity
-	FilePath string `json:"file_path" form:"file_path"`
+	FilePath  string `json:"file_path" form:"file_path"`
+	Sheetname string `json:"sheetname" form:"sheetname"`
 }
 
 //Update
 type RkaklUpdateRequest struct {
 	abstraction.ID
 	model.RkaklEntity
-	FilePath string `json:"file_path" form:"file"`
+	FilePath  string `json:"file_path" form:"file" validate:"required"`
+	Sheetname string `json:"sheetname" form:"sheetname" validate:"required"`
 }
 
 //Delete

@@ -60,7 +60,7 @@ func (r *Repository) Filter(ctx *Context, query *gorm.DB, payload interface{}) *
 					// TODO we need build custom type first
 					// dateStart, dateEnd := date.StringDateToDateRange(val.String())
 					// query = query.Where(fmt.Sprintf("%s >= ? and %s <= ?", filterColumn, filterColumn), dateStart, dateEnd)
-
+				case "NOFILTER":
 				default:
 					query = query.Where(fmt.Sprintf("%s = ?", key), val.Interface())
 				}

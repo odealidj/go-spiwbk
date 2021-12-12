@@ -16,8 +16,9 @@ import (
 )
 
 type errorResponse struct {
-	Meta  Meta   `json:"meta"`
-	Error string `json:"error"`
+	Meta Meta `json:"meta"`
+	//Error string `json:"error"`
+	Error interface{} `json:"error"`
 }
 
 type Error struct {
@@ -47,14 +48,36 @@ type errorConstant struct {
 	InternalServerError Error
 
 	NoFileUpload          Error
+	OpenFileErr           Error
 	UploadFileSrcError    Error
 	UploadFileCreateError Error
 	UploadFileDestError   Error
 	UploadFileError       Error
+	SheetFileXLSXSErr     Error
 	NotXLSXFileError      Error
 }
 
 var ErrorConstant errorConstant = errorConstant{
+	OpenFileErr: Error{
+		Response: errorResponse{
+			Meta: Meta{
+				Success: false,
+				Message: "Can not open file",
+			},
+			Error: E_SERVER_ERROR,
+		},
+		Code: http.StatusInternalServerError,
+	},
+	SheetFileXLSXSErr: Error{
+		Response: errorResponse{
+			Meta: Meta{
+				Success: false,
+				Message: "File sheetname error",
+			},
+			Error: E_SERVER_ERROR,
+		},
+		Code: http.StatusInternalServerError,
+	},
 	NoFileUpload: Error{
 		Response: errorResponse{
 			Meta: Meta{
@@ -220,6 +243,19 @@ func CustomErrorBuilder(code int, err string, message string) *Error {
 				Message: message,
 			},
 			Error: err,
+		},
+		Code: code,
+	}
+}
+
+func CustomErrorBuilderWithData(code int, data interface{}, message string) *Error {
+	return &Error{
+		Response: errorResponse{
+			Meta: Meta{
+				Success: false,
+				Message: message,
+			},
+			Error: data,
 		},
 		Code: code,
 	}

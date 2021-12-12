@@ -4,10 +4,15 @@ import (
 	docs "codeid-boiler/docs"
 	"codeid-boiler/internal/app/handler/auth"
 	"codeid-boiler/internal/app/handler/jenis-certificate"
+	jenis_kesesuaian "codeid-boiler/internal/app/handler/jenis-kesesuaian"
+	jenis_pengendali "codeid-boiler/internal/app/handler/jenis-pengendali"
 	"codeid-boiler/internal/app/handler/jenis-sdm"
 	"codeid-boiler/internal/app/handler/pegawai"
 	"codeid-boiler/internal/app/handler/rkakl"
 	"codeid-boiler/internal/app/handler/satker"
+	spi_ang "codeid-boiler/internal/app/handler/spi-ang"
+	spi_ang_item "codeid-boiler/internal/app/handler/spi-ang-item"
+	spi_ang_kesesuaian "codeid-boiler/internal/app/handler/spi-ang-kesesuaian"
 	"codeid-boiler/internal/app/handler/spi-sdm"
 	"codeid-boiler/internal/app/handler/spi-sdm-item"
 	"codeid-boiler/internal/app/handler/thnang"
@@ -56,4 +61,10 @@ func Init(e *echo.Echo, f *factory.Factory) {
 	pegawai.NewHandler(f).Route(g.Group("/pegawai"))
 	spi_sdm_item.NewHandler(f).Route(g.Group("/spi-sdm_item"))
 	rkakl.NewHandler(f).Route(g.Group("/rkakl"))
+	spi_ang.NewHandler(f).Route(g.Group("/spi-ang"))
+	spi_ang_item.NewHandler(f).Route(g.Group("/spi-ang-item"))
+	spi_ang_kesesuaian.NewHandler(f).Route(g.Group("/spi-ang-kesesuaian"))
+	jenis_kesesuaian.NewHandler(f).Route(g.Group("/jenis-kesesuaian"))
+	jenis_pengendali.NewHandler(f).Route(g.Group("/jenis-pengendali"))
+
 }
