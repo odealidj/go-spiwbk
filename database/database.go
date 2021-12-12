@@ -30,20 +30,22 @@ func Init() {
 			Loc:       os.Getenv("DB_LOC"),
 		},
 
-		os.Getenv("DB_CONN_NAME_DJPT_SPIWBK_MIG"): &dbMySQL{
-			db: db{
-				Host: os.Getenv("DB_HOST_MIG"),
-				User: os.Getenv("DB_USER_MIG"),
-				Pass: os.Getenv("DB_PASS_MIG"),
-				Port: os.Getenv("DB_PORT_MIG"),
-				Name: os.Getenv("DB_NAME_MIG"),
+		/*
+			os.Getenv("DB_CONN_NAME_DJPT_SPIWBK_MIG"): &dbMySQL{
+				db: db{
+					Host: os.Getenv("DB_HOST_MIG"),
+					User: os.Getenv("DB_USER_MIG"),
+					Pass: os.Getenv("DB_PASS_MIG"),
+					Port: os.Getenv("DB_PORT_MIG"),
+					Name: os.Getenv("DB_NAME_MIG"),
+				},
+				//SslMode: os.Getenv("DB_SSLMODE"),
+				//Tz:      os.Getenv("DB_TZ"),
+				Charset:   os.Getenv("DB_Charset"),
+				ParseTime: os.Getenv("DB_ParseTime"),
+				Loc:       os.Getenv("DB_LOC"),
 			},
-			//SslMode: os.Getenv("DB_SSLMODE"),
-			//Tz:      os.Getenv("DB_TZ"),
-			Charset:   os.Getenv("DB_Charset"),
-			ParseTime: os.Getenv("DB_ParseTime"),
-			Loc:       os.Getenv("DB_LOC"),
-		},
+		*/
 	}
 
 	dbConnections = make(map[string]*gorm.DB)
