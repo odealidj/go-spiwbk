@@ -39,12 +39,10 @@ func (r *jenisPengendali) Find(ctx *abstraction.Context, m *model.JenisPengendal
 	var result []model.JenisPengendali
 	var info abstraction.PaginationInfo
 
-	query := conn.
-		Select("*").Find(&result)
-
+	query := conn.Model(&result)
 	//filter
 
-	query = r.Filter(ctx, query, *m).Where("deleted_at is NULL")
+	query = r.Filter(ctx, query, *m)
 	queryCount := query
 
 	ChErr := make(chan error)

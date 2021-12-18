@@ -119,6 +119,10 @@ func (s *spiAngKesesuaianService) GetBySpiSdmID(ctx *abstraction.Context, payloa
 			return res.ErrorBuilder(&res.ErrorConstant.InternalServerError, err)
 		}
 
+		for i, _ := range datas {
+			datas[i].Row = i + 1
+		}
+
 		/*
 			if len(dealers) <= 0 {
 				return res.ErrorBuilder(&res.ErrorConstant.NotFound, errors.New("Data not found"))

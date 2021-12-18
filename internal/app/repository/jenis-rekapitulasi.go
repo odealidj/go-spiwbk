@@ -9,37 +9,39 @@ import (
 	"sync"
 )
 
-type JenisKesesuaian interface {
+type JenisRekapitulasi interface {
 	//Create(*abstraction.Context, *model.JenisKesesuaian) (*model.JenisKesesuaian, error)
 	//Update(*abstraction.Context, *model.Akun) (*model.Akun, error)
 	//Delete(*abstraction.Context, *model.Akun) (*model.Akun, error)
 	//FindByID(*abstraction.Context, *model.Akun) (*model.Akun, error)
-	Find(*abstraction.Context, *model.JenisKesesuaianFilter, *abstraction.Pagination) ([]model.JenisKesesuaian, *abstraction.PaginationInfo, error)
+	Find(*abstraction.Context, *model.JenisRekapitulasiFilter, *abstraction.Pagination) ([]model.JenisRekapitulasi, *abstraction.PaginationInfo, error)
 	//FirstOrCreate(*abstraction.Context, *model.Akun) (*model.Akun, error)
 	checkTrx(*abstraction.Context) *gorm.DB
 }
 
-type jenisKesesuaian struct {
+type jenisRekapitulasi struct {
 	abstraction.Repository
 }
 
-func NewJenisKesesuaian(db *gorm.DB) *jenisKesesuaian {
-	return &jenisKesesuaian{
+func NewJenisRekapitulasi(db *gorm.DB) *jenisRekapitulasi {
+	return &jenisRekapitulasi{
 		abstraction.Repository{
 			Db: db,
 		},
 	}
 }
 
-func (r *jenisKesesuaian) Find(ctx *abstraction.Context, m *model.JenisKesesuaianFilter, p *abstraction.Pagination) ([]model.JenisKesesuaian, *abstraction.PaginationInfo, error) {
+func (r *jenisRekapitulasi) Find(ctx *abstraction.Context, m *model.JenisRekapitulasiFilter, p *abstraction.Pagination) ([]model.JenisRekapitulasi, *abstraction.PaginationInfo, error) {
 	conn := r.CheckTrx(ctx)
 
 	var err error
 	var count int64
-	var result []model.JenisKesesuaian
+	var result []model.JenisRekapitulasi
 	var info abstraction.PaginationInfo
 
 	query := conn.Model(&result)
+	//Table("jenis_rekapitulasi")
+
 	//filter
 
 	query = r.Filter(ctx, query, *m)
@@ -155,7 +157,7 @@ func (r *jenisKesesuaian) Find(ctx *abstraction.Context, m *model.JenisKesesuaia
 
 }
 
-func (r *jenisKesesuaian) checkTrx(ctx *abstraction.Context) *gorm.DB {
+func (r *jenisRekapitulasi) checkTrx(ctx *abstraction.Context) *gorm.DB {
 	if ctx.Trx != nil {
 		return ctx.Trx.Db
 	}

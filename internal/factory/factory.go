@@ -41,6 +41,8 @@ type Factory struct {
 	SpiAngKesesuaianRepository        repository.SpiAngKesesuaian
 	JenisKesesuaianRepository         repository.JenisKesesuaian
 	JenisPengendaliRepository         repository.JenisPengendali
+	JenisRekapitulasiRepository       repository.JenisRekapitulasi
+	SpiPbjRekapitulasiRepository      repository.SpiPbjRekapitulasi
 }
 
 func NewFactory() *Factory {
@@ -95,4 +97,6 @@ func (f *Factory) SetupRepository() {
 	f.SpiAngKesesuaianRepository = repository.NewSpiAngKesesuaian(f.Db)
 	f.JenisKesesuaianRepository = repository.NewJenisKesesuaian(f.Db)
 	f.JenisPengendaliRepository = repository.NewJenisPengendali(f.Db)
+	f.JenisRekapitulasiRepository = repository.NewJenisRekapitulasi(f.Db)
+	f.SpiPbjRekapitulasiRepository = repository.NewSpiPbjRekapitulasi(f.Db)
 }

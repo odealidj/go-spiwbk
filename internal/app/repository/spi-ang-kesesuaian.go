@@ -60,7 +60,7 @@ func (r *spiAngKesesuaian) FindSpiKesesuaianByThnAngIDAndSatkerID(ctx *abstracti
 		Select(
 			`sak.id as spi_ang_kesesuaian_id,sak.spi_ang_item_id, sak.jenis_kesesuaian_id,sak.jenis_pengendali_id,  
 					sai.spi_ang_id, sai.komponen_id, sa.thn_ang_id, sa.satker_id, 
-					CONCAT(p.name,"/",k2.name,"/",o.name,"/",k.name) as program_kegiatan_output_komponen,
+					CONCAT(p.code,"/",k2.code,"/",o.code,"/",k.code) as program_kegiatan_output_komponen,
 					CONCAT(jk.code, ". ",jk.name) as jenis_kendali_name,
 					IFNULL(case when sak.jenis_pengendali_id  = 1 then 
 						case when sak.is_check = true then true end
@@ -94,8 +94,8 @@ func (r *spiAngKesesuaian) FindSpiKesesuaianByThnAngIDAndSatkerID(ctx *abstracti
 		Joins(`INNER JOIN kegiatan k2 on pk.kegiatan_id = k2.id and k2.deleted_at is NULL`).
 		Joins(`INNER JOIN rkakl_prog rp on pk.rkakl_prog_id = rp.id and rp.deleted_at is NULL`).
 		Joins(`INNER JOIN program p on rp.program_id = p.id  and p.deleted_at is NULL`).
-		Joins(`INNER JOIN rkakl r on rp.rkakl_id = r.id and r.deleted_at is NULL`).
-		Find(&result)
+		Joins(`INNER JOIN rkakl r on rp.rkakl_id = r.id and r.deleted_at is NULL`)
+	//Find(&result)
 
 	query = r.Filter(ctx, query, *m).Where(partQuery)
 	queryCount := query
@@ -142,7 +142,7 @@ func (r *spiAngKesesuaian) FindSpiKesesuaianByThnAngIDAndSatkerID(ctx *abstracti
 	}
 
 	if p.SortBy == nil {
-		sortBy := "sai.komponen_id, sak.jenis_kesesuaian_id "
+		sortBy := "sai.komponen_id, sak.jenis_kesesuaian_id, sak.jenis_pengendali_id"
 		p.SortBy = &sortBy
 	}
 

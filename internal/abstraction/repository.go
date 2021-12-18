@@ -44,25 +44,51 @@ func (r *Repository) Filter(ctx *Context, query *gorm.DB, payload interface{}) *
 
 				key := mTypeChild.Type.Field(j).Tag.Get("query")
 				filter := mTypeChild.Type.Field(j).Tag.Get("filter")
+				alias := mTypeChild.Type.Field(j).Tag.Get("alias")
+				//wilcard := mTypeChild.Type.Field(j).Tag.Get("wilcard")
 				// TODO need to custom field
 				// filterColumn := mTypeChild.Type.Field(j).Tag.Get("filterColumn")
 
 				switch filter {
 				case "LIKE":
-					query = query.Where(fmt.Sprintf("%s LIKE ?", key), "%"+val.String()+"%")
+					if alias != "" {
+						query = query.Where(fmt.Sprintf("%s LIKE ?", alias+"."+key), "%"+val.String())
+					} else {
+						query = query.Where(fmt.Sprintf("%s LIKE ?", key), "%"+val.String()+"%")
+					}
 				case "ILIKE":
-					query = query.Where(fmt.Sprintf("%s ILIKE ?", key), "%"+val.String()+"%")
-				case "FLIKE":
-					query = query.Where(fmt.Sprintf("%s LIKE ?", key), val.String()+"%")
+					if alias != "" {
+						query = query.Where(fmt.Sprintf("%s ILIKE ?", alias+"."+key), "%"+val.String()+"%")
+					} else {
+						query = query.Where(fmt.Sprintf("%s ILIKE ?", key), "%"+val.String()+"%")
+					}
+
 				case "LLIKE":
-					query = query.Where(fmt.Sprintf("%s LIKE ?", key), "%"+val.String())
+					if alias != "" {
+						query = query.Where(fmt.Sprintf("%s LIKE ?", alias+"."+key), val.String()+"%")
+					} else {
+						query = query.Where(fmt.Sprintf("%s LIKE ?", key), val.String()+"%")
+					}
+
+				case "FLIKE":
+					if alias != "" {
+						query = query.Where(fmt.Sprintf("%s LIKE ?", alias+"."+key), "%"+val.String())
+					} else {
+						query = query.Where(fmt.Sprintf("%s LIKE ?", key), "%"+val.String())
+					}
+
 				case "DATE":
 					// TODO we need build custom type first
 					// dateStart, dateEnd := date.StringDateToDateRange(val.String())
 					// query = query.Where(fmt.Sprintf("%s >= ? and %s <= ?", filterColumn, filterColumn), dateStart, dateEnd)
 				case "NOFILTER":
 				default:
-					query = query.Where(fmt.Sprintf("%s = ?", key), val.Interface())
+					if alias != "" {
+						query = query.Where(fmt.Sprintf("%s = ?", alias+"."+key), val.Interface())
+					} else {
+						query = query.Where(fmt.Sprintf("%s = ?", key), val.Interface())
+					}
+
 				}
 			}
 		}

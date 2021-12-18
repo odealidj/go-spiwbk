@@ -22,6 +22,11 @@ type CreateBy struct {
 
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
 }
+
+type DeleteAt struct {
+	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+}
+
 type EntityInc struct {
 	IDInc
 	CreateBy

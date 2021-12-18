@@ -21,6 +21,7 @@ type SpiAngKesesuaianGetRequest struct {
 }
 
 type SpiAngKesesuaianGetResponse struct {
+	Row                           int    `json:"row"`
 	SpiAngKesesuaianID            int    `json:"spiAngKesesuaianID"`
 	SpiAngItemID                  int    `json:"spiAngItemID"`
 	JenisKesesuaianID             int    `json:"jenisKesesuaianID"`
