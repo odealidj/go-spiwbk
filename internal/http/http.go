@@ -3,6 +3,7 @@ package http
 import (
 	docs "codeid-boiler/docs"
 	"codeid-boiler/internal/app/handler/auth"
+	"codeid-boiler/internal/app/handler/bulan"
 	"codeid-boiler/internal/app/handler/jenis-certificate"
 	jenis_kesesuaian "codeid-boiler/internal/app/handler/jenis-kesesuaian"
 	jenis_pengendali "codeid-boiler/internal/app/handler/jenis-pengendali"
@@ -70,5 +71,6 @@ func Init(e *echo.Echo, f *factory.Factory) {
 	jenis_pengendali.NewHandler(f).Route(g.Group("/jenis-pengendali"))
 	jenis_rekapitulasi.NewHandler(f).Route(g.Group("/jenis-rekapitulasi"))
 	spi_pbj_rekapitulasi.NewHandler(f).Route(g.Group("/spi-pbj-rekapitulasi"))
+	bulan.NewHandler(f).Route(g.Group("/bulan"))
 
 }
