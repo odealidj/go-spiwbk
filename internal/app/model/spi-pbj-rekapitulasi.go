@@ -7,8 +7,9 @@ import (
 
 type SpiPbjRekapitulasiEntityFilter struct {
 	ID       *int `json:"ID" query:"ID" alias:"spr"`
-	ThnAngID *int `json:"thnAngID" query:"thnAngID" filter:"NOFILTER"`
-	SatkerID *int `json:"satkerID" query:"satkerID" filter:"NOFILTER"`
+	SpiAngID *int `json:"spiAngID" query:"spi_ang_id" alias:"spr"`
+	ThnAngID *int `json:"thnAngID" query:"thn_ang_id" alias:"sa"`
+	SatkerID *int `json:"satkerID" query:"satker_id" alias:"sa"`
 }
 
 type SpiPbjRekapitulasiEntity struct {

@@ -4,11 +4,14 @@ import (
 	docs "codeid-boiler/docs"
 	"codeid-boiler/internal/app/handler/auth"
 	"codeid-boiler/internal/app/handler/bulan"
+	"codeid-boiler/internal/app/handler/group-package-value"
+	jenis_belanja_pagu "codeid-boiler/internal/app/handler/jenis-belanja-pagu"
 	"codeid-boiler/internal/app/handler/jenis-certificate"
 	jenis_kesesuaian "codeid-boiler/internal/app/handler/jenis-kesesuaian"
 	jenis_pengendali "codeid-boiler/internal/app/handler/jenis-pengendali"
 	jenis_rekapitulasi "codeid-boiler/internal/app/handler/jenis-rekapitulasi"
 	"codeid-boiler/internal/app/handler/jenis-sdm"
+	method_apbj "codeid-boiler/internal/app/handler/method-apbj"
 	"codeid-boiler/internal/app/handler/pegawai"
 	"codeid-boiler/internal/app/handler/rkakl"
 	"codeid-boiler/internal/app/handler/satker"
@@ -72,5 +75,7 @@ func Init(e *echo.Echo, f *factory.Factory) {
 	jenis_rekapitulasi.NewHandler(f).Route(g.Group("/jenis-rekapitulasi"))
 	spi_pbj_rekapitulasi.NewHandler(f).Route(g.Group("/spi-pbj-rekapitulasi"))
 	bulan.NewHandler(f).Route(g.Group("/bulan"))
-
+	group_package_value.NewHandler(f).Route(g.Group("/group-package-value"))
+	jenis_belanja_pagu.NewHandler(f).Route(g.Group("/jenis-belanja-pagu"))
+	method_apbj.NewHandler(f).Route(g.Group("/method-apbj"))
 }

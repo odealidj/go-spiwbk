@@ -21,6 +21,7 @@ type SpiPbjRekapitulasi interface {
 	FindSpiPbjRekapitulasiByID(*abstraction.Context, *model.SpiPbjRekapitulasiFilter, *abstraction.Pagination) ([]dto.SpiPbjRekapitulasiGetResponse, *abstraction.PaginationInfo, error)
 	checkTrx(*abstraction.Context) *gorm.DB
 }
+
 type spiPbjRekapitulasi struct {
 	abstraction.Repository
 }

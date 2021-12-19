@@ -45,6 +45,8 @@ type Factory struct {
 	SpiPbjRekapitulasiRepository      repository.SpiPbjRekapitulasi
 	BulanRepository                   repository.Bulan
 	GroupPackageValueRepository       repository.GroupPackageValue
+	JenisBelanjaPaguRepository        repository.JenisBelanjaPagu
+	MethodApbjRepository              repository.MethodApbj
 }
 
 func NewFactory() *Factory {
@@ -103,4 +105,6 @@ func (f *Factory) SetupRepository() {
 	f.SpiPbjRekapitulasiRepository = repository.NewSpiPbjRekapitulasi(f.Db)
 	f.BulanRepository = repository.NewBulan(f.Db)
 	f.GroupPackageValueRepository = repository.NewGroupPackageValue(f.Db)
+	f.JenisBelanjaPaguRepository = repository.NewJenisBelanjaPagu(f.Db)
+	f.MethodApbjRepository = repository.NewMethodApbj(f.Db)
 }

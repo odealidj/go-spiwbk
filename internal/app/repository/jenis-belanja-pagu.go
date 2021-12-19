@@ -9,34 +9,34 @@ import (
 	"sync"
 )
 
-type GroupPackageValue interface {
+type JenisBelanjaPagu interface {
 	//Create(*abstraction.Context, *model.JenisKesesuaian) (*model.JenisKesesuaian, error)
 	//Update(*abstraction.Context, *model.Akun) (*model.Akun, error)
 	//Delete(*abstraction.Context, *model.Akun) (*model.Akun, error)
 	//FindByID(*abstraction.Context, *model.Akun) (*model.Akun, error)
-	Find(*abstraction.Context, *model.GroupPackageValueFilter, *abstraction.Pagination) ([]model.GroupPackageValue, *abstraction.PaginationInfo, error)
+	Find(*abstraction.Context, *model.JenisBelanjaPaguFilter, *abstraction.Pagination) ([]model.JenisBelanjaPagu, *abstraction.PaginationInfo, error)
 	//FirstOrCreate(*abstraction.Context, *model.Akun) (*model.Akun, error)
 	checkTrx(*abstraction.Context) *gorm.DB
 }
 
-type groupPackageValue struct {
+type jenisBelanjaPagu struct {
 	abstraction.Repository
 }
 
-func NewGroupPackageValue(db *gorm.DB) *groupPackageValue {
-	return &groupPackageValue{
+func NewJenisBelanjaPagu(db *gorm.DB) *jenisBelanjaPagu {
+	return &jenisBelanjaPagu{
 		abstraction.Repository{
 			Db: db,
 		},
 	}
 }
 
-func (r *groupPackageValue) Find(ctx *abstraction.Context, m *model.GroupPackageValueFilter, p *abstraction.Pagination) ([]model.GroupPackageValue, *abstraction.PaginationInfo, error) {
+func (r *jenisBelanjaPagu) Find(ctx *abstraction.Context, m *model.JenisBelanjaPaguFilter, p *abstraction.Pagination) ([]model.JenisBelanjaPagu, *abstraction.PaginationInfo, error) {
 	conn := r.CheckTrx(ctx)
 
 	var err error
 	var count int64
-	var result []model.GroupPackageValue
+	var result []model.JenisBelanjaPagu
 	var info abstraction.PaginationInfo
 
 	query := conn.Model(&result)
@@ -157,7 +157,7 @@ func (r *groupPackageValue) Find(ctx *abstraction.Context, m *model.GroupPackage
 
 }
 
-func (r *groupPackageValue) checkTrx(ctx *abstraction.Context) *gorm.DB {
+func (r *jenisBelanjaPagu) checkTrx(ctx *abstraction.Context) *gorm.DB {
 	if ctx.Trx != nil {
 		return ctx.Trx.Db
 	}

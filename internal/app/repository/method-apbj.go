@@ -9,34 +9,34 @@ import (
 	"sync"
 )
 
-type GroupPackageValue interface {
+type MethodApbj interface {
 	//Create(*abstraction.Context, *model.JenisKesesuaian) (*model.JenisKesesuaian, error)
 	//Update(*abstraction.Context, *model.Akun) (*model.Akun, error)
 	//Delete(*abstraction.Context, *model.Akun) (*model.Akun, error)
 	//FindByID(*abstraction.Context, *model.Akun) (*model.Akun, error)
-	Find(*abstraction.Context, *model.GroupPackageValueFilter, *abstraction.Pagination) ([]model.GroupPackageValue, *abstraction.PaginationInfo, error)
+	Find(*abstraction.Context, *model.MethodApbjFilter, *abstraction.Pagination) ([]model.MethodApbj, *abstraction.PaginationInfo, error)
 	//FirstOrCreate(*abstraction.Context, *model.Akun) (*model.Akun, error)
 	checkTrx(*abstraction.Context) *gorm.DB
 }
 
-type groupPackageValue struct {
+type methodApbj struct {
 	abstraction.Repository
 }
 
-func NewGroupPackageValue(db *gorm.DB) *groupPackageValue {
-	return &groupPackageValue{
+func NewMethodApbj(db *gorm.DB) *methodApbj {
+	return &methodApbj{
 		abstraction.Repository{
 			Db: db,
 		},
 	}
 }
 
-func (r *groupPackageValue) Find(ctx *abstraction.Context, m *model.GroupPackageValueFilter, p *abstraction.Pagination) ([]model.GroupPackageValue, *abstraction.PaginationInfo, error) {
+func (r *methodApbj) Find(ctx *abstraction.Context, m *model.MethodApbjFilter, p *abstraction.Pagination) ([]model.MethodApbj, *abstraction.PaginationInfo, error) {
 	conn := r.CheckTrx(ctx)
 
 	var err error
 	var count int64
-	var result []model.GroupPackageValue
+	var result []model.MethodApbj
 	var info abstraction.PaginationInfo
 
 	query := conn.Model(&result)
@@ -157,7 +157,7 @@ func (r *groupPackageValue) Find(ctx *abstraction.Context, m *model.GroupPackage
 
 }
 
-func (r *groupPackageValue) checkTrx(ctx *abstraction.Context) *gorm.DB {
+func (r *methodApbj) checkTrx(ctx *abstraction.Context) *gorm.DB {
 	if ctx.Trx != nil {
 		return ctx.Trx.Db
 	}
