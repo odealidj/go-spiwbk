@@ -47,7 +47,7 @@ type SpiPbjRekapitulasiGetResponse struct {
 	B09                 float64 `json:"b09"`
 	B10                 float64 `json:"b10"`
 	B11                 float64 `json:"b11"`
-	B12                 float64 `json:"b21"`
+	B12                 float64 `json:"b12"`
 }
 
 type SpiPbjRekapitulasiGetInfoResponse struct {

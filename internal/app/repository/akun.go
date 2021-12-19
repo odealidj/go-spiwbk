@@ -79,8 +79,7 @@ func (r *akun) Find(ctx *abstraction.Context, m *model.AkunFilter, p *abstractio
 	var result []model.Akun
 	var info abstraction.PaginationInfo
 
-	query := conn.
-		Select("*").Find(&result)
+	query := conn.Model(&model.Akun{})
 
 	//filter
 
