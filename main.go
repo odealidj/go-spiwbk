@@ -5,13 +5,13 @@ import (
 	"codeid-boiler/internal/factory"
 	"codeid-boiler/internal/http"
 	"codeid-boiler/internal/middleware"
-	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"os"
 
 	"github.com/labstack/echo/v4"
 )
 
+/*
 func init() {
 	//env := env.NewEnv()
 	//env.Load(ENV)
@@ -23,6 +23,7 @@ func init() {
 
 	}
 }
+*/
 
 // @title codeid-boiler
 // @version 0.0.1

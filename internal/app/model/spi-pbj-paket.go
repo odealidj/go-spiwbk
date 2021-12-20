@@ -16,8 +16,7 @@ type SpiPbjPaketEntity struct {
 	SpiAngID            int    `json:"spiAngID"`
 	GroupPackageValueID int    `json:"groupPackageValueID"`
 	KomponenID          int    `json:"komponenID"`
-	JenisBelanjaAkunID  int    `json:"jenisBelanjaAkunID"`
-	MethodApbjID        int    `json:"methodApbjID"`
+	MethodApbjID        *int   `json:"methodApbjID"`
 	Permasalahan        string `json:"permasalahan"`
 	RencanaPemecahan    string `json:"rencanaPemecahan"`
 }

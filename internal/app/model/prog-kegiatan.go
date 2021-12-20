@@ -9,9 +9,9 @@ import (
 )
 
 type ProgKegiatanEntity struct {
-	RkaklProgID int `json:"rkakl_prog_id"`
-	KegiatanID  int `json:"kegiatan_id"`
-	Biaya decimal.Decimal `json:"biaya"`
+	RkaklProgID int             `json:"rkakl_prog_id"`
+	KegiatanID  int             `json:"kegiatan_id"`
+	Biaya       decimal.Decimal `json:"biaya"`
 }
 
 type ProgKegiatan struct {

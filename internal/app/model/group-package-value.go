@@ -2,15 +2,20 @@ package model
 
 import (
 	"codeid-boiler/internal/abstraction"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
 
 type GroupPackageValueEntityFilter struct {
-	Name *string `json:"name" query:"name" filter:"LIKE"`
+	ThnAngID *int    `json:"thn_ang_id" query:"thn_ang_id" filter:"NOFILTER"`
+	SatkerID *int    `json:"satker_id" query:"satker_id" filter:"NOFILTER"`
+	Name     *string `json:"name" query:"name" filter:"LIKE"`
 }
 
 type GroupPackageValueEntity struct {
-	Name string `json:"name"`
+	Name     string          `json:"name"`
+	MinValue decimal.Decimal `json:"minValue"`
+	MaxValue decimal.Decimal `json:"maxValue"`
 }
 
 type GroupPackageValue struct {

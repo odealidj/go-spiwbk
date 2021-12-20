@@ -9,44 +9,46 @@ import (
 )
 
 type Factory struct {
-	Db                                *gorm.DB
-	LoginAppRepository                repository.LoginApp
-	UserAppRepository                 repository.UserApp
-	ThnAngRepository                  repository.ThnAng
-	SatkerRepository                  repository.Satker
-	SpiSdmRepository                  repository.SpiSdm
-	JenisSdmRepository                repository.JenisSdm
-	JenisCertificateRepository        repository.JenisCertificate
-	PegawaiRepository                 repository.Pegawai
-	SpiSdmItemRepository              repository.SpiSdmItem
-	SpiSdmFileRepository              repository.SpiSdmFile
-	RkaklRepository                   repository.Rkakl
-	RkaklFileRepository               repository.RkaklFile
-	ProgramRepository                 repository.Program
-	RkaklProgRepository               repository.RkaklProg
-	KegiatanRepository                repository.Kegiatan
-	ProgKegiatanRepository            repository.ProgKegiatan
-	OutputRepository                  repository.Output
-	KegiatanOutputRepository          repository.KegiatanOutput
-	KegiatanOutputLocationRepository  repository.KegiatanOutputLocation
-	SubOutputRepository               repository.SubOutput
-	KomponenRepository                repository.Komponen
-	SubKomponenRepository             repository.SubKomponen
-	AkunRepository                    repository.Akun
-	SubKomponenAkunRepository         repository.SubKomponenAkun
-	SubKomponenAkunLocationRepository repository.SubKomponenAkunLocation
-	RkaklItemRepository               repository.RkaklItem
-	SpiAngRepository                  repository.SpiAng
-	SpiAngItemRepository              repository.SpiAngItem
-	SpiAngKesesuaianRepository        repository.SpiAngKesesuaian
-	JenisKesesuaianRepository         repository.JenisKesesuaian
-	JenisPengendaliRepository         repository.JenisPengendali
-	JenisRekapitulasiRepository       repository.JenisRekapitulasi
-	SpiPbjRekapitulasiRepository      repository.SpiPbjRekapitulasi
-	BulanRepository                   repository.Bulan
-	GroupPackageValueRepository       repository.GroupPackageValue
-	JenisBelanjaPaguRepository        repository.JenisBelanjaPagu
-	MethodApbjRepository              repository.MethodApbj
+	Db                                    *gorm.DB
+	LoginAppRepository                    repository.LoginApp
+	UserAppRepository                     repository.UserApp
+	ThnAngRepository                      repository.ThnAng
+	SatkerRepository                      repository.Satker
+	SpiSdmRepository                      repository.SpiSdm
+	JenisSdmRepository                    repository.JenisSdm
+	JenisCertificateRepository            repository.JenisCertificate
+	PegawaiRepository                     repository.Pegawai
+	SpiSdmItemRepository                  repository.SpiSdmItem
+	SpiSdmFileRepository                  repository.SpiSdmFile
+	RkaklRepository                       repository.Rkakl
+	RkaklFileRepository                   repository.RkaklFile
+	ProgramRepository                     repository.Program
+	RkaklProgRepository                   repository.RkaklProg
+	KegiatanRepository                    repository.Kegiatan
+	ProgKegiatanRepository                repository.ProgKegiatan
+	OutputRepository                      repository.Output
+	KegiatanOutputRepository              repository.KegiatanOutput
+	KegiatanOutputLocationRepository      repository.KegiatanOutputLocation
+	SubOutputRepository                   repository.SubOutput
+	KomponenRepository                    repository.Komponen
+	SubKomponenRepository                 repository.SubKomponen
+	AkunRepository                        repository.Akun
+	SubKomponenAkunRepository             repository.SubKomponenAkun
+	SubKomponenAkunLocationRepository     repository.SubKomponenAkunLocation
+	RkaklItemRepository                   repository.RkaklItem
+	SpiAngRepository                      repository.SpiAng
+	SpiAngItemRepository                  repository.SpiAngItem
+	SpiAngKesesuaianRepository            repository.SpiAngKesesuaian
+	JenisKesesuaianRepository             repository.JenisKesesuaian
+	JenisPengendaliRepository             repository.JenisPengendali
+	JenisRekapitulasiRepository           repository.JenisRekapitulasi
+	SpiPbjRekapitulasiRepository          repository.SpiPbjRekapitulasi
+	BulanRepository                       repository.Bulan
+	GroupPackageValueRepository           repository.GroupPackageValue
+	JenisBelanjaPaguRepository            repository.JenisBelanjaPagu
+	MethodApbjRepository                  repository.MethodApbj
+	SpiPbjPaketRepository                 repository.SpiPbjPaket
+	SpiPbjPaketJenisBelanjaPaguRepository repository.SpiPbjPaketJenisBelanjaPagu
 }
 
 func NewFactory() *Factory {
@@ -107,4 +109,6 @@ func (f *Factory) SetupRepository() {
 	f.GroupPackageValueRepository = repository.NewGroupPackageValue(f.Db)
 	f.JenisBelanjaPaguRepository = repository.NewJenisBelanjaPagu(f.Db)
 	f.MethodApbjRepository = repository.NewMethodApbj(f.Db)
+	f.SpiPbjPaketRepository = repository.NewSpiPbjPaket(f.Db)
+	f.SpiPbjPaketJenisBelanjaPaguRepository = repository.NewSpiPbjPaketJenisBelanjaPagu(f.Db)
 }

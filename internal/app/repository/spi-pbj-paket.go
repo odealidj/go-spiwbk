@@ -39,8 +39,8 @@ func (r *spiPbjPaket) Create(ctx *abstraction.Context, m *model.SpiPbjPaket) (*m
 
 	err := conn.FirstOrCreate(&m, map[string]interface{}{"spi_ang_id": m.SpiAngID,
 		"group_package_value_id": m.GroupPackageValueID, "komponen_id": m.KomponenID,
-		"jenis_belanja_akun_id": m.JenisBelanjaAkunID, "method_apbj_id": m.MethodApbjID,
-		"permasalahan": m.Permasalahan, "rencana_pemecahan": m.RencanaPemecahan}).
+		"method_apbj_id": m.MethodApbjID,
+		"permasalahan":   m.Permasalahan, "rencana_pemecahan": m.RencanaPemecahan}).
 		WithContext(ctx.Request().Context()).Error
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func (r *spiPbjPaket) Upsert(ctx *abstraction.Context, m *model.SpiPbjPaket) (*m
 	err := conn.Clauses(clause.OnConflict{
 		Columns: []clause.Column{{Name: "id"}},
 		DoUpdates: clause.AssignmentColumns([]string{"spi_ang_id", "group_package_value_id", "komponen_id",
-			"jenis_belanja_akun_id", "method_apbj_id", "permasalahan", "rencana_pemecahan"}),
+			"method_apbj_id", "permasalahan", "rencana_pemecahan"}),
 		//UpdateAll: true,
 	}).Create(&m).WithContext(ctx.Request().Context()).Error
 

@@ -13,6 +13,7 @@ import (
 )
 
 type SpiPbjRekapitulasiService interface {
+	Save(*abstraction.Context, *dto.SpiPbjRekapitulasiSaveRequest) ([]dto.SpiPbjRekapitulasiResponse, error)
 	Upsert(*abstraction.Context, *dto.SpiPbjRekapitulasiUpsertRequest) ([]dto.SpiPbjRekapitulasiResponse, error)
 	GetSpiPbjRekapitulasiByID(*abstraction.Context, *dto.SpiPbjRekapitulasiGetRequest) (*dto.SpiPbjRekapitulasiGetInfoResponse, error)
 }
@@ -29,6 +30,51 @@ func NewSpiPbjRekapitulasiService(f *factory.Factory) *spiPbjRekapitulasiService
 	spiAngRepository := f.SpiAngRepository
 	db := f.Db
 	return &spiPbjRekapitulasiService{spiAngRepository, spiPbjRekapitulasiRepository, db}
+
+}
+
+func (s *spiPbjRekapitulasiService) Save(ctx *abstraction.Context, payload *dto.SpiPbjRekapitulasiSaveRequest) ([]dto.SpiPbjRekapitulasiResponse, error) {
+
+	var result []dto.SpiPbjRekapitulasiResponse
+	//var data *model.ThnAng
+
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+
+		spiAng, err := s.SpiAngRepository.Create(ctx, &model.SpiAng{Context: ctx, SpiAngEntity: model.SpiAngEntity{
+			ThnAngID: uint16(payload.ThnAngID), SatkerID: uint16(payload.SatkerID),
+		}})
+		if err != nil {
+			//if strings.Contains(strings.ToLower(err.Error()), "duplicate") {
+			//	return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
+			//		"Duplicate spi ang", "Invalid spi ang")
+			//}
+
+			return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
+				"Invalid spi ang", "Invalid spi ang")
+		}
+
+		payload.SpiPbjRekapitulasiEntity.SpiAngID = int(spiAng.ID)
+		spiPbjRekapitulasi, err := s.SpiPbjRekapitulasiRepository.Create(ctx, &model.SpiPbjRekapitulasi{Context: ctx,
+			//IDInc:                    abstraction.IDInc{ID: payload.ID.ID},
+			SpiPbjRekapitulasiEntity: payload.SpiPbjRekapitulasiEntity})
+		if err != nil {
+			return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
+				"Invalid upsert spi pbj rekapitulasi", err.Error())
+		}
+
+		result = append(result, dto.SpiPbjRekapitulasiResponse{
+			ID:                       abstraction.ID{ID: spiPbjRekapitulasi.ID},
+			SpiPbjRekapitulasiEntity: spiPbjRekapitulasi.SpiPbjRekapitulasiEntity,
+			SatkerID:                 payload.SatkerID,
+			ThnAngID:                 payload.ThnAngID,
+		})
+
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
 
 }
 
