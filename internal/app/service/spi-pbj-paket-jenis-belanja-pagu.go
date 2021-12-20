@@ -29,6 +29,9 @@ type spiPbjPaketJenisBelanjaPaguService struct {
 	GroupPackageValueRepository           repository.GroupPackageValue
 	KomponenRepository                    repository.Komponen
 	SubKomponenAkunRepository             repository.SubKomponenAkun
+	SpiPbjRekapitulasiRepository          repository.SpiPbjRekapitulasi
+	JenisRekapitulasiRepository           repository.JenisRekapitulasi
+	BulanRepository                       repository.Bulan
 	Db                                    *gorm.DB
 }
 
@@ -39,10 +42,15 @@ func NewSpiPbjPaketJenisBelanjaPaguService(f *factory.Factory) *spiPbjPaketJenis
 	groupPackageValueRepository := f.GroupPackageValueRepository
 	komponenRepository := f.KomponenRepository
 	subKomponenAkunRepository := f.SubKomponenAkunRepository
+	spiPbjRekapitulasiRepository := f.SpiPbjRekapitulasiRepository
+	jenisRekapitulasiRepository := f.JenisRekapitulasiRepository
+	bulanRepository := f.BulanRepository
 	db := f.Db
 	return &spiPbjPaketJenisBelanjaPaguService{spiAngRepository, spiPbjPaketRepository,
 		spiPbjPaketJenisBelanjaPaguRepository, groupPackageValueRepository,
-		komponenRepository, subKomponenAkunRepository, db}
+		komponenRepository, subKomponenAkunRepository,
+		spiPbjRekapitulasiRepository, jenisRekapitulasiRepository,
+		bulanRepository, db}
 
 }
 
@@ -68,6 +76,40 @@ func (s *spiPbjPaketJenisBelanjaPaguService) Save(ctx *abstraction.Context, payl
 			return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
 				"Invalid spi ang", "Invalid spi ang")
 		}
+
+		jenisRekapitulasies, _, err := s.JenisRekapitulasiRepository.Find(ctx, &model.JenisRekapitulasiFilter{},
+			&abstraction.Pagination{})
+		if err != nil {
+			isSave = false
+			return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
+				"Invalid Jenis rekapitulasi", err.Error())
+		}
+
+		bulans, _, err := s.BulanRepository.Find(ctx, &model.BulanFilter{}, &abstraction.Pagination{})
+		if err != nil {
+			isSave = false
+			return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
+				"Invalid Bulan", err.Error())
+		}
+
+		for _, jenisRekapitulasi := range jenisRekapitulasies {
+
+			for _, bulan := range bulans {
+
+				_, err := s.SpiPbjRekapitulasiRepository.Create(ctx, &model.SpiPbjRekapitulasi{Context: ctx,
+					SpiPbjRekapitulasiEntity: model.SpiPbjRekapitulasiEntity{
+						SpiAngID: int(spiAng.ID), JenisRekapitulasiID: int(jenisRekapitulasi.ID.ID),
+						BulanID: int(bulan.ID.ID), Target: 0.0,
+					}})
+				if err != nil {
+					isSave = false
+					return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
+						"Invalid spi pbj rekapitulasi", err.Error())
+				}
+
+			} //end for bulan
+
+		} //end for jenis rekapitulasi
 
 		//Find All GroupPackageValue
 		SortByGroupPackageValue := "id"

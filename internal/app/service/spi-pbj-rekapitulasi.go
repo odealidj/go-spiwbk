@@ -18,9 +18,13 @@ type SpiPbjRekapitulasiService interface {
 	GetSpiPbjRekapitulasiByID(*abstraction.Context, *dto.SpiPbjRekapitulasiGetRequest) (*dto.SpiPbjRekapitulasiGetInfoResponse, error)
 }
 
+var err error
+
 type spiPbjRekapitulasiService struct {
 	SpiAngRepository             repository.SpiAng
 	SpiPbjRekapitulasiRepository repository.SpiPbjRekapitulasi
+	JenisRekapitulasiRepository  repository.JenisRekapitulasi
+	BulanRepository              repository.Bulan
 	Db                           *gorm.DB
 }
 
@@ -28,17 +32,22 @@ func NewSpiPbjRekapitulasiService(f *factory.Factory) *spiPbjRekapitulasiService
 
 	spiPbjRekapitulasiRepository := f.SpiPbjRekapitulasiRepository
 	spiAngRepository := f.SpiAngRepository
+	jenisRekapitulasiRepository := f.JenisRekapitulasiRepository
+	bulanRepository := f.BulanRepository
 	db := f.Db
-	return &spiPbjRekapitulasiService{spiAngRepository, spiPbjRekapitulasiRepository, db}
+	return &spiPbjRekapitulasiService{spiAngRepository,
+		spiPbjRekapitulasiRepository, jenisRekapitulasiRepository,
+		bulanRepository, db}
 
 }
 
-func (s *spiPbjRekapitulasiService) Save(ctx *abstraction.Context, payload *dto.SpiPbjRekapitulasiSaveRequest) ([]dto.SpiPbjRekapitulasiResponse, error) {
+func (s *spiPbjRekapitulasiService) Save(ctx *abstraction.Context,
+	payload *dto.SpiPbjRekapitulasiSaveRequest) ([]dto.SpiPbjRekapitulasiResponse, error) {
 
 	var result []dto.SpiPbjRekapitulasiResponse
 	//var data *model.ThnAng
 
-	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+	if err := trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
 
 		spiAng, err := s.SpiAngRepository.Create(ctx, &model.SpiAng{Context: ctx, SpiAngEntity: model.SpiAngEntity{
 			ThnAngID: uint16(payload.ThnAngID), SatkerID: uint16(payload.SatkerID),
@@ -53,21 +62,61 @@ func (s *spiPbjRekapitulasiService) Save(ctx *abstraction.Context, payload *dto.
 				"Invalid spi ang", "Invalid spi ang")
 		}
 
-		payload.SpiPbjRekapitulasiEntity.SpiAngID = int(spiAng.ID)
-		spiPbjRekapitulasi, err := s.SpiPbjRekapitulasiRepository.Create(ctx, &model.SpiPbjRekapitulasi{Context: ctx,
-			//IDInc:                    abstraction.IDInc{ID: payload.ID.ID},
-			SpiPbjRekapitulasiEntity: payload.SpiPbjRekapitulasiEntity})
+		jenisRekapitulasies, _, err := s.JenisRekapitulasiRepository.Find(ctx, &model.JenisRekapitulasiFilter{},
+			&abstraction.Pagination{})
 		if err != nil {
 			return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
-				"Invalid upsert spi pbj rekapitulasi", err.Error())
+				"Invalid Jenis rekapitulasi", err.Error())
 		}
 
-		result = append(result, dto.SpiPbjRekapitulasiResponse{
-			ID:                       abstraction.ID{ID: spiPbjRekapitulasi.ID},
-			SpiPbjRekapitulasiEntity: spiPbjRekapitulasi.SpiPbjRekapitulasiEntity,
-			SatkerID:                 payload.SatkerID,
-			ThnAngID:                 payload.ThnAngID,
-		})
+		bulans, _, err := s.BulanRepository.Find(ctx, &model.BulanFilter{}, &abstraction.Pagination{})
+		if err != nil {
+			return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
+				"Invalid Bulan", err.Error())
+		}
+
+		for _, jenisRekapitulasi := range jenisRekapitulasies {
+
+			for _, bulan := range bulans {
+
+				spiPbjRekapitulasi, err := s.SpiPbjRekapitulasiRepository.Create(ctx, &model.SpiPbjRekapitulasi{Context: ctx,
+					SpiPbjRekapitulasiEntity: model.SpiPbjRekapitulasiEntity{
+						SpiAngID: int(spiAng.ID), JenisRekapitulasiID: int(jenisRekapitulasi.ID.ID),
+						BulanID: int(bulan.ID.ID), Target: 0.0,
+					}})
+				if err != nil {
+					return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
+						"Invalid spi pbj rekapitulasi", err.Error())
+				}
+
+				result = append(result, dto.SpiPbjRekapitulasiResponse{
+					ID:                       abstraction.ID{ID: spiPbjRekapitulasi.ID},
+					SpiPbjRekapitulasiEntity: spiPbjRekapitulasi.SpiPbjRekapitulasiEntity,
+					SatkerID:                 payload.SatkerID,
+					ThnAngID:                 payload.ThnAngID,
+				})
+
+			} //end for bulan
+
+		} //end for jenis rekapitulasi
+
+		/*
+			payload.SpiPbjRekapitulasiEntity.SpiAngID = int(spiAng.ID)
+			spiPbjRekapitulasi, err := s.SpiPbjRekapitulasiRepository.Create(ctx, &model.SpiPbjRekapitulasi{Context: ctx,
+				//IDInc:                    abstraction.IDInc{ID: payload.ID.ID},
+				SpiPbjRekapitulasiEntity: payload.SpiPbjRekapitulasiEntity})
+			if err != nil {
+				return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
+					"Invalid upsert spi pbj rekapitulasi", err.Error())
+			}
+
+			result = append(result, dto.SpiPbjRekapitulasiResponse{
+				ID:                       abstraction.ID{ID: spiPbjRekapitulasi.ID},
+				SpiPbjRekapitulasiEntity: spiPbjRekapitulasi.SpiPbjRekapitulasiEntity,
+				SatkerID:                 payload.SatkerID,
+				ThnAngID:                 payload.ThnAngID,
+			})
+		*/
 
 		return nil
 	}); err != nil {

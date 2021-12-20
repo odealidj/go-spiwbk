@@ -8,7 +8,7 @@ import (
 type SpiPbjRekapitulasiSaveRequest struct {
 	SatkerID int `json:"satkerID"`
 	ThnAngID int `json:"thnAngID"`
-	model.SpiPbjRekapitulasiEntity
+	//model.SpiPbjRekapitulasiEntity
 }
 
 //upsert

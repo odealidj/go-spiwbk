@@ -14,8 +14,6 @@ import (
 	"sync"
 )
 
-var err error
-
 type AuthService interface {
 	Login(*abstraction.Context, *dto.LoginRequest) (*dto.LoginResponse, error)
 	Login2(*abstraction.Context, *dto.LoginRequest) (*dto.LoginResponse, error)

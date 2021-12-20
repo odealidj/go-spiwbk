@@ -31,7 +31,8 @@ func NewJenisRekapitulasi(db *gorm.DB) *jenisRekapitulasi {
 	}
 }
 
-func (r *jenisRekapitulasi) Find(ctx *abstraction.Context, m *model.JenisRekapitulasiFilter, p *abstraction.Pagination) ([]model.JenisRekapitulasi, *abstraction.PaginationInfo, error) {
+func (r *jenisRekapitulasi) Find(ctx *abstraction.Context, m *model.JenisRekapitulasiFilter, p *abstraction.Pagination) ([]model.JenisRekapitulasi,
+	*abstraction.PaginationInfo, error) {
 	conn := r.CheckTrx(ctx)
 
 	var err error
@@ -84,7 +85,7 @@ func (r *jenisRekapitulasi) Find(ctx *abstraction.Context, m *model.JenisRekapit
 
 	// sort
 	if p.Sort == nil {
-		sort := "desc"
+		sort := "asc"
 		p.Sort = &sort
 	}
 
