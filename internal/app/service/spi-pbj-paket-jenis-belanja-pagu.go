@@ -314,7 +314,7 @@ func (s *spiPbjPaketJenisBelanjaPaguService) GetSpiPbjPaketJenisBelanjaPaguByThn
 		totalModal := decimal.NewFromInt(0)
 		totalSosial := decimal.NewFromInt(0)
 
-		spiPbjPaketJenisBelanjaPaguGetReformatResponse := &[]dto.SpiPbjPaketJenisBelanjaPaguGetReformatResponse{}
+		var spiPbjPaketJenisBelanjaPaguGetReformatResponse []dto.SpiPbjPaketJenisBelanjaPaguGetReformatResponse
 
 		for i, groupPackageValue := range groupPackageValues {
 			//fmt.Println(groupPackageValue.ID.ID)
@@ -346,14 +346,14 @@ func (s *spiPbjPaketJenisBelanjaPaguService) GetSpiPbjPaketJenisBelanjaPaguByThn
 				totalSosial = totalSosial.Add(data.Sosial)
 			}
 
-			*spiPbjPaketJenisBelanjaPaguGetReformatResponse = append(*spiPbjPaketJenisBelanjaPaguGetReformatResponse,
+			spiPbjPaketJenisBelanjaPaguGetReformatResponse = append(spiPbjPaketJenisBelanjaPaguGetReformatResponse,
 				dto.SpiPbjPaketJenisBelanjaPaguGetReformatResponse{
 					Row: alfabetCounter[i], PaketName: groupPackageValue.Name,
 					Barang: nil, Modal: nil, Sosial: nil,
 				})
 
 			for _, data := range spiPbjPaketJenisBelanjaPagues {
-				*spiPbjPaketJenisBelanjaPaguGetReformatResponse = append(*spiPbjPaketJenisBelanjaPaguGetReformatResponse,
+				spiPbjPaketJenisBelanjaPaguGetReformatResponse = append(spiPbjPaketJenisBelanjaPaguGetReformatResponse,
 					dto.SpiPbjPaketJenisBelanjaPaguGetReformatResponse{
 						Row: strconv.Itoa(data.Row), SpiAngID: &data.SpiAngID, ThnAngID: &data.ThnAngID,
 						SatkerID: &data.SatkerID, PaketName: data.PaketName, Barang: &data.Barang,
@@ -370,7 +370,7 @@ func (s *spiPbjPaketJenisBelanjaPaguService) GetSpiPbjPaketJenisBelanjaPaguByThn
 					})
 			}
 
-			*spiPbjPaketJenisBelanjaPaguGetReformatResponse = append(*spiPbjPaketJenisBelanjaPaguGetReformatResponse,
+			spiPbjPaketJenisBelanjaPaguGetReformatResponse = append(spiPbjPaketJenisBelanjaPaguGetReformatResponse,
 				dto.SpiPbjPaketJenisBelanjaPaguGetReformatResponse{
 					PaketName: "SubTotal",
 					Barang:    &subTotalBarang, Modal: &subTotalModal, Sosial: &subTotalSosial,
@@ -378,7 +378,7 @@ func (s *spiPbjPaketJenisBelanjaPaguService) GetSpiPbjPaketJenisBelanjaPaguByThn
 
 		} // end for
 
-		*spiPbjPaketJenisBelanjaPaguGetReformatResponse = append(*spiPbjPaketJenisBelanjaPaguGetReformatResponse,
+		spiPbjPaketJenisBelanjaPaguGetReformatResponse = append(spiPbjPaketJenisBelanjaPaguGetReformatResponse,
 			dto.SpiPbjPaketJenisBelanjaPaguGetReformatResponse{
 				PaketName: "Total",
 				Barang:    &totalBarang, Modal: &totalModal, Sosial: &totalSosial,
@@ -389,8 +389,13 @@ func (s *spiPbjPaketJenisBelanjaPaguService) GetSpiPbjPaketJenisBelanjaPaguByThn
 				return res.ErrorBuilder(&res.ErrorConstant.NotFound, errors.New("Data not found"))
 			}
 		*/
+		//num := 0
+		for i, _ := range spiPbjPaketJenisBelanjaPaguGetReformatResponse {
+			spiPbjPaketJenisBelanjaPaguGetReformatResponse[i].Num = i + 1
+		}
+
 		result = &dto.SpiPbjPaketJenisBelanjaPaguGetInfoResponse{
-			Datas:          spiPbjPaketJenisBelanjaPaguGetReformatResponse,
+			Datas:          &spiPbjPaketJenisBelanjaPaguGetReformatResponse,
 			PaginationInfo: info,
 		}
 

@@ -62,6 +62,7 @@ type SpiPbjPaketJenisBelanjaPaguGetResponse struct {
 }
 
 type SpiPbjPaketJenisBelanjaPaguGetReformatResponse struct {
+	Num                 int              `json:"num"`
 	Row                 string           `json:"row"`
 	SpiAngID            *int             `json:"spiAngID"`
 	ThnAngID            *int             `json:"thnAngID"`
