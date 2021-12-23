@@ -6,9 +6,17 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+type SpiBmnResponse struct {
+	abstraction.ID
+	model.SpiBmnEntity
+	Year       *string `json:"year,omitempty"`
+	SatkerName *string `json:"satkerName,omitempty"`
+}
+
 type SpiBmnSaveRequest struct {
 	ThnAngID int `json:"thnAngID"`
 	SatkerID int `json:"satkerID"`
+	model.SpiBmnEntity
 	//JenisKesesuaianID int  `json:"jenisKesesuaianID"`
 	//JenisPengendaliID int  `json:"jenisPengendaliID"`
 	//IsCheck           bool `json:"isCheck"`
@@ -21,88 +29,68 @@ type SpiBmnGetRequest struct {
 }
 
 type SpiBmnGetResponse struct {
-	Row                 int             `json:"row"`
-	SpiAngID            int             `json:"spiAngID"`
-	ThnAngID            int             `json:"thnAngID"`
-	SatkerID            int             `json:"satkerID"`
-	GroupPackageValueID int             `json:"groupPackageValueID"`
-	PaketName           string          `json:"paketName"`
-	Barang              decimal.Decimal `json:"barang"`
-	Modal               decimal.Decimal `json:"modal"`
-	Sosial              decimal.Decimal `json:"sosial"`
-	Lainnya             decimal.Decimal `json:"lainnya"`
-	MethodPbj           string          `json:"methodPbj"`
-	Rencana1            bool            `json:"rencana1"`
-	Rencana2            bool            `json:"rencana2"`
-	Rencana3            bool            `json:"rencana3"`
-	Rencana4            bool            `json:"rencana4"`
-	Rencana5            bool            `json:"rencana5"`
-	Rencana6            bool            `json:"rencana6"`
-	Rencana7            bool            `json:"rencana7"`
-	Rencana8            bool            `json:"rencana8"`
-	Rencana9            bool            `json:"rencana9"`
-	Rencana10           bool            `json:"rencana10"`
-	Rencana11           bool            `json:"rencana11"`
-	Rencana12           bool            `json:"rencana12"`
-	Realisasi1          bool            `json:"realisasi1"`
-	Realisasi2          bool            `json:"realisasi2"`
-	Realisasi3          bool            `json:"realisasi3"`
-	Realisasi4          bool            `json:"realisasi4"`
-	Realisasi5          bool            `json:"realisasi5"`
-	Realisasi6          bool            `json:"realisasi6"`
-	Realisasi7          bool            `json:"realisasi7"`
-	Realisasi8          bool            `json:"realisasi8"`
-	Realisasi9          bool            `json:"realisasi9"`
-	Realisasi10         bool            `json:"realisasi10"`
-	Realisasi11         bool            `json:"realisasi11"`
-	Realisasi12         bool            `json:"realisasi12"`
-	Permasalahan        string          `json:"permasalahan"`
-	RencanaPemecahan    string          `json:"rencanaPemecahan"`
+	Row                        int             `json:"row"`
+	ID                         int             `json:"ID"`
+	SpiAngID                   int             `json:"spiAngID"`
+	ThnAngID                   int             `json:"thnAngID"`
+	SatkerID                   int             `json:"satkerID"`
+	JenisBmnID                 int             `json:"jenisBmnID"`
+	JenisBmnName               string          `json:"jenisBmnName"`
+	JenisBmnUraian             string          `json:"jenisBmnUraian"`
+	NilaiBmn                   decimal.Decimal `json:"nilaiBmn"`
+	PengelolaSatkerID          int             `json:"pengelolaSatkerID"`
+	PengelolaSatkerName        string          `json:"pengelolaSatkerName"`
+	PengelolaPihakTigaID       int             `json:"pengelolaPihakTigaID"`
+	PengelolaPihakTigaName     string          `json:"PengelolaPihakTigaName"`
+	PengelolaKsoID             int             `json:"pengelolaKsoID"`
+	PengelolaKsoName           string          `json:"pengelolaKsoName"`
+	PermasalahanSengketaID     int             `json:"permasalahanSengketaID"`
+	PermasalahanSengketaUraian string          `json:"permasalahanSengketaUraian"`
+	PermasalahanDokumenID      string          `json:"permasalahanDokumenID"`
+	PermasalahanDokumenUraian  string          `json:"PermasalahanDokumenUraian"`
+	PermasalahanHilangID       int             `json:"permasalahanHilangID"`
+	PermasalahanHilangUraian   string          `json:"permasalahanHilangUraian"`
+	PermasalahanRusakID        int             `json:"permasalahanRusakID"`
+	PermasalahanRusakUraian    string          `json:"PermasalahanRusakUraian"`
+	PermasalahanLainnyaID      int             `json:"permasalahanLainnyaID"`
+	PermasalahanLainnyaUraian  string          `json:"permasalahanLainnyaUraian"`
+	RencanaPemecahan           string          `json:"rencanaPemecahan"`
+	RealisasiPemecahan         string          `json:"realisasiPemecahan"`
 }
 
 type SpiBmnGetReformatResponse struct {
-	Num                 int              `json:"num"`
-	Row                 string           `json:"row"`
-	SpiAngID            *int             `json:"spiAngID"`
-	ThnAngID            *int             `json:"thnAngID"`
-	SatkerID            *int             `json:"satkerID"`
-	GroupPackageValueID *int             `json:"groupPackageValueID"`
-	PaketName           string           `json:"paketName"`
-	Barang              *decimal.Decimal `json:"barang"`
-	Modal               *decimal.Decimal `json:"modal"`
-	Sosial              *decimal.Decimal `json:"sosial"`
-	Lainnya             *decimal.Decimal `json:"lainnya"`
-	MethodPbj           string           `json:"methodPbj"`
-	Rencana1            *bool            `json:"rencana1"`
-	Rencana2            *bool            `json:"rencana2"`
-	Rencana3            *bool            `json:"rencana3"`
-	Rencana4            *bool            `json:"rencana4"`
-	Rencana5            *bool            `json:"rencana5"`
-	Rencana6            *bool            `json:"rencana6"`
-	Rencana7            *bool            `json:"rencana7"`
-	Rencana8            *bool            `json:"rencana8"`
-	Rencana9            *bool            `json:"rencana9"`
-	Rencana10           *bool            `json:"rencana10"`
-	Rencana11           *bool            `json:"rencana11"`
-	Rencana12           *bool            `json:"rencana12"`
-	Realisasi1          *bool            `json:"realisasi1"`
-	Realisasi2          *bool            `json:"realisasi2"`
-	Realisasi3          *bool            `json:"realisasi3"`
-	Realisasi4          *bool            `json:"realisasi4"`
-	Realisasi5          *bool            `json:"realisasi5"`
-	Realisasi6          *bool            `json:"realisasi6"`
-	Realisasi7          *bool            `json:"realisasi7"`
-	Realisasi8          *bool            `json:"realisasi8"`
-	Realisasi9          *bool            `json:"realisasi9"`
-	Realisasi10         *bool            `json:"realisasi10"`
-	Realisasi11         *bool            `json:"realisasi11"`
-	Realisasi12         *bool            `json:"realisasi12"`
-	Permasalahan        string           `json:"permasalahan"`
-	RencanaPemecahan    string           `json:"rencanaPemecahan"`
+	Num                        int             `json:"num"`
+	Row                        string          `json:"row"`
+	ID                         int             `json:"ID"`
+	SpiAngID                   int             `json:"spiAngID"`
+	ThnAngID                   int             `json:"thnAngID"`
+	SatkerID                   int             `json:"satkerID"`
+	JenisBmnID                 int             `json:"jenisBmnID"`
+	JenisBmnName               string          `json:"jenisBmnName"`
+	JenisBmnUraian             string          `json:"jenisBmnUraian"`
+	NilaiBmn                   decimal.Decimal `json:"nilaiBmn"`
+	PengelolaSatkerID          int             `json:"pengelolaSatkerID"`
+	PengelolaSatkerName        string          `json:"pengelolaSatkerName"`
+	PengelolaPihakTigaID       int             `json:"pengelolaPihakTigaID"`
+	PengelolaPihakTigaName     string          `json:"PengelolaPihakTigaName"`
+	PengelolaKsoID             int             `json:"pengelolaKsoID"`
+	PengelolaKsoName           string          `json:"pengelolaKsoName"`
+	PermasalahanSengketaID     int             `json:"permasalahanSengketaID"`
+	PermasalahanSengketaUraian string          `json:"permasalahanSengketaUraian"`
+	PermasalahanDokumenID      string          `json:"permasalahanDokumenID"`
+	PermasalahanDokumenUraian  string          `json:"PermasalahanDokumenUraian"`
+	PermasalahanHilangID       int             `json:"permasalahanHilangID"`
+	PermasalahanHilangUraian   string          `json:"permasalahanHilangUraian"`
+	PermasalahanRusakID        int             `json:"permasalahanRusakID"`
+	PermasalahanRusakUraian    string          `json:"PermasalahanRusakUraian"`
+	PermasalahanLainnyaID      int             `json:"permasalahanLainnyaID"`
+	PermasalahanLainnyaUraian  string          `json:"permasalahanLainnyaUraian"`
+	RencanaPemecahan           string          `json:"rencanaPemecahan"`
+	RealisasiPemecahan         string          `json:"realisasiPemecahan"`
 }
 
 type SpiBmnGetInfoResponse struct {
-	Datas          *[]SpiBmnGetReformatResponse
+	Datas          *[]SpiBmnGetResponse
 	PaginationInfo *abstraction.PaginationInfo
 }
 

@@ -49,6 +49,7 @@ type Factory struct {
 	MethodApbjRepository                  repository.MethodApbj
 	SpiPbjPaketRepository                 repository.SpiPbjPaket
 	SpiPbjPaketJenisBelanjaPaguRepository repository.SpiPbjPaketJenisBelanjaPagu
+	SpiBmnRepository                      repository.SpiBmn
 }
 
 func NewFactory() *Factory {
@@ -111,4 +112,5 @@ func (f *Factory) SetupRepository() {
 	f.MethodApbjRepository = repository.NewMethodApbj(f.Db)
 	f.SpiPbjPaketRepository = repository.NewSpiPbjPaket(f.Db)
 	f.SpiPbjPaketJenisBelanjaPaguRepository = repository.NewSpiPbjPaketJenisBelanjaPagu(f.Db)
+	f.SpiBmnRepository = repository.NewSpiBmn(f.Db)
 }

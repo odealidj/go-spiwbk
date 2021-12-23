@@ -7,8 +7,8 @@ import (
 )
 
 type SpiBmnEntityFilter struct {
-	ThnAngID *int `json:"thnAngID" query:"thnAngID" filter:"NOFILTER"`
-	SatkerID *int `json:"satkerID" query:"satkerID" filter:"NOFILTER"`
+	ThnAngID *int `json:"thn_ang_id" query:"thn_ang_id" filter:"NOFILTER"`
+	SatkerID *int `json:"satker_id" query:"satker_id" filter:"NOFILTER"`
 }
 
 type SpiBmnEntity struct {
@@ -20,7 +20,7 @@ type SpiBmnEntity struct {
 	PengelolaBmnPihakTigaID int             `json:"pengelolaBmnPihakTigaID"`
 	PengelolaBmnKsoID       int             `json:"pengelolaBmnKsoID"`
 	PermasalahanBmnID       int             `json:"permasalahanBmnID"`
-	UraianPemasalahan       string          `json:"uraianPemasalahan"`
+	UraianPermasalahan      string          `json:"uraianPermasalahan"`
 	RencanaPemecahan        string          `json:"rencanaPemecahan"`
 	RealisasiPemecahan      string          `json:"realisasiPemecahan"`
 }

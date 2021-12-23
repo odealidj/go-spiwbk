@@ -18,6 +18,7 @@ import (
 	spi_ang "codeid-boiler/internal/app/handler/spi-ang"
 	spi_ang_item "codeid-boiler/internal/app/handler/spi-ang-item"
 	spi_ang_kesesuaian "codeid-boiler/internal/app/handler/spi-ang-kesesuaian"
+	spi_bmn "codeid-boiler/internal/app/handler/spi-bmn"
 	spi_pbj_paket_jenis_belanja_pagu "codeid-boiler/internal/app/handler/spi-pbj-paket-jenis-belanja-pagu"
 	spi_pbj_rekapitulasi "codeid-boiler/internal/app/handler/spi-pbj-rekapitulasi"
 	"codeid-boiler/internal/app/handler/spi-sdm"
@@ -80,4 +81,5 @@ func Init(e *echo.Echo, f *factory.Factory) {
 	jenis_belanja_pagu.NewHandler(f).Route(g.Group("/jenis-belanja-pagu"))
 	method_apbj.NewHandler(f).Route(g.Group("/method-apbj"))
 	spi_pbj_paket_jenis_belanja_pagu.NewHandler(f).Route(g.Group("/spi-pbj-paket-jenis-belanja-pagu"))
+	spi_bmn.NewHandler(f).Route(g.Group("/spi-bmn"))
 }

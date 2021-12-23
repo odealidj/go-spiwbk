@@ -36,8 +36,12 @@ func NewSpiBmn(db *gorm.DB) *spiBmn {
 func (r *spiBmn) Create(ctx *abstraction.Context, m *model.SpiBmn) (*model.SpiBmn, error) {
 	conn := r.CheckTrx(ctx)
 
-	err := conn.FirstOrCreate(&m, map[string]interface{}{"spi_pbj_paket_id": m.ID,
-		"jenis_belanja_pagu_id": m.JenisBmnID, "sub_komponen_akun_id": m.JenisBmnUraian}).
+	err := conn.FirstOrCreate(&m, map[string]interface{}{"spi_ang_id": m.ID,
+		"jenis_bmn_id": m.JenisBmnID, "jenis_bmn_uraian": m.JenisBmnUraian,
+		"nilai_bmn": m.NilaiBmn, "pengelola_bmn_satker_id": m.PengelolaBmnSatkerID,
+		"pengelola_bmn_pihak_tiga_id": m.PengelolaBmnPihakTigaID, "pengelola_bmn_kso_id": m.PengelolaBmnKsoID,
+		"permasalahan_bmn_id": m.PermasalahanBmnID, "uraian_permasalahan": m.UraianPermasalahan,
+		"rencana_pemecahan": m.RencanaPemecahan, "realisasi_pemecahan": m.RealisasiPemecahan}).
 		WithContext(ctx.Request().Context()).Error
 	if err != nil {
 		return nil, err
@@ -49,8 +53,10 @@ func (r *spiBmn) Upsert(ctx *abstraction.Context, m *model.SpiBmn) (*model.SpiBm
 	conn := r.CheckTrx(ctx)
 
 	err := conn.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "id"}},
-		DoUpdates: clause.AssignmentColumns([]string{"spi_pbj_paket_id", "jenis_belanja_pagu_id", "sub_komponen_akun_id"}),
+		Columns: []clause.Column{{Name: "id"}},
+		DoUpdates: clause.AssignmentColumns([]string{"spi_ang_id", "jenis_bmn_id", "jenis_bmn_uraian",
+			"nilai_bmn", "pengelola_bmn_satker_id", "pengelola_bmn_pihak_tiga_id", "pengelola_bmn_kso_id",
+			"permasalahan_bmn_id", "uraian_permasalahan", "rencana_pemecahan", "realisasi_pemecahan"}),
 		//UpdateAll: true,
 	}).Create(&m).WithContext(ctx.Request().Context()).Error
 
@@ -69,66 +75,47 @@ func (r *spiBmn) FindSpiBmnByThnAngIDAndSatkerID(ctx *abstraction.Context,
 	var result []dto.SpiBmnGetResponse
 	var info abstraction.PaginationInfo
 
-	partQuery := fmt.Sprintf("sa.thn_ang_id =%d and sa.satker_id =%d and spp.group_package_value_id =%d and ta.deleted_at is NULL",
-		*m.ThnAngID, *m.SatkerID, *m.ThnAngID)
+	partQuery := fmt.Sprintf("sa.thn_ang_id =%d and sa.satker_id =%d and sb.deleted_at is NULL",
+		*m.ThnAngID, *m.ThnAngID)
 
-	query := conn.Table("thn_ang ta").
+	query := conn.Table("spi_bmn sb").
 		Select(
-			`sa.id as spi_ang_id,
-			sa.thn_ang_id ,sa.satker_id , spp.group_package_value_id,
-			k.name as paket_name, 
-			sum(case when sppjbp.jenis_belanja_pagu_id = 1 then ska.biaya else 0 end) barang,
-			sum(case when sppjbp.jenis_belanja_pagu_id = 2 then ska.biaya else 0 end) modal,
-			sum(case when sppjbp.jenis_belanja_pagu_id = 3 then ska.biaya else 0 end) sosial,
-			sum(case when sppjbp.jenis_belanja_pagu_id = 4 then ska.biaya else 0 end) lainnya,
-			IFNULL(ma.name,'') as method_pbj,
-			case when spr.bulan_id = 1 then true else false end 'rencana1',
-			case when spr.bulan_id = 2 then true else false end 'rencana2',
-			case when spr.bulan_id = 3 then true else false end 'rencana3',
-			case when spr.bulan_id = 4 then true else false end 'rencana4',
-			case when spr.bulan_id = 5 then true else false end 'rencana5',
-			case when spr.bulan_id = 6 then true else false end 'rencana6',
-			case when spr.bulan_id = 7 then true else false end 'rencana7',
-			case when spr.bulan_id = 8 then true else false end 'rencana8',
-			case when spr.bulan_id = 9 then true else false end 'rencana9',
-			case when spr.bulan_id = 10 then true else false end 'rencana10',
-			case when spr.bulan_id = 11 then true else false end 'rencana11',
-			case when spr.bulan_id = 12 then true else false end 'rencana12',
-			case when spr2.bulan_id = 1 then true else false end 'realisasi1',
-			case when spr2.bulan_id = 2 then true else false end 'realisasi2',
-			case when spr2.bulan_id = 3 then true else false end 'realisasi3',
-			case when spr2.bulan_id = 4 then true else false end 'realisasi4',
-			case when spr2.bulan_id = 5 then true else false end 'realisasi5',
-			case when spr2.bulan_id = 6 then true else false end 'realisasi6',
-			case when spr2.bulan_id = 7 then true else false end 'realisasi7',
-			case when spr2.bulan_id = 8 then true else false end 'realisasi8',
-			case when spr2.bulan_id = 9 then true else false end 'realisasi9',
-			case when spr2.bulan_id = 10 then true else false end 'realisasi10',
-			case when spr2.bulan_id = 11 then true else false end 'realisasi11',
-			case when spr2.bulan_id = 12 then true else false end 'realisasi12',
-			spp.permasalahan, spp.rencana_pemecahan 
+			`sb.id, sa.thn_ang_id, sa.satker_id , sb.spi_ang_id, sb.jenis_bmn_id, jb.name as jenis_bmn_name, sb.jenis_bmn_uraian, sb.nilai_bmn, 
+	case when sb.pengelola_bmn_satker_id is not null then  sb.pengelola_bmn_satker_id else null end 'pengelola_satker_id',
+	case when sb.pengelola_bmn_satker_id is not null then  s.name else null end 'pengelola_satker_name',
+	case when sb.pengelola_bmn_pihak_tiga_id is not null then sb.pengelola_bmn_pihak_tiga_id else null end 'pengelola_pihak_tiga_id', 
+	case when sb.pengelola_bmn_pihak_tiga_id is not null then pt.name else null end 'pengelola_pihak_tiga_name', 
+	case when sb.pengelola_bmn_kso_id is not null then sb.pengelola_bmn_kso_id else null end 'pengelola_kso_id',
+	case when sb.pengelola_bmn_kso_id is not null then k.name else null end 'pengelola_kso_name',
+	case when sb.permasalahan_bmn_id = 1 then sb.permasalahan_bmn_id else null end 'permasalahan_sengketa_id', 
+	case when sb.permasalahan_bmn_id = 1 then sb.uraian_permasalahan else '' end 'permasalahan_sengketa_uraian', 
+	case when sb.permasalahan_bmn_id = 2 then sb.permasalahan_bmn_id else null end 'permasalahan_dokumen_id', 
+	case when sb.permasalahan_bmn_id = 2 then sb.uraian_permasalahan else '' end 'permasalahan_dokumen_uraian', 
+	case when sb.permasalahan_bmn_id = 3 then sb.permasalahan_bmn_id else null end 'permasalahan_hilang_id', 
+	case when sb.permasalahan_bmn_id = 3 then sb.uraian_permasalahan else '' end 'permasalahan_hilang_uraian', 
+	case when sb.permasalahan_bmn_id = 4 then sb.permasalahan_bmn_id else null end 'permasalahan_rusak_id', 
+	case when sb.permasalahan_bmn_id = 4 then sb.uraian_permasalahan else '' end 'permasalahan_rusak_uraian', 
+	case when sb.permasalahan_bmn_id = 5 then sb.permasalahan_bmn_id else null end 'permasalahan_lainnya_id', 
+	case when sb.permasalahan_bmn_id = 5 then sb.uraian_permasalahan else '' end 'permasalahan_lainnya_uraian', 
+	sb.rencana_pemecahan, sb.realisasi_pemecahan 
 		`).
-		Joins(`inner join spi_ang sa ON sa.thn_ang_id = ta.id and sa.deleted_at is NULL`).
-		Joins(`inner join satker s on sa.satker_id = s.id and s.deleted_at is NULL`).
-		Joins(`inner join spi_pbj_paket spp on spp.spi_ang_id = sa.id and spp.deleted_at is NULL`).
-		Joins(`inner join group_package_value gpv on spp.group_package_value_id = gpv.id  and gpv.deleted_at is NULL `).
-		Joins(`inner join komponen k on spp.komponen_id = k.id and k.deleted_at is NULL`).
-		Joins(`inner join sub_komponen sk on sk.komponen_id = k.id and sk.deleted_at is NULL`).
-		Joins(`inner join sub_komponen_akun ska on ska.sub_komponen_id = sk.id  and ska.deleted_at is NULL`).
-		Joins(`inner join akun a on ska.akun_id = a.id and a.deleted_at is NULL`).
-		Joins(`inner JOIN spi_pbj_paket_jenis_belanja_pagu sppjbp on sppjbp.spi_pbj_paket_id = spp.id and sppjbp.deleted_at is NULL`).
-		Joins(`INNER join jenis_belanja_pagu jbp on sppjbp.jenis_belanja_pagu_id = jbp.id and jbp.deleted_at is NULL`).
-		Joins(`LEFT OUTER JOIN method_apbj ma on spp.method_apbj_id = ma.id and ma.deleted_at is NULL`).
-		Joins(`LEFT OUTER JOIN spi_pbj_rencana spr ON spr.spi_pbj_paket_id = spp.id and spr.deleted_at is NULL`).
-		Joins(`LEFT OUTER JOIN spi_pbj_realisasi spr2 on spr2.spi_pbj_paket_id = spp.id and spr2.deleted_at is NULL`).
-		Joins(`LEFT OUTER JOIN bulan b on spr.bulan_id = b.id`).
-		Joins(`LEFT OUTER JOIN bulan b2 on spr2.bulan_id = b2.id`)
+		Joins(`inner join spi_ang sa ON sb.spi_ang_id = sa.id and sa.deleted_at is NULL`).
+		Joins(`inner join permasalahan_bmn pb ON sb.permasalahan_bmn_id = pb.id and pb.deleted_at is NULL`).
+		Joins(`inner JOIN jenis_bmn jb on sb.jenis_bmn_id = jb.id and jb.deleted_at is NULL`).
+		Joins(`LEFT outer JOIN pengelola_bmn_satker pbs ON sb.pengelola_bmn_satker_id = pbs.id and pbs.deleted_at is NULL`).
+		Joins(`LEFT OUTER JOIN satker s on pbs.satker_id = s.id and s.deleted_at is NULL`).
+		Joins(`LEFT OUTER JOIN pengelola_bmn pb2 on pbs.pengelola_bmn_id = pb2.id and pb2.deleted_at is NULL`).
+		Joins(`LEFT OUTER JOIN pengelola_bmn_pihak_tiga pbpt on sb.pengelola_bmn_pihak_tiga_id = pbpt.id and pbpt.deleted_at is NULL`).
+		Joins(`LEFT OUTER JOIN pengelola_bmn pb3 on pbpt.pengelola_bmn_id = pb3.id and pb3.deleted_at is NULL`).
+		Joins(`LEFT OUTER JOIN pihak_tiga pt on pbpt.pihak_tiga_id = pt.id and pt.deleted_at is NULL`).
+		Joins(`LEFT OUTER JOIN pengelola_bmn_kso pbk ON sb.pengelola_bmn_kso_id = pbk.id and pbk.deleted_at is NULL`).
+		Joins(`LEFT OUTER JOIN pengelola_bmn pb4 on pbk.pengelola_bmn_id = pb4.id and pb4.deleted_at is NULL`).
+		Joins(`LEFT OUTER JOIN kso k on pbk.kso_id = k.id and k.deleted_at is NULL`)
+
 	//Find(&result)
 
-	query = r.Filter(ctx, query, *m).Where(partQuery).
-		Group(`sa.id,sa.thn_ang_id ,sa.satker_id, spp.group_package_value_id,
-			k.name,IFNULL(ma.name,''),spr.bulan_id,spr2.bulan_id, spp.permasalahan, spp.rencana_pemecahan
-		`)
+	query = r.Filter(ctx, query, *m).Where(partQuery)
+
 	queryCount := query
 
 	ChErr := make(chan error)
@@ -173,7 +160,7 @@ func (r *spiBmn) FindSpiBmnByThnAngIDAndSatkerID(ctx *abstraction.Context,
 	}
 
 	if p.SortBy == nil {
-		sortBy := "sa.id, sa.thn_ang_id ,sa.satker_id , spp.group_package_value_id"
+		sortBy := "sb.jenis_bmn_id"
 		p.SortBy = &sortBy
 	}
 
