@@ -77,11 +77,11 @@ func (r *spiPbjRekapitulasi) FindSpiPbjRekapitulasiByID(ctx *abstraction.Context
 
 	query := conn.Table("spi_pbj_rekapitulasi spr").
 		Select(
-			`spr.id, spr.spi_ang_id, spr.jenis_rekapitulasi_id
+			`0 as id, spr.spi_ang_id, spr.jenis_rekapitulasi_id
 		,sa.thn_ang_id,ta.year
 		,sa.satker_id, s.name as satker_name
 		,jr.name as pelaksanaan_kegiatan,
-		CASE when spr.bulan_id =1 then spr.target else 0 end+
+		SUM(CASE when spr.bulan_id =1 then spr.target else 0 end+
 		CASE when spr.bulan_id =2 then spr.target else 0 end+
 		CASE when spr.bulan_id =3 then spr.target else 0 end+
 		CASE when spr.bulan_id =4 then spr.target else 0 end+
@@ -92,19 +92,19 @@ func (r *spiPbjRekapitulasi) FindSpiPbjRekapitulasiByID(ctx *abstraction.Context
 		CASE when spr.bulan_id =9 then spr.target else 0 end+
 		CASE when spr.bulan_id =10 then spr.target else 0 end+
 		CASE when spr.bulan_id =11 then spr.target else 0 end+
-		CASE when spr.bulan_id =12 then spr.target else 0 end as Total,
-		CASE when spr.bulan_id =1 then spr.target else 0 end B01,
-		CASE when spr.bulan_id =2 then spr.target else 0 end B02,
-		CASE when spr.bulan_id =3 then spr.target else 0 end B03,
-		CASE when spr.bulan_id =4 then spr.target else 0 end B04,
-		CASE when spr.bulan_id =5 then spr.target else 0 end B05,
-		CASE when spr.bulan_id =6 then spr.target else 0 end B06,
-		CASE when spr.bulan_id =7 then spr.target else 0 end B07,
-		CASE when spr.bulan_id =8 then spr.target else 0 end B08,
-		CASE when spr.bulan_id =9 then spr.target else 0 end B09,
-		CASE when spr.bulan_id =10 then spr.target else 0 end B10,
-		CASE when spr.bulan_id =11 then spr.target else 0 end B11,
-		CASE when spr.bulan_id =12 then spr.target else 0 end B12
+		CASE when spr.bulan_id =12 then spr.target else 0 end) as Total,
+		SUM(CASE when spr.bulan_id =1 then spr.target else 0 end) B01,
+		SUM(CASE when spr.bulan_id =2 then spr.target else 0 end) B02,
+		SUM(CASE when spr.bulan_id =3 then spr.target else 0 end) B03,
+		SUM(CASE when spr.bulan_id =4 then spr.target else 0 end) B04,
+		SUM(CASE when spr.bulan_id =5 then spr.target else 0 end) B05,
+		SUM(CASE when spr.bulan_id =6 then spr.target else 0 end) B06,
+		SUM(CASE when spr.bulan_id =7 then spr.target else 0 end) B07,
+		SUM(CASE when spr.bulan_id =8 then spr.target else 0 end) B08,
+		SUM(CASE when spr.bulan_id =9 then spr.target else 0 end) B09,
+		SUM(CASE when spr.bulan_id =10 then spr.target else 0 end) B10,
+		SUM(CASE when spr.bulan_id =11 then spr.target else 0 end) B11,
+		SUM(CASE when spr.bulan_id =12 then spr.target else 0 end) B12
 	`).
 		Joins(`inner join spi_ang sa on spr.spi_ang_id = sa.id and sa.deleted_at IS NULL`).
 		Joins(`inner JOIN thn_ang ta ON  sa.thn_ang_id = ta.id and ta.deleted_at IS NULL`).
@@ -112,7 +112,11 @@ func (r *spiPbjRekapitulasi) FindSpiPbjRekapitulasiByID(ctx *abstraction.Context
 		Joins(`inner JOIN jenis_rekapitulasi jr on spr.jenis_rekapitulasi_id = jr.id and jr.deleted_at IS NULL`).
 		Joins(`inner JOIN bulan b on b.id = spr.bulan_id`)
 
-	query = r.Filter(ctx, query, *m).Where("sa.deleted_at IS NULL")
+	query = r.Filter(ctx, query, *m).Where("sa.deleted_at IS NULL").
+		Group(`spr.spi_ang_id, spr.jenis_rekapitulasi_id
+	,sa.thn_ang_id,ta.year
+	,sa.satker_id, s.name
+	,jr.name`)
 	queryCount := query
 
 	ChErr := make(chan error)

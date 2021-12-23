@@ -33,7 +33,7 @@ func (r *loginapp) FindLoginAppByUsername(ctx *abstraction.Context, m *model.Log
 
 	//var data *model.LoginApp
 
-	err := conn.Where("username = ?", m.Username).First(&m).WithContext(ctx.Request().Context()).Error
+	err := conn.Where("username = ?", m.Username).Find(&m).WithContext(ctx.Request().Context()).Error
 	if err != nil {
 		return nil, err
 	}
