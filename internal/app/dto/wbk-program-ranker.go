@@ -11,6 +11,17 @@ type WbkProgramRankerSaveRequest struct {
 	//model.SpiPbjRekapitulasiEntity
 }
 
+type WbkProgramRankerGetSatkerNilaiResponse struct {
+	Row int `json:"row"`
+	model.SatkerEntity
+	Nilai float64 `json:"nilai"`
+}
+
+type WbkProgramRankerGetSatkerNilaiInfoResponse struct {
+	Datas          *[]WbkProgramRankerGetSatkerNilaiResponse
+	PaginationInfo *abstraction.PaginationInfo
+}
+
 //upsert
 type WbkProgramRankerUpsertRequest struct {
 	abstraction.ID
@@ -28,7 +39,7 @@ type WbkProgramRankerGetRequest struct {
 type WbkProgramRankerGetResponse struct {
 	Row int `json:"row"`
 	model.WbkProgramRankerEntity
-	Nilai int `json:"nilai"`
+	Nilai float64 `json:"nilai"`
 }
 
 type WbkProgramRankerGetInfoResponse struct {
@@ -39,7 +50,7 @@ type WbkProgramRankerGetInfoResponse struct {
 type WbkProgramRankerResponse struct {
 	abstraction.ID
 	model.WbkProgramRankerEntity
-	SatkerID int `json:"satkerID"`
-	ThnAngID int `json:"thnAngID"`
-	Nilai    int `json:"nilai"`
+	SatkerID int     `json:"satkerID"`
+	ThnAngID int     `json:"thnAngID"`
+	Nilai    float64 `json:"nilai"`
 }

@@ -15,6 +15,7 @@ import (
 type WbkProgramRankerService interface {
 	//Save(*abstraction.Context, *dto.WbkProgramRankerSaveRequest) (*dto.WbkProgramRankerResponse, error)
 	//Upsert(*abstraction.Context, *dto.SpiPbjPaketJenisBelanjaPaguUpsertRequest) ([]dto.SpiPbjRekapitulasiResponse, error)
+	GetSatkerNilaiByThnAngID(*abstraction.Context, *dto.WbkProgramRankerGetRequest) (*dto.WbkProgramRankerGetSatkerNilaiInfoResponse, error)
 	GetByThnAngIDAndSatkerID(*abstraction.Context, *dto.WbkProgramRankerGetRequest) (*dto.WbkProgramRankerGetInfoResponse, error)
 }
 
@@ -30,6 +31,40 @@ func NewWbkProgramRankerService(f *factory.Factory) *wbkProgramRankerService {
 	db := f.Db
 	return &wbkProgramRankerService{wbkProgramRankerRepository, db}
 
+}
+
+func (s *wbkProgramRankerService) GetSatkerNilaiByThnAngID(ctx *abstraction.Context,
+	payload *dto.WbkProgramRankerGetRequest) (*dto.WbkProgramRankerGetSatkerNilaiInfoResponse, error) {
+
+	var result *dto.WbkProgramRankerGetSatkerNilaiInfoResponse
+
+	if err := trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+
+		datas, info, err := s.WbkProgramRankerRepository.FindSatkerNilaiByThnAngID(ctx,
+			&model.WbkProgramRankerFilter{WbkProgramRankerEntityFilter: model.WbkProgramRankerEntityFilter{
+				ThnAngID: payload.ThnAngID, SatkerID: payload.SatkerID},
+			}, &payload.Pagination)
+		if err != nil {
+			return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
+				"Invalid Spi bmn", err.Error())
+		}
+
+		//num := 0
+		for i, _ := range datas {
+			datas[i].Row = i + 1
+		}
+
+		result = &dto.WbkProgramRankerGetSatkerNilaiInfoResponse{
+			Datas:          &datas,
+			PaginationInfo: info,
+		}
+
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func (s *wbkProgramRankerService) GetByThnAngIDAndSatkerID(ctx *abstraction.Context,
