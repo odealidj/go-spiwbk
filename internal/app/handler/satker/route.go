@@ -10,5 +10,6 @@ func (h *handler) Route(g *echo.Group) {
 	g.DELETE("/:id", h.Delete)
 	g.POST("/id", h.GetByID)
 	g.GET("", h.Get2)
+	g.GET("/count", h.GetCount)
 
 }

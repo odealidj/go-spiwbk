@@ -24,6 +24,7 @@ import (
 	"codeid-boiler/internal/app/handler/spi-sdm"
 	"codeid-boiler/internal/app/handler/spi-sdm-item"
 	"codeid-boiler/internal/app/handler/thnang"
+	wbk_program_ranker "codeid-boiler/internal/app/handler/wbk-program-ranker"
 	"codeid-boiler/internal/factory"
 	"codeid-boiler/pkg/constant"
 	"fmt"
@@ -82,4 +83,5 @@ func Init(e *echo.Echo, f *factory.Factory) {
 	method_apbj.NewHandler(f).Route(g.Group("/method-apbj"))
 	spi_pbj_paket_jenis_belanja_pagu.NewHandler(f).Route(g.Group("/spi-pbj-paket-jenis-belanja-pagu"))
 	spi_bmn.NewHandler(f).Route(g.Group("/spi-bmn"))
+	wbk_program_ranker.NewHandler(f).Route(g.Group("/wbk-program-ranker"))
 }

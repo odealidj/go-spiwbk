@@ -50,6 +50,7 @@ type Factory struct {
 	SpiPbjPaketRepository                 repository.SpiPbjPaket
 	SpiPbjPaketJenisBelanjaPaguRepository repository.SpiPbjPaketJenisBelanjaPagu
 	SpiBmnRepository                      repository.SpiBmn
+	WbkProgramRankerRepository            repository.WbkProgramRanker
 }
 
 func NewFactory() *Factory {
@@ -113,4 +114,5 @@ func (f *Factory) SetupRepository() {
 	f.SpiPbjPaketRepository = repository.NewSpiPbjPaket(f.Db)
 	f.SpiPbjPaketJenisBelanjaPaguRepository = repository.NewSpiPbjPaketJenisBelanjaPagu(f.Db)
 	f.SpiBmnRepository = repository.NewSpiBmn(f.Db)
+	f.WbkProgramRankerRepository = repository.NewWbkProgramRanker(f.Db)
 }

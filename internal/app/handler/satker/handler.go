@@ -133,3 +133,23 @@ func (h *handler) Get2(c echo.Context) error {
 
 	return res.CustomSuccessBuilder2(200, result.Datas, "Get datas success", &result.PaginationInfo).Send(c)
 }
+
+func (h *handler) GetCount(c echo.Context) error {
+	cc := c.(*abstraction.Context)
+
+	//payload := new(dto.SatkerGet2Request)
+	//if err := c.Bind(payload); err != nil {
+	//	return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err).Send(c)
+	//}
+	//if err = c.Validate(payload); err != nil {
+	//	return res.ErrorBuilder(&res.ErrorConstant.Validation, err).Send(c)
+	//}
+
+	result, err := h.service.GetCount(cc)
+	if err != nil {
+		return res.ErrorResponse(err).Send(c)
+	}
+
+	return res.SuccessResponse(result).Send(c)
+
+}

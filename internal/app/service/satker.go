@@ -20,6 +20,7 @@ type SatkerService interface {
 	Get(ctx *abstraction.Context, payload *dto.SatkerGetRequest) (*dto.SatkerGetResponse, error)
 	Get2(ctx *abstraction.Context, payload *dto.SatkerGet2Request) (*dto.SatkerGet2Response, error)
 	GetByID(*abstraction.Context, *dto.SatkerGetByIDRequest) (*dto.SatkerResponse, error)
+	GetCount(ctx *abstraction.Context) (*int64, error)
 }
 
 type satkerService struct {
@@ -240,4 +241,23 @@ func (s *satkerService) GetByID(ctx *abstraction.Context, payload *dto.SatkerGet
 	}
 
 	return result, nil
+}
+
+func (s *satkerService) GetCount(ctx *abstraction.Context) (*int64, error) {
+	var result *int64
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+		count, err := s.Repository.Count(ctx)
+		if err != nil {
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+
+		result = count
+
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+
 }

@@ -16,6 +16,7 @@ type Satker interface {
 	FindByID(*abstraction.Context, *model.Satker) (*model.Satker, error)
 	Find(*abstraction.Context, model.SatkerFilter, *abstraction.Pagination) (*[]model.Satker, *abstraction.PaginationInfo, error)
 	Find2(*abstraction.Context, model.SatkerFilter, *abstraction.PaginationArr) (*[]model.Satker, *abstraction.PaginationInfoArr, error)
+	Count(*abstraction.Context) (*int64, error)
 	checkTrx(*abstraction.Context) *gorm.DB
 }
 
@@ -276,6 +277,17 @@ func (r *satker) Find2(ctx *abstraction.Context, m model.SatkerFilter, p *abstra
 
 	return &result, &info, nil
 
+}
+
+func (r *satker) Count(ctx *abstraction.Context) (*int64, error) {
+	conn := r.CheckTrx(ctx)
+
+	var count int64
+	err := conn.Model(&model.Satker{}).WithContext(ctx.Request().Context()).Count(&count).Error
+	if err != nil {
+		return nil, err
+	}
+	return &count, nil
 }
 
 func (r *satker) checkTrx(ctx *abstraction.Context) *gorm.DB {
