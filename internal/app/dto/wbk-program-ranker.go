@@ -13,6 +13,7 @@ type WbkProgramRankerSaveRequest struct {
 
 type WbkProgramRankerGetSatkerNilaiResponse struct {
 	Row int `json:"row"`
+	abstraction.ID
 	model.SatkerEntity
 	Nilai float64 `json:"nilai"`
 }
