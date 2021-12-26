@@ -23,3 +23,17 @@ type WbkProgramGetInfoResponse struct {
 	Datas          *[]WbkProgramGetResponse
 	PaginationInfo *abstraction.PaginationInfo
 }
+
+//Get
+type WbkProgramNilaiGetByThnAngIDAndSatkerIDResponse struct {
+	Row int `json:"row"`
+	abstraction.ID
+	model.WbkProgramEntity
+	Nilai float64 `json:"nilai"`
+}
+
+//Get Info
+type WbkProgramNilaiGetByThnAngIDAndSatkerIDInfoResponse struct {
+	Datas          *[]WbkProgramNilaiGetByThnAngIDAndSatkerIDResponse
+	PaginationInfo *abstraction.PaginationInfo
+}

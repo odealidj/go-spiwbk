@@ -73,17 +73,19 @@ func (r *wbkProgramRanker) FindSatkerNilaiByThnAngID(ctx *abstraction.Context,
 	var result []dto.WbkProgramRankerGetSatkerNilaiResponse
 	var info abstraction.PaginationInfo
 
-	partQuery := fmt.Sprintf("tas.thn_ang_id = %d and wpr.deleted_at is NULL",
-		*m.ThnAngID)
+	partQuery := fmt.Sprintf("s.deleted_at is NULL")
 
-	query := conn.Table("wbk_program_ranker wpr").
+	partQueryTas := fmt.Sprintf("left outer join thn_ang_satker tas on tas.satker_id = s.id and tas.thn_ang_id = %d and s.deleted_at is NULL", *m.ThnAngID)
+
+	query := conn.Table("satker s").
 		Select(
-			`s.id, s.unit_id, s.kabkota_id, s.code, s.name, sum(wprn.nilai)/COUNT(*) as nilai
-	`).
-		Joins(`inner join  wbk_program_ranker_nilai wprn on wprn.wbk_program_ranker_id = wpr.id and wprn.deleted_at is NULL`).
-		Joins(`inner join thn_ang_satker tas on wprn.thn_ang_satker_id = tas.id and tas.deleted_at is NULL`).
-		Joins(`inner join satker s on tas.satker_id = s.id and s.deleted_at is NULL`).
-		Joins(`inner join thn_ang ta on tas.thn_ang_id = ta.id and ta.deleted_at is NULL`)
+			`s.id, s.unit_id, s.kabkota_id, s.code, s.name, 
+					IFNULL(sum(wprn.nilai)/COUNT(*),0) as nilai
+		`).
+		Joins(partQueryTas).
+		Joins(`left outer join thn_ang ta on tas.thn_ang_id = ta.id and ta.deleted_at is NULL`).
+		Joins(`LEFT outer join wbk_program_ranker_nilai wprn on wprn.thn_ang_satker_id = tas.id and wprn.deleted_at is NULL`).
+		Joins(`left outer join wbk_program_ranker wpr on wprn.wbk_program_ranker_id = wpr.id and wpr.deleted_at is NULL`)
 
 	query = r.Filter(ctx, query, *m).Where(partQuery).
 		Group("s.unit_id, s.kabkota_id, s.code, s.name")
@@ -212,14 +214,16 @@ func (r *wbkProgramRanker) FindByThnAngIDAndSatkerID(ctx *abstraction.Context,
 	partQuery := fmt.Sprintf("tas.thn_ang_id = %d and tas.satker_id = %d and wpr.deleted_at is NULL",
 		*m.ThnAngID, *m.SatkerID)
 
-	query := conn.Table("wbk_program_ranker wpr").
+	query := conn.Table("wbk_program wp").
 		Select(
-			`wpr.*, wprn.nilai
+			`wp.id as wbk_program_id, wp.code as wbk_program_code, wp.name as wbk_program_name,
+					wpr.*, wprn.nilai
 	`).
-		Joins(`inner join  wbk_program_ranker_nilai wprn on wprn.wbk_program_ranker_id = wpr.id and wprn.deleted_at is NULL`).
-		Joins(`inner join thn_ang_satker tas on wprn.thn_ang_satker_id = tas.id and tas.deleted_at is NULL`).
-		Joins(`inner join satker s on tas.satker_id = s.id and s.deleted_at is NULL`).
-		Joins(`inner join thn_ang ta on tas.thn_ang_id = ta.id and ta.deleted_at is NULL`)
+		Joins(`inner join wbk_program_ranker wpr on wpr.wbk_program_id = wp.id and wp.deleted_at is NULL`).
+		Joins(`left outer join  wbk_program_ranker_nilai wprn on wprn.wbk_program_ranker_id = wpr.id and wprn.deleted_at is NULL`).
+		Joins(`left outer join thn_ang_satker tas on wprn.thn_ang_satker_id = tas.id and tas.deleted_at is NULL`).
+		Joins(`left outer join satker s on tas.satker_id = s.id and s.deleted_at is NULL`).
+		Joins(`left outer join thn_ang ta on tas.thn_ang_id = ta.id and ta.deleted_at is NULL`)
 
 	query = r.Filter(ctx, query, *m).Where(partQuery)
 	queryCount := query

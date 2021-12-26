@@ -38,7 +38,11 @@ type WbkProgramRankerGetRequest struct {
 }
 
 type WbkProgramRankerGetResponse struct {
-	Row int `json:"row"`
+	Row            int    `json:"row"`
+	WbkProgramID   int    `json:"wbk_program_id"`
+	WbkProgramCode string `json:"wbk_program_code"`
+	WbkProgramName string `json:"wbk_program_name"`
+	abstraction.ID
 	model.WbkProgramRankerEntity
 	Nilai float64 `json:"nilai"`
 }
