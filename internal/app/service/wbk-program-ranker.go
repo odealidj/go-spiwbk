@@ -17,6 +17,7 @@ type WbkProgramRankerService interface {
 	//Upsert(*abstraction.Context, *dto.SpiPbjPaketJenisBelanjaPaguUpsertRequest) ([]dto.SpiPbjRekapitulasiResponse, error)
 	GetSatkerNilaiByThnAngID(*abstraction.Context, *dto.WbkProgramRankerGetRequest) (*dto.WbkProgramRankerGetSatkerNilaiInfoResponse, error)
 	GetByThnAngIDAndSatkerID(*abstraction.Context, *dto.WbkProgramRankerGetRequest) (*dto.WbkProgramRankerGetInfoResponse, error)
+	Get(*abstraction.Context, *dto.WbkProgramRankerGetRequest) (*dto.WbkProgramRankerGetInfoResponse, error)
 }
 
 type wbkProgramRankerService struct {
@@ -75,6 +76,40 @@ func (s *wbkProgramRankerService) GetByThnAngIDAndSatkerID(ctx *abstraction.Cont
 	if err := trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
 
 		wbkProgramRankerGetResponses, info, err := s.WbkProgramRankerRepository.FindByThnAngIDAndSatkerID(ctx,
+			&model.WbkProgramRankerFilter{WbkProgramRankerEntityFilter: model.WbkProgramRankerEntityFilter{
+				ThnAngID: payload.ThnAngID, SatkerID: payload.SatkerID},
+			}, &payload.Pagination)
+		if err != nil {
+			return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
+				"Invalid Spi bmn", err.Error())
+		}
+
+		//num := 0
+		for i, _ := range wbkProgramRankerGetResponses {
+			wbkProgramRankerGetResponses[i].Row = i + 1
+		}
+
+		result = &dto.WbkProgramRankerGetInfoResponse{
+			Datas:          &wbkProgramRankerGetResponses,
+			PaginationInfo: info,
+		}
+
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (s *wbkProgramRankerService) Get(ctx *abstraction.Context,
+	payload *dto.WbkProgramRankerGetRequest) (*dto.WbkProgramRankerGetInfoResponse, error) {
+
+	var result *dto.WbkProgramRankerGetInfoResponse
+
+	if err := trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+
+		wbkProgramRankerGetResponses, info, err := s.WbkProgramRankerRepository.Find(ctx,
 			&model.WbkProgramRankerFilter{WbkProgramRankerEntityFilter: model.WbkProgramRankerEntityFilter{
 				ThnAngID: payload.ThnAngID, SatkerID: payload.SatkerID},
 			}, &payload.Pagination)

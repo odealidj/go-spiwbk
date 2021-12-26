@@ -27,6 +27,7 @@ import (
 	wbk_komponen "codeid-boiler/internal/app/handler/wbk-komponen"
 	wbk_program "codeid-boiler/internal/app/handler/wbk-program"
 	wbk_program_ranker "codeid-boiler/internal/app/handler/wbk-program-ranker"
+	wbk_program_tujuan "codeid-boiler/internal/app/handler/wbk-program-tujuan"
 	"codeid-boiler/internal/factory"
 	"codeid-boiler/pkg/constant"
 	"fmt"
@@ -88,4 +89,5 @@ func Init(e *echo.Echo, f *factory.Factory) {
 	wbk_program_ranker.NewHandler(f).Route(g.Group("/wbk-program-ranker"))
 	wbk_komponen.NewHandler(f).Route(g.Group("/wbk-komponen"))
 	wbk_program.NewHandler(f).Route(g.Group("/wbk-program"))
+	wbk_program_tujuan.NewHandler(f).Route(g.Group("/wbk-program-tujuan"))
 }

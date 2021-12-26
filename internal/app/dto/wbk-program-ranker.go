@@ -44,7 +44,7 @@ type WbkProgramRankerGetResponse struct {
 	WbkProgramName string `json:"wbk_program_name"`
 	abstraction.ID
 	model.WbkProgramRankerEntity
-	Nilai float64 `json:"nilai"`
+	Nilai *float64 `json:"nilai,omitempty"`
 }
 
 type WbkProgramRankerGetInfoResponse struct {

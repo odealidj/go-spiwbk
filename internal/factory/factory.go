@@ -53,6 +53,7 @@ type Factory struct {
 	WbkProgramRankerRepository            repository.WbkProgramRanker
 	WbkKomponenRepository                 repository.WbkKomponen
 	WbkProgramRepository                  repository.WbkProgram
+	WbkProgramTujuanRepository            repository.WbkProgramTujuan
 }
 
 func NewFactory() *Factory {
@@ -119,5 +120,6 @@ func (f *Factory) SetupRepository() {
 	f.WbkProgramRankerRepository = repository.NewWbkProgramRanker(f.Db)
 	f.WbkKomponenRepository = repository.NewWbkKomponen(f.Db)
 	f.WbkProgramRepository = repository.NewWbkProgram(f.Db)
+	f.WbkProgramTujuanRepository = repository.NewWbkProgramTujuan(f.Db)
 
 }
