@@ -14,7 +14,7 @@ type WbkProgramTujuanEntityFilter struct {
 
 type WbkProgramTujuanEntity struct {
 	WbkProgramID int    `json:"wbk_program_id"`
-	Code         string `json:"code"`
+	Code         string `json:"code,omitempty"`
 	Name         string `json:"name"`
 }
 
