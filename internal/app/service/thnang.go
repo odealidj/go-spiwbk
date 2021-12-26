@@ -21,6 +21,7 @@ type ThnAngService interface {
 	Delete(*abstraction.Context, *abstraction.ID) (*dto.ThnAngResponse, error)
 	GetAll(*abstraction.Context, *dto.ThnAngGetAllRequest) (*dto.ThnAngGetAllResponse, error)
 	Get(*abstraction.Context, *dto.ThnAngGetRequest) (*dto.ThnAngResponse, error)
+	GetByYear(*abstraction.Context, *dto.ThnAngGetByYearRequest) (*dto.ThnAngResponse, error)
 }
 
 type thnAngService struct {
@@ -262,6 +263,34 @@ func (s *thnAngService) Get(ctx *abstraction.Context, payload *dto.ThnAngGetRequ
 				return res.ErrorBuilder(&res.ErrorConstant.NotFound, err)
 			}
 			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+
+		result = &dto.ThnAngResponse{
+			ID:           abstraction.ID{ID: thnang.ID},
+			ThnAngEntity: thnang.ThnAngEntity,
+		}
+
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+
+}
+
+func (s *thnAngService) GetByYear(ctx *abstraction.Context, payload *dto.ThnAngGetByYearRequest) (*dto.ThnAngResponse, error) {
+	var result *dto.ThnAngResponse
+
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+		thnang, err := s.Repository.FindByYear(ctx, &model.ThnAng{Context: ctx,
+			ThnAngEntity: model.ThnAngEntity{Year: payload.Year}})
+		if err != nil {
+			return res.ErrorBuilder(&res.ErrorConstant.UnprocessableEntity, err)
+		}
+
+		if thnang.ID == 0 {
+			return res.ErrorBuilder(&res.ErrorConstant.NotFound, err)
 		}
 
 		result = &dto.ThnAngResponse{

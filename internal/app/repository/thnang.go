@@ -15,6 +15,7 @@ type ThnAng interface {
 	Update(*abstraction.Context, *model.ThnAng) (*model.ThnAng, error)
 	Delete(*abstraction.Context, *model.ThnAng) (*model.ThnAng, error)
 	FindByID(*abstraction.Context, *model.ThnAng) (*model.ThnAng, error)
+	FindByYear(*abstraction.Context, *model.ThnAng) (*model.ThnAng, error)
 	Find(*abstraction.Context, *model.ThnAngFilter, *abstraction.Pagination) (*[]model.ThnAng, *abstraction.PaginationInfo, error)
 	checkTrx(*abstraction.Context) *gorm.DB
 }
@@ -76,6 +77,16 @@ func (r *thnang) FindByID(ctx *abstraction.Context, m *model.ThnAng) (*model.Thn
 	conn := r.CheckTrx(ctx)
 
 	err := conn.First(&m, m.EntityInc.IDInc.ID).WithContext(ctx.Request().Context()).Error
+	if err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (r *thnang) FindByYear(ctx *abstraction.Context, m *model.ThnAng) (*model.ThnAng, error) {
+	conn := r.CheckTrx(ctx)
+
+	err := conn.WithContext(ctx.Request().Context()).Where("year = ?", m.Year).Find(&m).Error
 	if err != nil {
 		return nil, err
 	}

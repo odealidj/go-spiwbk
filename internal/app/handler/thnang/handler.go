@@ -159,3 +159,21 @@ func (h *handler) Get(c echo.Context) error {
 
 	return res.SuccessResponse(data).Send(c)
 }
+
+func (h *handler) GetByYear(c echo.Context) error {
+	cc := c.(*abstraction.Context)
+
+	payload := new(dto.ThnAngGetByYearRequest)
+	if err = c.Bind(payload); err != nil {
+		return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err).Send(c)
+	}
+	if err = c.Validate(payload); err != nil {
+		return res.ErrorBuilder(&res.ErrorConstant.Validation, err).Send(c)
+	}
+	data, err := h.service.GetByYear(cc, payload)
+	if err != nil {
+		return res.ErrorResponse(err).Send(c)
+	}
+
+	return res.SuccessResponse(data).Send(c)
+}

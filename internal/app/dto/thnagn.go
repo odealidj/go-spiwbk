@@ -33,6 +33,11 @@ type ThnAngGetRequest struct {
 	abstraction.ID
 }
 
+//Get
+type ThnAngGetByYearRequest struct {
+	Year string `json:"year"`
+}
+
 //Get All
 type ThnAngGetAllRequest struct {
 	abstraction.Pagination
