@@ -14,6 +14,7 @@ type WbkProgramGetRequest struct {
 //Get
 type WbkProgramGetResponse struct {
 	Row int `json:"row"`
+	abstraction.ID
 	model.WbkProgramEntity
 	WbkKomponenName string `json:"wbk_komponen_name"`
 }

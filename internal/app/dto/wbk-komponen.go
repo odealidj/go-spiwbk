@@ -14,6 +14,7 @@ type WbkKomponenGetRequest struct {
 //Get
 type WbkKomponenGetResponse struct {
 	Row int `json:"row"`
+	abstraction.ID
 	model.WbkKomponenEntity
 }
 
