@@ -12,35 +12,35 @@ import (
 	"net/http"
 )
 
-type WbkProgramTujuanService interface {
+type WbkProgramTargetService interface {
 	//Save(*abstraction.Context, *dto.WbkProgramRankerSaveRequest) (*dto.WbkProgramRankerResponse, error)
 	//Upsert(*abstraction.Context, *dto.SpiPbjPaketJenisBelanjaPaguUpsertRequest) ([]dto.SpiPbjRekapitulasiResponse, error)
-	Get(*abstraction.Context, *dto.WbkProgramTujuanGetRequest) (*dto.WbkProgramTujuanGetInfoResponse, error)
+	Get(*abstraction.Context, *dto.WbkProgramTargetGetRequest) (*dto.WbkProgramTargetGetInfoResponse, error)
 }
 
-type wbkProgramTujuanService struct {
+type wbkProgramTargetService struct {
 	//SpiAngRepository repository.SpiAng
-	WbkProgramTujuanRepository repository.WbkProgramTujuan
+	WbkProgramTargetRepository repository.WbkProgramTarget
 	Db                         *gorm.DB
 }
 
-func NewWbkProgramTujuanService(f *factory.Factory) *wbkProgramTujuanService {
-	wbkProgramTujuanRepository := f.WbkProgramTujuanRepository
+func NewWbkProgramTargetService(f *factory.Factory) *wbkProgramTargetService {
+	wbkProgramTargetRepository := f.WbkProgramTargetRepository
 
 	db := f.Db
-	return &wbkProgramTujuanService{wbkProgramTujuanRepository, db}
+	return &wbkProgramTargetService{wbkProgramTargetRepository, db}
 
 }
 
-func (s *wbkProgramTujuanService) Get(ctx *abstraction.Context,
-	payload *dto.WbkProgramTujuanGetRequest) (*dto.WbkProgramTujuanGetInfoResponse, error) {
+func (s *wbkProgramTargetService) Get(ctx *abstraction.Context,
+	payload *dto.WbkProgramTargetGetRequest) (*dto.WbkProgramTargetGetInfoResponse, error) {
 
-	var result *dto.WbkProgramTujuanGetInfoResponse
+	var result *dto.WbkProgramTargetGetInfoResponse
 
 	if err := trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
 
-		datas, info, err := s.WbkProgramTujuanRepository.Find(ctx,
-			&model.WbkProgramTujuanFilter{WbkProgramTujuanEntityFilter: payload.WbkProgramTujuanEntityFilter}, &payload.Pagination)
+		datas, info, err := s.WbkProgramTargetRepository.Find(ctx,
+			&model.WbkProgramTargetFilter{WbkProgramTargetEntityFilter: payload.WbkProgramTargetEntityFilter}, &payload.Pagination)
 		if err != nil {
 			return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
 				"Invalid Spi bmn", err.Error())
@@ -51,7 +51,7 @@ func (s *wbkProgramTujuanService) Get(ctx *abstraction.Context,
 			datas[i].Row = i + 1
 		}
 
-		result = &dto.WbkProgramTujuanGetInfoResponse{
+		result = &dto.WbkProgramTargetGetInfoResponse{
 			Datas:          &datas,
 			PaginationInfo: info,
 		}

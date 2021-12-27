@@ -54,6 +54,7 @@ type Factory struct {
 	WbkKomponenRepository                 repository.WbkKomponen
 	WbkProgramRepository                  repository.WbkProgram
 	WbkProgramTujuanRepository            repository.WbkProgramTujuan
+	WbkProgramTargetRepository            repository.WbkProgramTarget
 }
 
 func NewFactory() *Factory {
@@ -121,5 +122,6 @@ func (f *Factory) SetupRepository() {
 	f.WbkKomponenRepository = repository.NewWbkKomponen(f.Db)
 	f.WbkProgramRepository = repository.NewWbkProgram(f.Db)
 	f.WbkProgramTujuanRepository = repository.NewWbkProgramTujuan(f.Db)
+	f.WbkProgramTargetRepository = repository.NewWbkProgramTarget(f.Db)
 
 }
