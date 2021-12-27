@@ -6,11 +6,13 @@ import (
 	"codeid-boiler/internal/app/model"
 	"fmt"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"math"
 	"sync"
 )
 
 type WbkProgramTujuan interface {
+	Upsert(*abstraction.Context, *model.WbkProgramTujuan) (*model.WbkProgramTujuan, error)
 	Find(*abstraction.Context, *model.WbkProgramTujuanFilter, *abstraction.Pagination) ([]dto.WbkProgramTujuanGetResponse, *abstraction.PaginationInfo, error)
 
 	checkTrx(*abstraction.Context) *gorm.DB
@@ -41,12 +43,14 @@ func (r *wbkProgramRanker) Create(ctx *abstraction.Context, m *model.WbkProgramR
 	return m, nil
 }
 
-func (r *wbkProgramRanker) Upsert(ctx *abstraction.Context, m *model.WbkProgramRanker) (*model.WbkProgramRanker, error) {
+*/
+
+func (r *wbkProgramTujuan) Upsert(ctx *abstraction.Context, m *model.WbkProgramTujuan) (*model.WbkProgramTujuan, error) {
 	conn := r.CheckTrx(ctx)
 
 	err := conn.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "id"}},
-		DoUpdates: clause.AssignmentColumns([]string{"wbk_program_id", "code", "name", "tag"}),
+		DoUpdates: clause.AssignmentColumns([]string{"wbk_program_id", "code", "name"}),
 		//UpdateAll: true,
 	}).Create(&m).WithContext(ctx.Request().Context()).Error
 
@@ -55,8 +59,6 @@ func (r *wbkProgramRanker) Upsert(ctx *abstraction.Context, m *model.WbkProgramR
 	}
 	return m, nil
 }
-
-*/
 
 func (r *wbkProgramTujuan) Find(ctx *abstraction.Context,
 	m *model.WbkProgramTujuanFilter, p *abstraction.Pagination) ([]dto.WbkProgramTujuanGetResponse,
