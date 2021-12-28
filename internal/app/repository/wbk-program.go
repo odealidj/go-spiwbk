@@ -6,6 +6,7 @@ import (
 	"codeid-boiler/internal/app/model"
 	"fmt"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"math"
 	"sync"
 )
@@ -17,6 +18,7 @@ type WbkProgram interface {
 	//Delete(*abstraction.Context, *model.SpiAngItem) (*model.SpiAngItem, error)
 	//FindByID(*abstraction.Context, *model.SpiAngItem) (*model.SpiAngItem, error)
 	//Find(*abstraction.Context, *model.SpiAngKesesuaianFilter, *abstraction.Pagination) (*[]model.SpiAngItem, *abstraction.PaginationInfo, error)
+	Upsert(*abstraction.Context, *model.WbkProgram) (*model.WbkProgram, error)
 	Find(*abstraction.Context, *model.WbkProgramFilter, *abstraction.Pagination) ([]dto.WbkProgramGetResponse, *abstraction.PaginationInfo, error)
 	FindByThnAngIDAndSatkerID(*abstraction.Context, *model.WbkProgramFilter, *abstraction.Pagination) ([]dto.WbkProgramNilaiGetByThnAngIDAndSatkerIDResponse, *abstraction.PaginationInfo, error)
 
@@ -48,12 +50,14 @@ func (r *wbkProgramRanker) Create(ctx *abstraction.Context, m *model.WbkProgramR
 	return m, nil
 }
 
-func (r *wbkProgramRanker) Upsert(ctx *abstraction.Context, m *model.WbkProgramRanker) (*model.WbkProgramRanker, error) {
+*/
+
+func (r *wbkProgram) Upsert(ctx *abstraction.Context, m *model.WbkProgram) (*model.WbkProgram, error) {
 	conn := r.CheckTrx(ctx)
 
 	err := conn.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "id"}},
-		DoUpdates: clause.AssignmentColumns([]string{"wbk_program_id", "code", "name", "tag"}),
+		DoUpdates: clause.AssignmentColumns([]string{"wbk_komponen_id", "code", "name", "tag"}),
 		//UpdateAll: true,
 	}).Create(&m).WithContext(ctx.Request().Context()).Error
 
@@ -62,8 +66,6 @@ func (r *wbkProgramRanker) Upsert(ctx *abstraction.Context, m *model.WbkProgramR
 	}
 	return m, nil
 }
-
-*/
 
 func (r *wbkProgram) Find(ctx *abstraction.Context,
 	m *model.WbkProgramFilter, p *abstraction.Pagination) ([]dto.WbkProgramGetResponse,

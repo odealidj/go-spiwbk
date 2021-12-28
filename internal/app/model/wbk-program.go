@@ -6,10 +6,11 @@ import (
 )
 
 type WbkProgramEntityFilter struct {
-	ThnAngID *int    `json:"thn_ang_id" query:"thn_ang_id" filter:"NOFILTER"`
-	SatkerID *int    `json:"satker_id" query:"satker_id" filter:"NOFILTER"`
-	Code     *string `json:"code" query:"code"`
-	Name     *string `json:"name" query:"name" filter:"LIKE"`
+	ThnAngID      *int    `json:"thn_ang_id" query:"thn_ang_id" filter:"NOFILTER"`
+	SatkerID      *int    `json:"satker_id" query:"satker_id" filter:"NOFILTER"`
+	WbkKomponenID *int    `json:"wbk_komponen_id" query:"wbk_komponen_id"`
+	Code          *string `json:"code" query:"code"`
+	Name          *string `json:"name" query:"name" filter:"LIKE"`
 }
 
 type WbkProgramEntity struct {
@@ -20,7 +21,7 @@ type WbkProgramEntity struct {
 }
 
 type WbkProgram struct {
-	abstraction.ID
+	abstraction.IDInc
 	WbkProgramEntity
 	abstraction.DeleteAt
 	Context *abstraction.Context `json:"-" gorm:"-"`

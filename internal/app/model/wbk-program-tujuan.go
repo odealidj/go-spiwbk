@@ -6,11 +6,12 @@ import (
 )
 
 type WbkProgramTujuanEntityFilter struct {
-	ThnAngID *int    `json:"thn_ang_id" query:"thn_ang_id" filter:"NOFILTER"`
-	SatkerID *int    `json:"satker_id" query:"satker_id" filter:"NOFILTER"`
-	ID       *int    `json:"id" query:"id" alias:"wpt"`
-	Code     *string `json:"code" query:"code"`
-	Name     *string `json:"name" query:"name" filter:"LIKE"`
+	ThnAngID     *int    `json:"thn_ang_id" query:"thn_ang_id" filter:"NOFILTER"`
+	SatkerID     *int    `json:"satker_id" query:"satker_id" filter:"NOFILTER"`
+	WbkProgramID *int    `json:"wbk_program_id" query:"wbk_program_id"`
+	ID           *int    `json:"id" query:"id" alias:"wpt"`
+	Code         *string `json:"code" query:"code"`
+	Name         *string `json:"name" query:"name" filter:"LIKE"`
 }
 
 type WbkProgramTujuanEntity struct {

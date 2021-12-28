@@ -11,30 +11,30 @@ import (
 	"sync"
 )
 
-type WbkProgramTarget interface {
-	Find(*abstraction.Context, *model.WbkProgramTargetFilter, *abstraction.Pagination) ([]dto.WbkProgramTargetGetResponse, *abstraction.PaginationInfo, error)
-	Upsert(*abstraction.Context, *model.WbkProgramTarget) (*model.WbkProgramTarget, error)
+type WbkPertanyaan interface {
+	Find(*abstraction.Context, *model.WbkPertanyaanFilter, *abstraction.Pagination) ([]dto.WbkPertanyaanGetResponse, *abstraction.PaginationInfo, error)
+	Upsert(*abstraction.Context, *model.WbkPertanyaan) (*model.WbkPertanyaan, error)
 	checkTrx(*abstraction.Context) *gorm.DB
 }
 
-type wbkProgramTarget struct {
+type wbkPertanyaan struct {
 	abstraction.Repository
 }
 
-func NewWbkProgramTarget(db *gorm.DB) *wbkProgramTarget {
-	return &wbkProgramTarget{
+func NewWbkPertanyaan(db *gorm.DB) *wbkPertanyaan {
+	return &wbkPertanyaan{
 		abstraction.Repository{
 			Db: db,
 		},
 	}
 }
 
-func (r *wbkProgramTarget) Upsert(ctx *abstraction.Context, m *model.WbkProgramTarget) (*model.WbkProgramTarget, error) {
+func (r *wbkPertanyaan) Upsert(ctx *abstraction.Context, m *model.WbkPertanyaan) (*model.WbkPertanyaan, error) {
 	conn := r.CheckTrx(ctx)
 
 	err := conn.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "id"}},
-		DoUpdates: clause.AssignmentColumns([]string{"wbk_program_tujuan_id", "code", "name"}),
+		DoUpdates: clause.AssignmentColumns([]string{"wbk_program_ranker_id", "code", "name", "target"}),
 		//UpdateAll: true,
 	}).Create(&m).WithContext(ctx.Request().Context()).Error
 
@@ -44,14 +44,14 @@ func (r *wbkProgramTarget) Upsert(ctx *abstraction.Context, m *model.WbkProgramT
 	return m, nil
 }
 
-func (r *wbkProgramTarget) Find(ctx *abstraction.Context,
-	m *model.WbkProgramTargetFilter, p *abstraction.Pagination) ([]dto.WbkProgramTargetGetResponse,
+func (r *wbkPertanyaan) Find(ctx *abstraction.Context,
+	m *model.WbkPertanyaanFilter, p *abstraction.Pagination) ([]dto.WbkPertanyaanGetResponse,
 	*abstraction.PaginationInfo, error) {
 	conn := r.CheckTrx(ctx)
 
 	var err error
 	var count int64
-	var result []dto.WbkProgramTargetGetResponse
+	var result []dto.WbkPertanyaanGetResponse
 	var info abstraction.PaginationInfo
 
 	//partQuery := fmt.Sprintf("wpt.wbk_program_tujuan_id =1 and wpt.deleted_at is NULL",
@@ -177,7 +177,7 @@ func (r *wbkProgramTarget) Find(ctx *abstraction.Context,
 	return result, &info, nil
 }
 
-func (r *wbkProgramTarget) checkTrx(ctx *abstraction.Context) *gorm.DB {
+func (r *wbkPertanyaan) checkTrx(ctx *abstraction.Context) *gorm.DB {
 	if ctx.Trx != nil {
 		return ctx.Trx.Db
 	}

@@ -5,6 +5,18 @@ import (
 	"codeid-boiler/internal/app/model"
 )
 
+//Upsert
+type WbkProgramTargetUpsertRequest struct {
+	ID *int `json:"id" param:"id"`
+	model.WbkProgramTargetEntity
+}
+
+//Upsert
+type WbkProgramTargetResponse struct {
+	ID int `json:"id" param:"id"`
+	model.WbkProgramTargetEntity
+}
+
 //Get
 type WbkProgramTargetGetRequest struct {
 	abstraction.Pagination

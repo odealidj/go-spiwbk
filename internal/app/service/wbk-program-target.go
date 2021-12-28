@@ -14,7 +14,7 @@ import (
 
 type WbkProgramTargetService interface {
 	//Save(*abstraction.Context, *dto.WbkProgramRankerSaveRequest) (*dto.WbkProgramRankerResponse, error)
-	//Upsert(*abstraction.Context, *dto.SpiPbjPaketJenisBelanjaPaguUpsertRequest) ([]dto.SpiPbjRekapitulasiResponse, error)
+	Upsert(*abstraction.Context, *dto.WbkProgramTargetUpsertRequest) (*dto.WbkProgramTargetResponse, error)
 	Get(*abstraction.Context, *dto.WbkProgramTargetGetRequest) (*dto.WbkProgramTargetGetInfoResponse, error)
 }
 
@@ -29,6 +29,40 @@ func NewWbkProgramTargetService(f *factory.Factory) *wbkProgramTargetService {
 
 	db := f.Db
 	return &wbkProgramTargetService{wbkProgramTargetRepository, db}
+
+}
+
+func (s *wbkProgramTargetService) Upsert(ctx *abstraction.Context, payload *dto.WbkProgramTargetUpsertRequest) (*dto.WbkProgramTargetResponse, error) {
+
+	var result *dto.WbkProgramTargetResponse
+	//var data *model.ThnAng
+
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+
+		data, err := s.WbkProgramTargetRepository.Upsert(ctx, &model.WbkProgramTarget{Context: ctx,
+			WbkProgramTargetEntity: payload.WbkProgramTargetEntity,
+		})
+		if err != nil {
+			//if strings.Contains(strings.ToLower(err.Error()), "duplicate") {
+			//	return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
+			//		"Duplicate spi ang", "Invalid spi ang")
+			//}
+
+			return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
+				"Invalid spi ang", "Invalid wbk program tujuan")
+		}
+
+		result = &dto.WbkProgramTargetResponse{
+			ID:                     int(data.ID),
+			WbkProgramTargetEntity: data.WbkProgramTargetEntity,
+		}
+
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
 
 }
 
