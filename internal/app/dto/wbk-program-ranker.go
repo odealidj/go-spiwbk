@@ -26,9 +26,9 @@ type WbkProgramRankerGetSatkerNilaiInfoResponse struct {
 //upsert
 type WbkProgramRankerUpsertRequest struct {
 	abstraction.ID
-	SatkerID int `json:"satkerID"`
-	ThnAngID int `json:"thnAngID"`
 	model.WbkProgramRankerEntity
+	SatkerID *int `json:"satkerID,omitempty"`
+	ThnAngID *int `json:"thnAngID,omitempty"`
 }
 
 //Get
@@ -55,7 +55,7 @@ type WbkProgramRankerGetInfoResponse struct {
 type WbkProgramRankerResponse struct {
 	abstraction.ID
 	model.WbkProgramRankerEntity
-	SatkerID int     `json:"satkerID"`
-	ThnAngID int     `json:"thnAngID"`
-	Nilai    float64 `json:"nilai"`
+	SatkerID *int     `json:"satkerID,omitempty"`
+	ThnAngID *int     `json:"thnAngID,omitempty"`
+	Nilai    *float64 `json:"nilai,omitempty"`
 }

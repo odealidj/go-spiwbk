@@ -20,6 +20,25 @@ func NewHandler(f *factory.Factory) *handler {
 	return &handler{service}
 }
 
+func (h *handler) Save(c echo.Context) error {
+	cc := c.(*abstraction.Context)
+
+	payload := new(dto.WbkProgramRankerUpsertRequest)
+	if err = c.Bind(payload); err != nil {
+		return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err).Send(c)
+	}
+	if err = c.Validate(payload); err != nil {
+
+		return res.ErrorBuilder(&res.ErrorConstant.Validation, err).Send(c)
+	}
+	data, err := h.service.Upsert(cc, payload)
+	if err != nil {
+		return res.ErrorResponse(err).Send(c)
+	}
+
+	return res.SuccessResponse(data).Send(c)
+}
+
 func (h *handler) GetSatkerNilaiByThnAngID(c echo.Context) error {
 	cc := c.(*abstraction.Context)
 

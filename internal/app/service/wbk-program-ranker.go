@@ -14,7 +14,8 @@ import (
 
 type WbkProgramRankerService interface {
 	//Save(*abstraction.Context, *dto.WbkProgramRankerSaveRequest) (*dto.WbkProgramRankerResponse, error)
-	//Upsert(*abstraction.Context, *dto.SpiPbjPaketJenisBelanjaPaguUpsertRequest) ([]dto.SpiPbjRekapitulasiResponse, error)
+
+	Upsert(*abstraction.Context, *dto.WbkProgramRankerUpsertRequest) (*dto.WbkProgramRankerResponse, error)
 	GetSatkerNilaiByThnAngID(*abstraction.Context, *dto.WbkProgramRankerGetRequest) (*dto.WbkProgramRankerGetSatkerNilaiInfoResponse, error)
 	GetByThnAngIDAndSatkerID(*abstraction.Context, *dto.WbkProgramRankerGetRequest) (*dto.WbkProgramRankerGetInfoResponse, error)
 	Get(*abstraction.Context, *dto.WbkProgramRankerGetRequest) (*dto.WbkProgramRankerGetInfoResponse, error)
@@ -31,6 +32,35 @@ func NewWbkProgramRankerService(f *factory.Factory) *wbkProgramRankerService {
 
 	db := f.Db
 	return &wbkProgramRankerService{wbkProgramRankerRepository, db}
+
+}
+
+func (s *wbkProgramRankerService) Upsert(ctx *abstraction.Context, payload *dto.WbkProgramRankerUpsertRequest) (*dto.WbkProgramRankerResponse, error) {
+
+	var result *dto.WbkProgramRankerResponse
+	//var data *model.ThnAng
+
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+
+		data, err := s.WbkProgramRankerRepository.Upsert(ctx, &model.WbkProgramRanker{Context: ctx,
+			WbkProgramRankerEntity: payload.WbkProgramRankerEntity,
+		})
+		if err != nil {
+			return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
+				"Invalid wbk program ranker", err.Error())
+		}
+
+		result = &dto.WbkProgramRankerResponse{
+			ID:                     abstraction.ID{ID: data.ID},
+			WbkProgramRankerEntity: data.WbkProgramRankerEntity,
+		}
+
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
 
 }
 
@@ -110,9 +140,7 @@ func (s *wbkProgramRankerService) Get(ctx *abstraction.Context,
 	if err := trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
 
 		wbkProgramRankerGetResponses, info, err := s.WbkProgramRankerRepository.Find(ctx,
-			&model.WbkProgramRankerFilter{WbkProgramRankerEntityFilter: model.WbkProgramRankerEntityFilter{
-				ThnAngID: payload.ThnAngID, SatkerID: payload.SatkerID},
-			}, &payload.Pagination)
+			&model.WbkProgramRankerFilter{WbkProgramRankerEntityFilter: payload.WbkProgramRankerEntityFilter}, &payload.Pagination)
 		if err != nil {
 			return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
 				"Invalid Spi bmn", err.Error())
