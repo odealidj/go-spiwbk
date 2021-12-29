@@ -11,32 +11,33 @@ import (
 	"sync"
 )
 
-type FrekuensiRanker interface {
-	Create(*abstraction.Context, *model.FrekuensiRanker) (*model.FrekuensiRanker, error)
-	Upsert(*abstraction.Context, *model.FrekuensiRanker) (*model.FrekuensiRanker, error)
+type WbkSubProgramUraian interface {
+	Create(*abstraction.Context, *model.WbkSubProgramUraian) (*model.WbkSubProgramUraian, error)
+	Upsert(*abstraction.Context, *model.WbkSubProgramUraian) (*model.WbkSubProgramUraian, error)
 	//Update(*abstraction.Context, *model.SpiAngItem) (*model.SpiAngItem, error)
 	//Delete(*abstraction.Context, *model.SpiAngItem) (*model.SpiAngItem, error)
 	//FindByID(*abstraction.Context, *model.SpiAngItem) (*model.SpiAngItem, error)
-	Find(*abstraction.Context, *model.FrekuensiRankerFilter, *abstraction.Pagination) ([]dto.FrekuensiRankerGetResponse, *abstraction.PaginationInfo, error)
+	Find(*abstraction.Context, *model.WbkSubProgramUraianFilter, *abstraction.Pagination) ([]dto.WbkSubProgramUraianGetResponse, *abstraction.PaginationInfo, error)
 	checkTrx(*abstraction.Context) *gorm.DB
 }
 
-type frekuensiRanker struct {
+type wbkSubProgramUraian struct {
 	abstraction.Repository
 }
 
-func NewFrekuensiRanker(db *gorm.DB) *frekuensiRanker {
-	return &frekuensiRanker{
+func NewWbkSubProgramUraian(db *gorm.DB) *wbkSubProgramUraian {
+	return &wbkSubProgramUraian{
 		abstraction.Repository{
 			Db: db,
 		},
 	}
 }
 
-func (r *frekuensiRanker) Create(ctx *abstraction.Context, m *model.FrekuensiRanker) (*model.FrekuensiRanker, error) {
+func (r *wbkSubProgramUraian) Create(ctx *abstraction.Context, m *model.WbkSubProgramUraian) (*model.WbkSubProgramUraian, error) {
 	conn := r.CheckTrx(ctx)
 
-	err := conn.FirstOrCreate(&m, map[string]interface{}{"name": m.Name}).
+	err := conn.FirstOrCreate(&m, map[string]interface{}{"wbk_sub_program_ranker_id": m.WbkSubProgramRankerID,
+		"bulan_id": m.BulanID, "frekuensi_ranker_id": m.FrekuensiRankerID, "code": m.Code, "name": m.Name}).
 		WithContext(ctx.Request().Context()).Error
 	if err != nil {
 		return nil, err
@@ -44,12 +45,13 @@ func (r *frekuensiRanker) Create(ctx *abstraction.Context, m *model.FrekuensiRan
 	return m, nil
 }
 
-func (r *frekuensiRanker) Upsert(ctx *abstraction.Context, m *model.FrekuensiRanker) (*model.FrekuensiRanker, error) {
+func (r *wbkSubProgramUraian) Upsert(ctx *abstraction.Context, m *model.WbkSubProgramRanker) (*model.WbkSubProgramRanker, error) {
 	conn := r.CheckTrx(ctx)
 
 	err := conn.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "id"}},
-		DoUpdates: clause.AssignmentColumns([]string{"name"}),
+		Columns: []clause.Column{{Name: "id"}},
+		DoUpdates: clause.AssignmentColumns([]string{"wbk_sub_program_ranker_id", "bulan_id",
+			"frekuensi_ranker_id", "code", "name"}),
 		//UpdateAll: true,
 	}).Create(&m).WithContext(ctx.Request().Context()).Error
 
@@ -59,25 +61,25 @@ func (r *frekuensiRanker) Upsert(ctx *abstraction.Context, m *model.FrekuensiRan
 	return m, nil
 }
 
-func (r *frekuensiRanker) Find(ctx *abstraction.Context,
-	m *model.FrekuensiRankerFilter, p *abstraction.Pagination) ([]dto.FrekuensiRankerGetResponse,
+func (r *wbkSubProgramUraian) Find(ctx *abstraction.Context,
+	m *model.WbkSubProgramRankerFilter, p *abstraction.Pagination) ([]dto.WbkSubProgramRankerGetResponse,
 	*abstraction.PaginationInfo, error) {
 	conn := r.CheckTrx(ctx)
 
 	var err error
 	var count int64
-	var result []dto.FrekuensiRankerGetResponse
+	var result []dto.WbkSubProgramRankerGetResponse
 	var info abstraction.PaginationInfo
 
 	//partQuery := fmt.Sprintf("tas.thn_ang_id = %d and tas.satker_id = %d and wpr.deleted_at is NULL",
 	//*m.ThnAngID, *m.SatkerID)
 
-	query := conn.Table("frekuensi_ranker fr").
+	query := conn.Table("wbk_sub_program_ranker wspr").
 		Select(
-			`fr.id, fr.name
+			`wspr.id, wspr.wbk_program_ranker_id, wspr.code , wspr.name
 	`)
 
-	query = r.Filter(ctx, query, *m).Where("fr.deleted_at is NULL")
+	query = r.Filter(ctx, query, *m).Where("wspr.deleted_at is NULL")
 	queryCount := query
 
 	ChErr := make(chan error)
@@ -122,7 +124,7 @@ func (r *frekuensiRanker) Find(ctx *abstraction.Context,
 	}
 
 	if p.SortBy == nil {
-		sortBy := "id"
+		sortBy := "wspr.id"
 		p.SortBy = &sortBy
 	}
 
@@ -190,7 +192,7 @@ func (r *frekuensiRanker) Find(ctx *abstraction.Context,
 	return result, &info, nil
 }
 
-func (r *frekuensiRanker) checkTrx(ctx *abstraction.Context) *gorm.DB {
+func (r *wbkSubProgramUraian) checkTrx(ctx *abstraction.Context) *gorm.DB {
 	if ctx.Trx != nil {
 		return ctx.Trx.Db
 	}

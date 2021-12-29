@@ -73,7 +73,7 @@ func (h *handler) Save(c echo.Context) error {
 
 		return res.ErrorBuilder(&res.ErrorConstant.Validation, err).Send(c)
 	}
-	data, err := h.service.Upsert(cc, payload)
+	data, err := h.service.Save(cc, payload)
 	if err != nil {
 		return res.ErrorResponse(err).Send(c)
 	}

@@ -14,7 +14,7 @@ type FrekuensiRankerEntity struct {
 }
 
 type FrekuensiRanker struct {
-	abstraction.ID
+	abstraction.IDInc
 	FrekuensiRankerEntity
 	abstraction.DeleteAt
 	Context *abstraction.Context `json:"-" gorm:"-"`

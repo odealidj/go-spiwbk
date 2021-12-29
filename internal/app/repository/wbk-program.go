@@ -12,7 +12,7 @@ import (
 )
 
 type WbkProgram interface {
-	//Create(*abstraction.Context, *model.WbkProgramRanker) (*model.WbkProgramRanker, error)
+	Create(*abstraction.Context, *model.WbkProgram) (*model.WbkProgram, error)
 	//Upsert(*abstraction.Context, *model.WbkProgramRanker) (*model.WbkProgramRanker, error)
 	//Update(*abstraction.Context, *model.SpiAngItem) (*model.SpiAngItem, error)
 	//Delete(*abstraction.Context, *model.SpiAngItem) (*model.SpiAngItem, error)
@@ -37,11 +37,10 @@ func NewWbkProgram(db *gorm.DB) *wbkProgram {
 	}
 }
 
-/*
-func (r *wbkProgramRanker) Create(ctx *abstraction.Context, m *model.WbkProgramRanker) (*model.WbkProgramRanker, error) {
+func (r *wbkProgram) Create(ctx *abstraction.Context, m *model.WbkProgram) (*model.WbkProgram, error) {
 	conn := r.CheckTrx(ctx)
 
-	err := conn.FirstOrCreate(&m, map[string]interface{}{"wbk_program_id": m.WbkProgramID,
+	err := conn.FirstOrCreate(&m, map[string]interface{}{"wbk_komponen_id": m.WbkKomponenID,
 		"code": m.Code, "name": m.Name, "tag": m.Tag}).
 		WithContext(ctx.Request().Context()).Error
 	if err != nil {
@@ -49,8 +48,6 @@ func (r *wbkProgramRanker) Create(ctx *abstraction.Context, m *model.WbkProgramR
 	}
 	return m, nil
 }
-
-*/
 
 func (r *wbkProgram) Upsert(ctx *abstraction.Context, m *model.WbkProgram) (*model.WbkProgram, error) {
 	conn := r.CheckTrx(ctx)

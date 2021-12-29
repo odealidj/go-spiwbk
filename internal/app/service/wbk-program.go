@@ -13,7 +13,7 @@ import (
 )
 
 type WbkProgramService interface {
-	//Save(*abstraction.Context, *dto.WbkProgramRankerSaveRequest) (*dto.WbkProgramRankerResponse, error)
+	Save(*abstraction.Context, *dto.WbkProgramUpsertRequest) (*dto.WbkProgramResponse, error)
 	Upsert(*abstraction.Context, *dto.WbkProgramUpsertRequest) (*dto.WbkProgramResponse, error)
 	Get(*abstraction.Context, *dto.WbkProgramGetRequest) (*dto.WbkProgramGetInfoResponse, error)
 	GetNilaiByThnAngIDAndSatkerID(*abstraction.Context, *dto.WbkProgramGetRequest) (*dto.WbkProgramNilaiGetByThnAngIDAndSatkerIDInfoResponse, error)
@@ -30,6 +30,35 @@ func NewWbkProgramService(f *factory.Factory) *wbkProgramService {
 
 	db := f.Db
 	return &wbkProgramService{wbkProgramRepository, db}
+
+}
+
+func (s *wbkProgramService) Save(ctx *abstraction.Context, payload *dto.WbkProgramUpsertRequest) (*dto.WbkProgramResponse, error) {
+
+	var result *dto.WbkProgramResponse
+	//var data *model.ThnAng
+
+	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+
+		data, err := s.WbkProgramRepository.Create(ctx, &model.WbkProgram{Context: ctx,
+			WbkProgramEntity: payload.WbkProgramEntity,
+		})
+		if err != nil {
+			return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
+				"Invalid wbk program", err.Error())
+		}
+
+		result = &dto.WbkProgramResponse{
+			ID:               abstraction.ID{ID: data.ID},
+			WbkProgramEntity: data.WbkProgramEntity,
+		}
+
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return result, nil
 
 }
 

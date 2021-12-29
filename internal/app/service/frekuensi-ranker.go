@@ -41,7 +41,6 @@ func (s *frekuensiRankerService) Upsert(ctx *abstraction.Context, payload *dto.F
 	if err = trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
 
 		data, err := s.FrekuensiRankerRepository.Upsert(ctx, &model.FrekuensiRanker{Context: ctx,
-			ID:                    payload.ID,
 			FrekuensiRankerEntity: payload.FrekuensiRankerEntity,
 		})
 		if err != nil {
@@ -50,7 +49,7 @@ func (s *frekuensiRankerService) Upsert(ctx *abstraction.Context, payload *dto.F
 		}
 
 		result = &dto.FrekuensiRankerResponse{
-			ID:                    abstraction.ID{ID: data.ID.ID},
+			ID:                    abstraction.ID{ID: data.ID},
 			FrekuensiRankerEntity: data.FrekuensiRankerEntity,
 		}
 
