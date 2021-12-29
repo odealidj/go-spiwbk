@@ -4,6 +4,8 @@ import (
 	docs "codeid-boiler/docs"
 	"codeid-boiler/internal/app/handler/auth"
 	"codeid-boiler/internal/app/handler/bulan"
+	bulan_ranker "codeid-boiler/internal/app/handler/bulan-ranker"
+	frekuensi_ranker "codeid-boiler/internal/app/handler/frekuensi-ranker"
 	"codeid-boiler/internal/app/handler/group-package-value"
 	jenis_belanja_pagu "codeid-boiler/internal/app/handler/jenis-belanja-pagu"
 	"codeid-boiler/internal/app/handler/jenis-certificate"
@@ -94,4 +96,6 @@ func Init(e *echo.Echo, f *factory.Factory) {
 	wbk_program_tujuan.NewHandler(f).Route(g.Group("/wbk-program-tujuan"))
 	wbk_program_target.NewHandler(f).Route(g.Group("/wbk-program-target"))
 	wbk_sub_program_ranker.NewHandler(f).Route(g.Group("/wbk-sub-program-ranker"))
+	bulan_ranker.NewHandler(f).Route(g.Group("/bulan-ranker"))
+	frekuensi_ranker.NewHandler(f).Route(g.Group("/frekuensi-ranker"))
 }
