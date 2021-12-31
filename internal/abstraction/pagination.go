@@ -30,6 +30,7 @@ type PaginationInfo struct {
 
 type PaginationInfoArr struct {
 	*PaginationArr
+	Count       int  `json:"count"`
 	Pages       int  `json:"pages"`
 	MoreRecords bool `json:"more_records"`
 }

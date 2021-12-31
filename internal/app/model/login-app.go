@@ -13,6 +13,7 @@ import (
 )
 
 type LoginAppEntity struct {
+	AppID        int    `json:"app_id"`
 	Username     string `json:"username" validate:"required"`
 	Passwordhash string `json:"-"`
 	Password     string `json:"password" validate:"required" gorm:"-"`

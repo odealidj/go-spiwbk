@@ -42,6 +42,7 @@ func (c *dbPostgreSQL) Init() (*gorm.DB, error) {
 		DisableForeignKeyConstraintWhenMigrating: false,
 		Logger:                                   logger.Default.LogMode(logger.Info),
 		NamingStrategy:                           schema.NamingStrategy{SingularTable: true},
+		SkipDefaultTransaction:                   true,
 	})
 	if err != nil {
 		return nil, err

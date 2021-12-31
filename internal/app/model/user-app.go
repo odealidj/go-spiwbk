@@ -9,16 +9,16 @@ import (
 )
 
 type UserAppEntity struct {
-	RoleUserId   uint16 `json:"role_user_id"`
-	SatkerId     uint16 `json:"satker_id"`
-	JabatanId    uint16 `json:"jabatan_id"`
-	Nip          string `json:"nip" validate:"required"`
-	Name         string `json:"name" validate:"required"`
-	Address      string `json:"address" validate:"required"`
-	PostalCode   string `json:"postal_code" validate:"required"`
-	PhoneNumber  string `json:"phone_number" validate:"required"`
-	MobileNumber string `json:"mobile_number" validate:"required"`
-	Email        string `json:"email" validate:"required,email"`
+	RoleUserId   *uint16 `json:"role_user_id"`
+	SatkerId     *uint16 `json:"satker_id"`
+	JabatanId    *uint16 `json:"jabatan_id"`
+	Nip          string  `json:"nip" validate:"required"`
+	Name         string  `json:"name" validate:"required"`
+	Address      *string `json:"address"`
+	PostalCode   *string `json:"postal_code"`
+	PhoneNumber  *string `json:"phone_number"`
+	MobileNumber *string `json:"mobile_number"`
+	Email        *string `json:"email"`
 }
 
 type UserApp struct {

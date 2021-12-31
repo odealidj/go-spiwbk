@@ -4,16 +4,10 @@ import (
 	docs "codeid-boiler/docs"
 	"codeid-boiler/internal/app/handler/auth"
 	"codeid-boiler/internal/app/handler/bulan"
-	bulan_ranker "codeid-boiler/internal/app/handler/bulan-ranker"
-	frekuensi_ranker "codeid-boiler/internal/app/handler/frekuensi-ranker"
-	"codeid-boiler/internal/app/handler/group-package-value"
-	jenis_belanja_pagu "codeid-boiler/internal/app/handler/jenis-belanja-pagu"
 	"codeid-boiler/internal/app/handler/jenis-certificate"
 	jenis_kesesuaian "codeid-boiler/internal/app/handler/jenis-kesesuaian"
 	jenis_pengendali "codeid-boiler/internal/app/handler/jenis-pengendali"
-	jenis_rekapitulasi "codeid-boiler/internal/app/handler/jenis-rekapitulasi"
 	"codeid-boiler/internal/app/handler/jenis-sdm"
-	method_apbj "codeid-boiler/internal/app/handler/method-apbj"
 	"codeid-boiler/internal/app/handler/pegawai"
 	"codeid-boiler/internal/app/handler/rkakl"
 	"codeid-boiler/internal/app/handler/satker"
@@ -21,17 +15,24 @@ import (
 	spi_ang_item "codeid-boiler/internal/app/handler/spi-ang-item"
 	spi_ang_kesesuaian "codeid-boiler/internal/app/handler/spi-ang-kesesuaian"
 	spi_bmn "codeid-boiler/internal/app/handler/spi-bmn"
-	spi_pbj_paket_jenis_belanja_pagu "codeid-boiler/internal/app/handler/spi-pbj-paket-jenis-belanja-pagu"
-	spi_pbj_rekapitulasi "codeid-boiler/internal/app/handler/spi-pbj-rekapitulasi"
+	"codeid-boiler/internal/app/handler/spi-pbj/group-package-value"
+	"codeid-boiler/internal/app/handler/spi-pbj/jenis-belanja-pagu"
+	"codeid-boiler/internal/app/handler/spi-pbj/jenis-rekapitulasi"
+	"codeid-boiler/internal/app/handler/spi-pbj/method-apbj"
+	"codeid-boiler/internal/app/handler/spi-pbj/spi-pbj-paket-jenis-belanja-pagu"
+	"codeid-boiler/internal/app/handler/spi-pbj/spi-pbj-rekapitulasi"
 	"codeid-boiler/internal/app/handler/spi-sdm"
 	"codeid-boiler/internal/app/handler/spi-sdm-item"
 	"codeid-boiler/internal/app/handler/thnang"
-	wbk_komponen "codeid-boiler/internal/app/handler/wbk-komponen"
-	wbk_program "codeid-boiler/internal/app/handler/wbk-program"
-	wbk_program_ranker "codeid-boiler/internal/app/handler/wbk-program-ranker"
-	wbk_program_target "codeid-boiler/internal/app/handler/wbk-program-target"
-	wbk_program_tujuan "codeid-boiler/internal/app/handler/wbk-program-tujuan"
-	wbk_sub_program_ranker "codeid-boiler/internal/app/handler/wbk-sub-program-ranker"
+	auth_wbk "codeid-boiler/internal/app/handler/wbk/auth"
+	"codeid-boiler/internal/app/handler/wbk/frekuensi-ranker"
+	"codeid-boiler/internal/app/handler/wbk/wbk-komponen"
+	"codeid-boiler/internal/app/handler/wbk/wbk-program"
+	"codeid-boiler/internal/app/handler/wbk/wbk-program-ranker"
+	"codeid-boiler/internal/app/handler/wbk/wbk-program-target"
+	"codeid-boiler/internal/app/handler/wbk/wbk-program-tujuan"
+	"codeid-boiler/internal/app/handler/wbk/wbk-sub-program-ranker"
+	"codeid-boiler/internal/app/handler/wbk/wbk-sub-program-uraian"
 	"codeid-boiler/internal/factory"
 	"codeid-boiler/pkg/constant"
 	"fmt"
@@ -96,6 +97,8 @@ func Init(e *echo.Echo, f *factory.Factory) {
 	wbk_program_tujuan.NewHandler(f).Route(g.Group("/wbk-program-tujuan"))
 	wbk_program_target.NewHandler(f).Route(g.Group("/wbk-program-target"))
 	wbk_sub_program_ranker.NewHandler(f).Route(g.Group("/wbk-sub-program-ranker"))
-	bulan_ranker.NewHandler(f).Route(g.Group("/bulan-ranker"))
 	frekuensi_ranker.NewHandler(f).Route(g.Group("/frekuensi-ranker"))
+	wbk_sub_program_uraian.NewHandler(f).Route(g.Group("/wbk-sub-program-uraian"))
+	auth_wbk.NewHandler(f).Route(g.Group("/auth-wbk"))
+
 }

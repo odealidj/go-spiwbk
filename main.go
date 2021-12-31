@@ -5,25 +5,25 @@ import (
 	"codeid-boiler/internal/factory"
 	"codeid-boiler/internal/http"
 	"codeid-boiler/internal/middleware"
+	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"os"
 
 	"github.com/labstack/echo/v4"
 )
 
-/*
 func init() {
 	//env := env.NewEnv()
 	//env.Load(ENV)
 
 	//err := godotenv.Load(".env.development")
-	err := godotenv.Load(".env.local")
+	//err := godotenv.Load(".env.local")
+	err := godotenv.Load(".env.prod")
 	if err != nil {
 		panic("Failed to load .env file, Make sure .env is exists")
 
 	}
 }
-*/
 
 // @title codeid-boiler
 // @version 0.0.1

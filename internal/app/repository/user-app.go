@@ -31,7 +31,7 @@ func NewUserApp(db *gorm.DB) *userapp {
 func (r *userapp) Find(ctx *abstraction.Context, m *model.UserApp) (*model.UserApp, error) {
 	conn := r.CheckTrx(ctx)
 
-	err := conn.First(&m).WithContext(ctx.Request().Context()).Error
+	err := conn.Find(&m).WithContext(ctx.Request().Context()).Error
 	if err != nil {
 		return nil, err
 	}

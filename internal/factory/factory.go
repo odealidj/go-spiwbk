@@ -3,6 +3,8 @@ package factory
 import (
 	"codeid-boiler/database"
 	"codeid-boiler/internal/app/repository"
+	"codeid-boiler/internal/app/repository/spi-pbj"
+	"codeid-boiler/internal/app/repository/wbk"
 
 	"gorm.io/gorm"
 	"os"
@@ -41,23 +43,24 @@ type Factory struct {
 	SpiAngKesesuaianRepository            repository.SpiAngKesesuaian
 	JenisKesesuaianRepository             repository.JenisKesesuaian
 	JenisPengendaliRepository             repository.JenisPengendali
-	JenisRekapitulasiRepository           repository.JenisRekapitulasi
-	SpiPbjRekapitulasiRepository          repository.SpiPbjRekapitulasi
+	JenisRekapitulasiRepository           spi_pbj.JenisRekapitulasi
+	SpiPbjRekapitulasiRepository          spi_pbj.SpiPbjRekapitulasi
 	BulanRepository                       repository.Bulan
-	GroupPackageValueRepository           repository.GroupPackageValue
-	JenisBelanjaPaguRepository            repository.JenisBelanjaPagu
-	MethodApbjRepository                  repository.MethodApbj
-	SpiPbjPaketRepository                 repository.SpiPbjPaket
-	SpiPbjPaketJenisBelanjaPaguRepository repository.SpiPbjPaketJenisBelanjaPagu
+	GroupPackageValueRepository           spi_pbj.GroupPackageValue
+	JenisBelanjaPaguRepository            spi_pbj.JenisBelanjaPagu
+	MethodApbjRepository                  spi_pbj.MethodApbj
+	SpiPbjPaketRepository                 spi_pbj.SpiPbjPaket
+	SpiPbjPaketJenisBelanjaPaguRepository spi_pbj.SpiPbjPaketJenisBelanjaPagu
 	SpiBmnRepository                      repository.SpiBmn
-	WbkProgramRankerRepository            repository.WbkProgramRanker
-	WbkKomponenRepository                 repository.WbkKomponen
-	WbkProgramRepository                  repository.WbkProgram
-	WbkProgramTujuanRepository            repository.WbkProgramTujuan
-	WbkProgramTargetRepository            repository.WbkProgramTarget
-	WbkSubProgramRankerRepository         repository.WbkSubProgramRanker
-	BulanRankerRepository                 repository.BulanRanker
-	FrekuensiRankerRepository             repository.FrekuensiRanker
+	WbkProgramRankerRepository            wbk.WbkProgramRanker
+	WbkKomponenRepository                 wbk.WbkKomponen
+	WbkProgramRepository                  wbk.WbkProgram
+	WbkProgramTujuanRepository            wbk.WbkProgramTujuan
+	WbkProgramTargetRepository            wbk.WbkProgramTarget
+	WbkSubProgramRankerRepository         wbk.WbkSubProgramRanker
+
+	FrekuensiRankerRepository     wbk.FrekuensiRanker
+	WbkSubProgramUraianRepository wbk.WbkSubProgramUraian
 }
 
 func NewFactory() *Factory {
@@ -112,21 +115,22 @@ func (f *Factory) SetupRepository() {
 	f.SpiAngKesesuaianRepository = repository.NewSpiAngKesesuaian(f.Db)
 	f.JenisKesesuaianRepository = repository.NewJenisKesesuaian(f.Db)
 	f.JenisPengendaliRepository = repository.NewJenisPengendali(f.Db)
-	f.JenisRekapitulasiRepository = repository.NewJenisRekapitulasi(f.Db)
-	f.SpiPbjRekapitulasiRepository = repository.NewSpiPbjRekapitulasi(f.Db)
+	f.JenisRekapitulasiRepository = spi_pbj.NewJenisRekapitulasi(f.Db)
+	f.SpiPbjRekapitulasiRepository = spi_pbj.NewSpiPbjRekapitulasi(f.Db)
 	f.BulanRepository = repository.NewBulan(f.Db)
-	f.GroupPackageValueRepository = repository.NewGroupPackageValue(f.Db)
-	f.JenisBelanjaPaguRepository = repository.NewJenisBelanjaPagu(f.Db)
-	f.MethodApbjRepository = repository.NewMethodApbj(f.Db)
-	f.SpiPbjPaketRepository = repository.NewSpiPbjPaket(f.Db)
-	f.SpiPbjPaketJenisBelanjaPaguRepository = repository.NewSpiPbjPaketJenisBelanjaPagu(f.Db)
+	f.GroupPackageValueRepository = spi_pbj.NewGroupPackageValue(f.Db)
+	f.JenisBelanjaPaguRepository = spi_pbj.NewJenisBelanjaPagu(f.Db)
+	f.MethodApbjRepository = spi_pbj.NewMethodApbj(f.Db)
+	f.SpiPbjPaketRepository = spi_pbj.NewSpiPbjPaket(f.Db)
+	f.SpiPbjPaketJenisBelanjaPaguRepository = spi_pbj.NewSpiPbjPaketJenisBelanjaPagu(f.Db)
 	f.SpiBmnRepository = repository.NewSpiBmn(f.Db)
-	f.WbkProgramRankerRepository = repository.NewWbkProgramRanker(f.Db)
-	f.WbkKomponenRepository = repository.NewWbkKomponen(f.Db)
-	f.WbkProgramRepository = repository.NewWbkProgram(f.Db)
-	f.WbkProgramTujuanRepository = repository.NewWbkProgramTujuan(f.Db)
-	f.WbkProgramTargetRepository = repository.NewWbkProgramTarget(f.Db)
-	f.WbkSubProgramRankerRepository = repository.NewWbkSubProgramRanker(f.Db)
-	f.BulanRankerRepository = repository.NewBulanRanker(f.Db)
-	f.FrekuensiRankerRepository = repository.NewFrekuensiRanker(f.Db)
+	f.WbkProgramRankerRepository = wbk.NewWbkProgramRanker(f.Db)
+	f.WbkKomponenRepository = wbk.NewWbkKomponen(f.Db)
+	f.WbkProgramRepository = wbk.NewWbkProgram(f.Db)
+	f.WbkProgramTujuanRepository = wbk.NewWbkProgramTujuan(f.Db)
+	f.WbkProgramTargetRepository = wbk.NewWbkProgramTarget(f.Db)
+	f.WbkSubProgramRankerRepository = wbk.NewWbkSubProgramRanker(f.Db)
+
+	f.FrekuensiRankerRepository = wbk.NewFrekuensiRanker(f.Db)
+	f.WbkSubProgramUraianRepository = wbk.NewWbkSubProgramUraian(f.Db)
 }

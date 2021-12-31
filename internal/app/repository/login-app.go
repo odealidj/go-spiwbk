@@ -11,6 +11,7 @@ import (
 
 type LoginApp interface {
 	FindLoginAppByUsername(*abstraction.Context, *model.LoginApp) (*model.LoginApp, error)
+	FindLoginAppByAppIDAndUsername(*abstraction.Context, *model.LoginApp) (*model.LoginApp, error)
 	//Create(*abstraction.Context, *model.UserApp) (*model.UserApp, error)
 	CreateLoginApp(*abstraction.Context, *model.LoginApp) (*model.LoginApp, error)
 	checkTrx(*abstraction.Context) *gorm.DB
@@ -34,6 +35,18 @@ func (r *loginapp) FindLoginAppByUsername(ctx *abstraction.Context, m *model.Log
 	//var data *model.LoginApp
 
 	err := conn.Where("username = ?", m.Username).Find(&m).WithContext(ctx.Request().Context()).Error
+	if err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (r *loginapp) FindLoginAppByAppIDAndUsername(ctx *abstraction.Context, m *model.LoginApp) (*model.LoginApp, error) {
+	conn := r.CheckTrx(ctx)
+
+	//var data *model.LoginApp
+
+	err := conn.Where("app_id = ? And username = ?", m.AppID, m.Username).Find(&m).WithContext(ctx.Request().Context()).Error
 	if err != nil {
 		return nil, err
 	}
