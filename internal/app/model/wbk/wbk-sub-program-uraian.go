@@ -6,8 +6,9 @@ import (
 )
 
 type WbkSubProgramUraianEntityFilter struct {
-	WbkSubProgramRankerID *int    `json:"wbk_sub_program_ranker_id" query:"wbk_sub_program_ranker_id"`
+	WbkSubProgramRankerID *int    `json:"wbk_sub_program_ranker_id" query:"wbk_sub_program_ranker_id" filter:"NOFILTER"`
 	FrekuensiRankerID     *int    `json:"frekuensi_ranker_id" query:"frekuensi_ranker_id"`
+	ID                    *int    `json:"id" query:"id" alias:"wspu"`
 	Code                  *int    `json:"code" query:"code"`
 	Name                  *string `json:"name" query:"name" filter:"LIKE"`
 }

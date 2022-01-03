@@ -8,6 +8,7 @@ import (
 type WbkKomponenEntityFilter struct {
 	ThnAngID *int    `json:"thn_ang_id" query:"thn_ang_id" filter:"NOFILTER"`
 	SatkerID *int    `json:"satker_id" query:"satker_id" filter:"NOFILTER"`
+	ID       *int    `json:"id" query:"id" alias:"wk"`
 	Code     *string `json:"code" query:"code"`
 	Name     *string `json:"name" query:"name" filter:"LIKE"`
 }

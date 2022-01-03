@@ -73,10 +73,17 @@ func (r *wbkSubProgramRanker) Find(ctx *abstraction.Context,
 	//partQuery := fmt.Sprintf("tas.thn_ang_id = %d and tas.satker_id = %d and wpr.deleted_at is NULL",
 	//*m.ThnAngID, *m.SatkerID)
 
-	query := conn.Table("wbk_sub_program_ranker wspr").
+	query := conn.Table("wbk_komponen wk").
 		Select(
-			`wspr.id, wspr.wbk_program_ranker_id, wspr.code , wspr.name
-	`)
+			`wspr.id, wspr.code, wspr.name,
+	wspr.wbk_program_ranker_id ,
+		CONCAT(wk.code,". ",wk.name) as komponen,
+	CONCAT(wp.code,". ",wp.name) as program,
+	CONCAT(wpr.code,". ",wpr.name) as program_renja
+	`).
+		Joins(`inner join wbk_program wp ON wp.wbk_komponen_id = wk.id and wk.deleted_at is NULL`).
+		Joins(`inner join wbk_program_ranker wpr on wpr.wbk_program_id = wp.id and wpr.deleted_at is NULL`).
+		Joins(`inner join wbk_sub_program_ranker wspr on wpr.id = wspr.wbk_program_ranker_id`)
 
 	query = r.Filter(ctx, query, *m).Where("wspr.deleted_at is NULL")
 	queryCount := query

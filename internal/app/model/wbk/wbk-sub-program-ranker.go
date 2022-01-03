@@ -9,6 +9,7 @@ type WbkSubProgramRankerEntityFilter struct {
 	ThnAngID           *int    `json:"thn_ang_id" query:"thn_ang_id" filter:"NOFILTER"`
 	SatkerID           *int    `json:"satker_id" query:"satker_id" filter:"NOFILTER"`
 	WbkProgramRankerID *int    `json:"wbk_program_ranker_id" query:"wbk_program_ranker_id"`
+	ID                 *int    `json:"id" query:"id" alias:"wspr"`
 	Code               *string `json:"code" query:"code"`
 	Name               *string `json:"name" query:"name" filter:"LIKE"`
 }

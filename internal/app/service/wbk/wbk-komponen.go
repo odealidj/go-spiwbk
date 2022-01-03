@@ -40,7 +40,7 @@ func (s *wbkKomponenService) Get(ctx *abstraction.Context,
 	if err := trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
 
 		datas, info, err := s.WbkKomponenRepository.Find(ctx,
-			&wbk2.WbkKomponenFilter{WbkKomponenEntityFilter: wbk2.WbkKomponenEntityFilter{}}, &payload.Pagination)
+			&wbk2.WbkKomponenFilter{WbkKomponenEntityFilter: payload.WbkKomponenEntityFilter}, &payload.Pagination)
 		if err != nil {
 			return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
 				"Invalid Spi bmn", err.Error())

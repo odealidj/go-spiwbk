@@ -21,6 +21,9 @@ type WbkSubProgramRankerGetResponse struct {
 	Row int `json:"row"`
 	abstraction.ID
 	wbk.WbkSubProgramRankerEntity
+	Komponen     string `json:"komponen,omitempty"`
+	Program      string `json:"program,omitempty"`
+	ProgramRenja string `json:"program_renja,omitempty"`
 }
 
 type WbkSubProgramRankerGetInfoResponse struct {

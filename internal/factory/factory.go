@@ -58,9 +58,10 @@ type Factory struct {
 	WbkProgramTujuanRepository            wbk.WbkProgramTujuan
 	WbkProgramTargetRepository            wbk.WbkProgramTarget
 	WbkSubProgramRankerRepository         wbk.WbkSubProgramRanker
-
-	FrekuensiRankerRepository     wbk.FrekuensiRanker
-	WbkSubProgramUraianRepository wbk.WbkSubProgramUraian
+	FrekuensiRankerRepository             wbk.FrekuensiRanker
+	WbkSubProgramUraianRepository         wbk.WbkSubProgramUraian
+	WbkSubProgramUraianBulanRepository    wbk.WbkSubProgramUraianBulan
+	WbkSubProgramRankerBulanRepository    wbk.WbkSubProgramRankerBulan
 }
 
 func NewFactory() *Factory {
@@ -133,4 +134,6 @@ func (f *Factory) SetupRepository() {
 
 	f.FrekuensiRankerRepository = wbk.NewFrekuensiRanker(f.Db)
 	f.WbkSubProgramUraianRepository = wbk.NewWbkSubProgramUraian(f.Db)
+	f.WbkSubProgramUraianBulanRepository = wbk.NewWbkSubProgramUraianBulan(f.Db)
+	f.WbkSubProgramRankerBulanRepository = wbk.NewWbkSubProgramRankerBulan(f.Db)
 }

@@ -71,16 +71,52 @@ func (r *wbkSubProgramUraian) Find(ctx *abstraction.Context,
 	var result []wbk2.WbkSubProgramUraianGetResponse
 	var info abstraction.PaginationInfoArr
 
-	//partQuery := fmt.Sprintf("tas.thn_ang_id = %d and tas.satker_id = %d and wpr.deleted_at is NULL",
-	//*m.ThnAngID, *m.SatkerID)
+	partJoin := ""
+	if m.WbkSubProgramRankerID != nil {
+		partJoin = fmt.Sprintf(`inner join wbk_sub_program_uraian wspu on wpr.id = wspu.wbk_sub_program_ranker_id 
+	and  wspu.wbk_sub_program_ranker_id =%d and wspu.deleted_at is NULL`, *m.WbkSubProgramRankerID)
+	} else {
+		partJoin = fmt.Sprintf(`inner join wbk_sub_program_uraian wspu on wpr.id = wspu.wbk_sub_program_ranker_id 
+	and wspu.deleted_at is NULL`)
+	}
 
-	query := conn.Table("wbk_sub_program_uraian wspu").
+	query := conn.Table("wbk_sub_program_ranker wspr").
 		Select(
 			`wspu.id, wspu.wbk_sub_program_ranker_id, wspu.frekuensi_ranker_id,
-				  fr.name as frekuensi_ranker_name, wspu.code, wspu.name, wspu.ket `).
-		Joins(`inner join frekuensi_ranker fr on wspu.frekuensi_ranker_id = fr.id and fr.deleted_at is NULL`)
+		   fr.name as frekuensi_waktu, 
+		   wspu.code, wspu.name, 
+		   Sum(case when wspub.bulan_id = 1 then 1 else 0 end) 'b1',
+		   Sum(case when wspub.bulan_id = 2 then 1 else 0 end) 'b2',
+		   Sum(case when wspub.bulan_id = 3 then 1 else 0 end) 'b3',
+		   Sum(case when wspub.bulan_id = 4 then 1 else 0 end) 'b4',
+		   Sum(case when wspub.bulan_id = 5 then 1 else 0 end) 'b5',
+		   Sum(case when wspub.bulan_id = 6 then 1 else 0 end) 'b6',
+		   Sum(case when wspub.bulan_id = 7 then 1 else 0 end) 'b7',
+		   Sum(case when wspub.bulan_id = 8 then 1 else 0 end) 'b8',
+		   Sum(case when wspub.bulan_id = 9 then 1 else 0 end) 'b9',
+		   Sum(case when wspub.bulan_id = 10 then 1 else 0 end) 'b10',
+		   Sum(case when wspub.bulan_id = 11 then 1 else 0 end) 'b11',
+		   Sum(case when wspub.bulan_id = 12 then 1 else 0 end) 'b12',
+		   wspu.ket,
+		   CONCAT(wk.code, ". ", wk.name) as komponen, 
+		   CONCAT(wp.code,". ", wp.name) as program,
+		   CONCAT(wpr.code, ". ",wpr.name) as program_renja,
+		   CONCAT(wspr.code, ". ", wspr.name) as sub_program_renja,
+		   wspr.id as  wbk_sub_program_ranker_id`).
+		Joins(`inner join wbk_program_ranker wpr on wspr.wbk_program_ranker_id = wpr.id and wpr.deleted_at is NULL`).
+		Joins(`inner join wbk_program wp on wpr.wbk_program_id = wp.id and wp.deleted_at is NULL`).
+		Joins(`inner join wbk_komponen wk on wp.wbk_komponen_id = wk.id and wk.deleted_at is NULL`).
+		Joins(partJoin).
+		Joins(`inner join frekuensi_ranker fr on wspu.frekuensi_ranker_id = fr.id and fr.deleted_at is NULL`).
+		Joins(`inner join wbk_sub_program_uraian_bulan wspub on wspub.wbk_sub_program_uraian_id = wspu.id 
+	and wspub.deleted_at is NULL`).
+		Joins(`inner JOIN bulan b on wspub.bulan_id = b.id and b.deleted_at is NULL`)
 
-	query = r.Filter(ctx, query, *m).Where("wspu.deleted_at is NULL")
+	query = r.Filter(ctx, query, *m).Where("wspu.deleted_at is NULL").
+		Group(`wspu.id, wspu.wbk_sub_program_ranker_id, wspu.frekuensi_ranker_id,
+				fr.name, wspu.code, wspu.name, wspu.ket,  CONCAT(wk.code, ". ", wk.name),
+				CONCAT(wp.code,". ", wp.name), CONCAT(wpr.code, ". ",wpr.name), CONCAT(wspr.code, ". ", wspr.name),
+				wspr.id`)
 	queryCount := query
 
 	ChErr := make(chan error)
