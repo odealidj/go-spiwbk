@@ -8,10 +8,10 @@ import (
 )
 
 type IDInc struct {
-	ID uint16 `json:"id" param:"id" form:"id" query:"id" validate:"number" gorm:"primaryKey;"`
+	ID uint32 `json:"id" param:"id" form:"id" query:"id" validate:"number" gorm:"primaryKey;"`
 }
 type ID struct {
-	ID uint16 `json:"id" param:"id" form:"id" query:"id" validate:"number" gorm:"primaryKey;autoIncrement:false;"`
+	ID uint32 `json:"id" param:"id" form:"id" query:"id" validate:"number" gorm:"primaryKey;autoIncrement:false;"`
 }
 
 type CreateBy struct {

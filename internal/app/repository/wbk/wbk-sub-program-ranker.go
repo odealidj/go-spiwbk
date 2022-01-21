@@ -75,17 +75,38 @@ func (r *wbkSubProgramRanker) Find(ctx *abstraction.Context,
 
 	query := conn.Table("wbk_komponen wk").
 		Select(
-			`wspr.id, wspr.code, wspr.name,
-	wspr.wbk_program_ranker_id ,
-		CONCAT(wk.code,". ",wk.name) as komponen,
+			`wspr.id, wspr.code, wspr.name,	
+		sum(CASE when wsprb.bulan_id = 1 then 1 else 0 end) 'b1',
+        sum(CASE when wsprb.bulan_id = 2 then 1 else 0 end) 'b2',
+        sum(CASE when wsprb.bulan_id = 3 then 1 else 0 end) 'b3',
+        sum(CASE when wsprb.bulan_id = 4 then 1 else 0 end) 'b4',
+        sum(CASE when wsprb.bulan_id = 5 then 1 else 0 end) 'b5',
+        sum(CASE when wsprb.bulan_id = 6 then 1 else 0 end) 'b6',
+        sum(CASE when wsprb.bulan_id = 7 then 1 else 0 end) 'b7',
+        sum(CASE when wsprb.bulan_id = 8 then 1 else 0 end) 'b8',
+        sum(CASE when wsprb.bulan_id = 9 then 1 else 0 end) 'b9',
+        sum(CASE when wsprb.bulan_id = 10 then 1 else 0 end) 'b10',
+        sum(CASE when wsprb.bulan_id = 11 then 1 else 0 end) 'b11',
+        sum(CASE when wsprb.bulan_id = 12 then 1 else 0 end) 'b12',
+	wspr.wbk_program_ranker_id,
+	CONCAT(wk.code,". ",wk.name) as komponen,
 	CONCAT(wp.code,". ",wp.name) as program,
-	CONCAT(wpr.code,". ",wpr.name) as program_renja
-	`).
+	CONCAT(wpr.code,". ",wpr.name) as program_renja, wspr.frekuensi_ranker_id,
+        fr.name as frekuensi_waktu`).
 		Joins(`inner join wbk_program wp ON wp.wbk_komponen_id = wk.id and wk.deleted_at is NULL`).
 		Joins(`inner join wbk_program_ranker wpr on wpr.wbk_program_id = wp.id and wpr.deleted_at is NULL`).
-		Joins(`inner join wbk_sub_program_ranker wspr on wpr.id = wspr.wbk_program_ranker_id`)
+		Joins(`inner join wbk_sub_program_ranker wspr on wpr.id = wspr.wbk_program_ranker_id`).
+		Joins(`left outer join wbk_sub_program_ranker_bulan wsprb on wsprb.wbk_sub_program_ranker_id  = wspr.id 
+	and wspr.deleted_at is NULL`).
+		Joins(`left outer join bulan b on wsprb.bulan_id  = b.id and b.deleted_at is NULL`).
+		Joins(`left outer join frekuensi_ranker fr on wspr.frekuensi_ranker_id = fr.id 
+        	and fr.deleted_at is NULL`)
 
-	query = r.Filter(ctx, query, *m).Where("wspr.deleted_at is NULL")
+	query = r.Filter(ctx, query, *m).Where("wspr.deleted_at is NULL").
+		Group(`wspr.id, wspr.code, wspr.name,wspr.wbk_program_ranker_id,
+		CONCAT(wk.code,". ",wk.name),
+		CONCAT(wp.code,". ",wp.name),
+		CONCAT(wpr.code,". ",wpr.name), wspr.frekuensi_ranker_id, fr.name`)
 	queryCount := query
 
 	ChErr := make(chan error)

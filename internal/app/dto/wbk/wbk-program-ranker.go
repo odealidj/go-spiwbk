@@ -45,7 +45,10 @@ type WbkProgramRankerGetResponse struct {
 	WbkProgramName string `json:"wbk_program_name"`
 	abstraction.ID
 	wbk.WbkProgramRankerEntity
-	Nilai *float64 `json:"nilai,omitempty"`
+	WbkKomponenID *int     `json:"wbk_komponen_id,omitempty"`
+	Komponen      *string  `json:"komponen,omitempty"`
+	Program       *string  `json:"program,omitempty"`
+	Nilai         *float64 `json:"nilai,omitempty"`
 }
 
 type WbkProgramRankerGetInfoResponse struct {

@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"gorm.io/driver/mysql"
-	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
@@ -22,32 +21,11 @@ type db struct {
 	Name string
 }
 
-type dbPostgreSQL struct {
-	db
-	SslMode string
-	Tz      string
-}
-
 type dbMySQL struct {
 	db
 	Charset   string
 	ParseTime string
 	Loc       string
-}
-
-func (c *dbPostgreSQL) Init() (*gorm.DB, error) {
-	//heroku sslmode=require
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s", c.Host, c.User, c.Pass, c.Name, c.Port, c.SslMode, c.Tz)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		DisableForeignKeyConstraintWhenMigrating: false,
-		Logger:                                   logger.Default.LogMode(logger.Info),
-		NamingStrategy:                           schema.NamingStrategy{SingularTable: true},
-		SkipDefaultTransaction:                   true,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return db, nil
 }
 
 func (c *dbMySQL) Init() (*gorm.DB, error) {
@@ -58,12 +36,15 @@ func (c *dbMySQL) Init() (*gorm.DB, error) {
 	//MyLocal
 	//dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=%s&parseTime=%s&loc=%s", c.User, c.Pass, c.Host, c.Name, c.Charset, c.ParseTime, c.Loc)
 	//Heroku sukses
+	fmt.Println(fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=%s", c.User, c.Pass, c.Host, c.Name, c.ParseTime))
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=%s", c.User, c.Pass, c.Host, c.Name, c.ParseTime)
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: false,
 		Logger:                                   logger.Default.LogMode(logger.Info),
 		NamingStrategy:                           schema.NamingStrategy{SingularTable: true},
+		SkipDefaultTransaction:                   true,
+		PrepareStmt:                              true,
 	})
 	if err != nil {
 		return nil, err

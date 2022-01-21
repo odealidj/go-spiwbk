@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
@@ -64,4 +65,20 @@ func Connection(name string) (*gorm.DB, error) {
 		return nil, errors.New("Connection is undefined")
 	}
 	return dbConnections[name], nil
+}
+
+func Close() {
+	var sqlDB *sql.DB
+	var err error
+
+	for key, conn := range dbConnections {
+		if sqlDB, err = conn.DB(); err == nil {
+			err = sqlDB.Close()
+		}
+		if err != nil {
+			logrus.WithField("message", "failed to close database connection "+key).Error(err.Error())
+		} else {
+			logrus.Infof("Connection to %v closed", key)
+		}
+	}
 }

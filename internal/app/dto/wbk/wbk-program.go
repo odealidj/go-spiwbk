@@ -29,6 +29,7 @@ type WbkProgramGetResponse struct {
 	abstraction.ID
 	wbk.WbkProgramEntity
 	WbkKomponenName string `json:"wbk_komponen_name"`
+	WbkProgram      string `json:"wbk_program,omitempty"`
 }
 
 //Get Info

@@ -197,6 +197,12 @@ func (s *rkaklService) Save(ctx *abstraction.Context, payload *dto.RkaklSaveRequ
 		if err != nil {
 			return res.ErrorBuilder(&res.ErrorConstant.OpenFileErr, err)
 		}
+		defer func() {
+			// Close the spreadsheet.
+			if err := f.Close(); err != nil {
+				fmt.Println(err)
+			}
+		}()
 
 		rows, err := f.GetRows(payload.Sheetname)
 		if err != nil {

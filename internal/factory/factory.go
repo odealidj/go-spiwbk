@@ -3,65 +3,70 @@ package factory
 import (
 	"codeid-boiler/database"
 	"codeid-boiler/internal/app/repository"
-	"codeid-boiler/internal/app/repository/spi-pbj"
+	spi_pbj "codeid-boiler/internal/app/repository/spi-pbj"
 	"codeid-boiler/internal/app/repository/wbk"
 
-	"gorm.io/gorm"
 	"os"
+
+	"gorm.io/gorm"
 )
 
 type Factory struct {
-	Db                                    *gorm.DB
-	LoginAppRepository                    repository.LoginApp
-	UserAppRepository                     repository.UserApp
-	ThnAngRepository                      repository.ThnAng
-	SatkerRepository                      repository.Satker
-	SpiSdmRepository                      repository.SpiSdm
-	JenisSdmRepository                    repository.JenisSdm
-	JenisCertificateRepository            repository.JenisCertificate
-	PegawaiRepository                     repository.Pegawai
-	SpiSdmItemRepository                  repository.SpiSdmItem
-	SpiSdmFileRepository                  repository.SpiSdmFile
-	RkaklRepository                       repository.Rkakl
-	RkaklFileRepository                   repository.RkaklFile
-	ProgramRepository                     repository.Program
-	RkaklProgRepository                   repository.RkaklProg
-	KegiatanRepository                    repository.Kegiatan
-	ProgKegiatanRepository                repository.ProgKegiatan
-	OutputRepository                      repository.Output
-	KegiatanOutputRepository              repository.KegiatanOutput
-	KegiatanOutputLocationRepository      repository.KegiatanOutputLocation
-	SubOutputRepository                   repository.SubOutput
-	KomponenRepository                    repository.Komponen
-	SubKomponenRepository                 repository.SubKomponen
-	AkunRepository                        repository.Akun
-	SubKomponenAkunRepository             repository.SubKomponenAkun
-	SubKomponenAkunLocationRepository     repository.SubKomponenAkunLocation
-	RkaklItemRepository                   repository.RkaklItem
-	SpiAngRepository                      repository.SpiAng
-	SpiAngItemRepository                  repository.SpiAngItem
-	SpiAngKesesuaianRepository            repository.SpiAngKesesuaian
-	JenisKesesuaianRepository             repository.JenisKesesuaian
-	JenisPengendaliRepository             repository.JenisPengendali
-	JenisRekapitulasiRepository           spi_pbj.JenisRekapitulasi
-	SpiPbjRekapitulasiRepository          spi_pbj.SpiPbjRekapitulasi
-	BulanRepository                       repository.Bulan
-	GroupPackageValueRepository           spi_pbj.GroupPackageValue
-	JenisBelanjaPaguRepository            spi_pbj.JenisBelanjaPagu
-	MethodApbjRepository                  spi_pbj.MethodApbj
-	SpiPbjPaketRepository                 spi_pbj.SpiPbjPaket
-	SpiPbjPaketJenisBelanjaPaguRepository spi_pbj.SpiPbjPaketJenisBelanjaPagu
-	SpiBmnRepository                      repository.SpiBmn
-	WbkProgramRankerRepository            wbk.WbkProgramRanker
-	WbkKomponenRepository                 wbk.WbkKomponen
-	WbkProgramRepository                  wbk.WbkProgram
-	WbkProgramTujuanRepository            wbk.WbkProgramTujuan
-	WbkProgramTargetRepository            wbk.WbkProgramTarget
-	WbkSubProgramRankerRepository         wbk.WbkSubProgramRanker
-	FrekuensiRankerRepository             wbk.FrekuensiRanker
-	WbkSubProgramUraianRepository         wbk.WbkSubProgramUraian
-	WbkSubProgramUraianBulanRepository    wbk.WbkSubProgramUraianBulan
-	WbkSubProgramRankerBulanRepository    wbk.WbkSubProgramRankerBulan
+	Db                                     *gorm.DB
+	LoginAppRepository                     repository.LoginApp
+	UserAppRepository                      repository.UserApp
+	ThnAngRepository                       repository.ThnAng
+	SatkerRepository                       repository.Satker
+	SpiSdmRepository                       repository.SpiSdm
+	JenisSdmRepository                     repository.JenisSdm
+	JenisCertificateRepository             repository.JenisCertificate
+	PegawaiRepository                      repository.Pegawai
+	SpiSdmItemRepository                   repository.SpiSdmItem
+	SpiSdmFileRepository                   repository.SpiSdmFile
+	RkaklRepository                        repository.Rkakl
+	RkaklFileRepository                    repository.RkaklFile
+	ProgramRepository                      repository.Program
+	RkaklProgRepository                    repository.RkaklProg
+	KegiatanRepository                     repository.Kegiatan
+	ProgKegiatanRepository                 repository.ProgKegiatan
+	OutputRepository                       repository.Output
+	KegiatanOutputRepository               repository.KegiatanOutput
+	KegiatanOutputLocationRepository       repository.KegiatanOutputLocation
+	SubOutputRepository                    repository.SubOutput
+	KomponenRepository                     repository.Komponen
+	SubKomponenRepository                  repository.SubKomponen
+	AkunRepository                         repository.Akun
+	SubKomponenAkunRepository              repository.SubKomponenAkun
+	SubKomponenAkunLocationRepository      repository.SubKomponenAkunLocation
+	RkaklItemRepository                    repository.RkaklItem
+	SpiAngRepository                       repository.SpiAng
+	SpiAngItemRepository                   repository.SpiAngItem
+	SpiAngKesesuaianRepository             repository.SpiAngKesesuaian
+	JenisKesesuaianRepository              repository.JenisKesesuaian
+	JenisPengendaliRepository              repository.JenisPengendali
+	JenisRekapitulasiRepository            spi_pbj.JenisRekapitulasi
+	SpiPbjRekapitulasiRepository           spi_pbj.SpiPbjRekapitulasi
+	BulanRepository                        repository.Bulan
+	GroupPackageValueRepository            spi_pbj.GroupPackageValue
+	JenisBelanjaPaguRepository             spi_pbj.JenisBelanjaPagu
+	MethodApbjRepository                   spi_pbj.MethodApbj
+	SpiPbjPaketRepository                  spi_pbj.SpiPbjPaket
+	SpiPbjPaketJenisBelanjaPaguRepository  spi_pbj.SpiPbjPaketJenisBelanjaPagu
+	SpiBmnRepository                       repository.SpiBmn
+	WbkProgramRankerRepository             wbk.WbkProgramRanker
+	WbkKomponenRepository                  wbk.WbkKomponen
+	WbkProgramRepository                   wbk.WbkProgram
+	WbkProgramTujuanRepository             wbk.WbkProgramTujuan
+	WbkProgramTargetRepository             wbk.WbkProgramTarget
+	WbkSubProgramRankerRepository          wbk.WbkSubProgramRanker
+	FrekuensiRankerRepository              wbk.FrekuensiRanker
+	WbkSubProgramUraianRepository          wbk.WbkSubProgramUraian
+	WbkSubProgramUraianBulanRepository     wbk.WbkSubProgramUraianBulan
+	WbkSubProgramRankerBulanRepository     wbk.WbkSubProgramRankerBulan
+	WbkDocUploadSubProgramRankerRepository wbk.WbkDocUploadSubProgramRanker
+	WbkDocUploadSubProgramUraianRepositor  wbk.WbkDocUploadSubProgramUraian
+	WbkSatkerRepository                    wbk.WbkSatker
+	ThnAngSatkerRepository                 repository.ThnAngSatker
 }
 
 func NewFactory() *Factory {
@@ -131,9 +136,12 @@ func (f *Factory) SetupRepository() {
 	f.WbkProgramTujuanRepository = wbk.NewWbkProgramTujuan(f.Db)
 	f.WbkProgramTargetRepository = wbk.NewWbkProgramTarget(f.Db)
 	f.WbkSubProgramRankerRepository = wbk.NewWbkSubProgramRanker(f.Db)
-
 	f.FrekuensiRankerRepository = wbk.NewFrekuensiRanker(f.Db)
 	f.WbkSubProgramUraianRepository = wbk.NewWbkSubProgramUraian(f.Db)
 	f.WbkSubProgramUraianBulanRepository = wbk.NewWbkSubProgramUraianBulan(f.Db)
 	f.WbkSubProgramRankerBulanRepository = wbk.NewWbkSubProgramRankerBulan(f.Db)
+	f.WbkDocUploadSubProgramRankerRepository = wbk.NewWbkDocUploadSubProgramRanker(f.Db)
+	f.WbkDocUploadSubProgramUraianRepositor = wbk.NewWbkDocUploadSubProgramUraian(f.Db)
+	f.WbkSatkerRepository = wbk.NewWbkSatker(f.Db)
+	f.ThnAngSatkerRepository = repository.NewThnAngSatker(f.Db)
 }

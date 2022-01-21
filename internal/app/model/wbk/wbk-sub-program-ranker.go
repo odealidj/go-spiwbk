@@ -18,6 +18,7 @@ type WbkSubProgramRankerEntity struct {
 	WbkProgramRankerID int    `json:"wbk_program_ranker_id"`
 	Code               string `json:"code"`
 	Name               string `json:"name"`
+	FrekuensiRankerID  *int   `json:"frekuensi_Ranker_Id"`
 }
 
 type WbkSubProgramRanker struct {

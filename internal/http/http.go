@@ -31,6 +31,7 @@ import (
 	"codeid-boiler/internal/app/handler/wbk/wbk-program-ranker"
 	"codeid-boiler/internal/app/handler/wbk/wbk-program-target"
 	"codeid-boiler/internal/app/handler/wbk/wbk-program-tujuan"
+	wbk_satker "codeid-boiler/internal/app/handler/wbk/wbk-satker"
 	"codeid-boiler/internal/app/handler/wbk/wbk-sub-program-ranker"
 	"codeid-boiler/internal/app/handler/wbk/wbk-sub-program-uraian"
 	"codeid-boiler/internal/factory"
@@ -100,5 +101,6 @@ func Init(e *echo.Echo, f *factory.Factory) {
 	frekuensi_ranker.NewHandler(f).Route(g.Group("/frekuensi-ranker"))
 	wbk_sub_program_uraian.NewHandler(f).Route(g.Group("/wbk-sub-program-uraian"))
 	auth_wbk.NewHandler(f).Route(g.Group("/auth-wbk"))
+	wbk_satker.NewHandler(f).Route(g.Group("/wbk-satker"))
 
 }

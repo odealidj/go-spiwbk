@@ -18,6 +18,7 @@ type WbkProgramEntity struct {
 	Code          string `json:"code"`
 	Name          string `json:"name"`
 	Tag           string `json:"tag"`
+	Num           int    `json:"num"`
 }
 
 type WbkProgram struct {

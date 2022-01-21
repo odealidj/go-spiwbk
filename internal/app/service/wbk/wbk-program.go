@@ -8,6 +8,7 @@ import (
 	"codeid-boiler/internal/factory"
 	res "codeid-boiler/pkg/util/response"
 	"codeid-boiler/pkg/util/trxmanager"
+	"fmt"
 	"gorm.io/gorm"
 	"net/http"
 )
@@ -96,28 +97,22 @@ func (s *wbkProgramService) Get(ctx *abstraction.Context,
 
 	var result *wbk3.WbkProgramGetInfoResponse
 
-	if err := trxmanager.New(s.Db).WithTrx(ctx, func(ctx *abstraction.Context) error {
+	datas, info, err := s.WbkProgramRepository.Find(ctx,
+		&wbk2.WbkProgramFilter{WbkProgramEntityFilter: payload.WbkProgramEntityFilter}, &payload.Pagination)
+	if err != nil {
+		return nil, res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
+			"Invalid Spi bmn", err.Error())
+	}
 
-		datas, info, err := s.WbkProgramRepository.Find(ctx,
-			&wbk2.WbkProgramFilter{WbkProgramEntityFilter: payload.WbkProgramEntityFilter}, &payload.Pagination)
-		if err != nil {
-			return res.CustomErrorBuilderWithData(http.StatusUnprocessableEntity,
-				"Invalid Spi bmn", err.Error())
-		}
+	//num := 0
+	for i, _ := range datas {
+		datas[i].Row = i + 1
+		datas[i].WbkProgram = fmt.Sprintf("%s. %s", datas[i].Code, datas[i].Name)
+	}
 
-		//num := 0
-		for i, _ := range datas {
-			datas[i].Row = i + 1
-		}
-
-		result = &wbk3.WbkProgramGetInfoResponse{
-			Datas:          &datas,
-			PaginationInfo: info,
-		}
-
-		return nil
-	}); err != nil {
-		return nil, err
+	result = &wbk3.WbkProgramGetInfoResponse{
+		Datas:          &datas,
+		PaginationInfo: info,
 	}
 
 	return result, nil
