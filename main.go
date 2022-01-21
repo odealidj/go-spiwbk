@@ -7,7 +7,6 @@ import (
 	"codeid-boiler/internal/middleware"
 	"context"
 	echopprof "github.com/hiko1129/echo-pprof"
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 	netHTTP "net/http"
@@ -18,6 +17,7 @@ import (
 	"time"
 )
 
+/*
 func init() {
 	//err := godotenv.Load(".env.development")
 	//err := godotenv.Load(".env.local")
@@ -27,6 +27,7 @@ func init() {
 
 	}
 }
+*/
 
 // @title codeid-boiler
 // @version 0.0.1
@@ -40,11 +41,11 @@ func init() {
 // @BasePath /
 func main() {
 
-	//ENV := os.Getenv("ENV")
-	ENV := "LOCAL"
+	ENV := os.Getenv("ENV")
+	//ENV := "LOCAL"
 	logrus.Info("Choosen environment " + ENV)
 
-	var PORT = "3030" // os.Getenv("PORT")
+	var PORT = os.Getenv("PORT")
 
 	db.Init()
 	defer db.Close()
