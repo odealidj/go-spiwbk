@@ -7,6 +7,7 @@ import (
 	"codeid-boiler/internal/middleware"
 	"context"
 	echopprof "github.com/hiko1129/echo-pprof"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 	netHTTP "net/http"
@@ -17,7 +18,6 @@ import (
 	"time"
 )
 
-/*
 func init() {
 	//err := godotenv.Load(".env.development")
 	//err := godotenv.Load(".env.local")
@@ -27,7 +27,7 @@ func init() {
 
 	}
 }
-*/
+
 // @title codeid-boiler
 // @version 0.0.1
 // @description This is a doc for codeid-boiler.
