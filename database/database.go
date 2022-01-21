@@ -18,17 +18,17 @@ func Init() {
 	dbConfigurations := map[string]Db{
 		os.Getenv("DB_CONN_NAME_DJPT_SPIWBK"): &dbMySQL{
 			db: db{
-				Host: os.Getenv("DB_HOST"),
-				User: os.Getenv("DB_USER"),
-				Pass: os.Getenv("DB_PASS"),
-				Port: os.Getenv("DB_PORT"),
-				Name: os.Getenv("DB_NAME"),
+				Host: "49.128.186.146",  // os.Getenv("DB_HOST"),
+				User: "djptkkps_heroku", //os.Getenv("DB_USER"),
+				Pass: "dUZCa8m5QFKVTMy", // os.Getenv("DB_PASS"),
+				Port: "3306",            //os.Getenv("DB_PORT"),
+				Name: "djptkkps_heroku", //os.Getenv("DB_NAME"),
 			},
 			//SslMode: os.Getenv("DB_SSLMODE"),
 			//Tz:      os.Getenv("DB_TZ"),
-			Charset:   os.Getenv("DB_Charset"),
-			ParseTime: os.Getenv("DB_ParseTime"),
-			Loc:       os.Getenv("DB_LOC"),
+			Charset:   "utf8mb4", //os.Getenv("DB_Charset"),
+			ParseTime: "True",    // os.Getenv("DB_ParseTime"),
+			Loc:       "Local",   //os.Getenv("DB_LOC"),
 		},
 
 		/*

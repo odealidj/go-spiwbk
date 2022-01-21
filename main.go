@@ -1,23 +1,20 @@
 package main
 
 import (
-	"context"
-	netHTTP "net/http"
-	"os/signal"
-	"strings"
-	"syscall"
-	"time"
-
-	echopprof "github.com/hiko1129/echo-pprof"
-
 	db "codeid-boiler/database"
 	"codeid-boiler/internal/factory"
 	"codeid-boiler/internal/http"
 	"codeid-boiler/internal/middleware"
-	"github.com/sirupsen/logrus"
-	"os"
-
+	"context"
+	echopprof "github.com/hiko1129/echo-pprof"
 	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
+	netHTTP "net/http"
+	"os"
+	"os/signal"
+	"strings"
+	"syscall"
+	"time"
 )
 
 /*
@@ -31,7 +28,6 @@ func init() {
 	}
 }
 */
-
 // @title codeid-boiler
 // @version 0.0.1
 // @description This is a doc for codeid-boiler.
@@ -44,10 +40,11 @@ func init() {
 // @BasePath /
 func main() {
 
-	ENV := os.Getenv("ENV")
+	//ENV := os.Getenv("ENV")
+	ENV := "LOCAL"
 	logrus.Info("Choosen environment " + ENV)
 
-	var PORT = os.Getenv("PORT")
+	var PORT = "3030" // os.Getenv("PORT")
 
 	db.Init()
 	defer db.Close()
@@ -91,4 +88,18 @@ func main() {
 	if err := e.Shutdown(ctx); err != nil {
 		e.Logger.Fatal(err)
 	}
+
+	/*
+		db.Init()
+		//migration.Init()
+
+		e := echo.New()
+		middleware.Init(e)
+
+		f := factory.NewFactory()
+		http.Init(e, f)
+
+		e.Logger.Fatal(e.Start(":" + PORT))
+
+	*/
 }

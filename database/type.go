@@ -36,9 +36,10 @@ func (c *dbMySQL) Init() (*gorm.DB, error) {
 	//MyLocal
 	//dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=%s&parseTime=%s&loc=%s", c.User, c.Pass, c.Host, c.Name, c.Charset, c.ParseTime, c.Loc)
 	//Heroku sukses
-	fmt.Println(fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=%s", c.User, c.Pass, c.Host, c.Name, c.ParseTime))
+
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=%s", c.User, c.Pass, c.Host, c.Name, c.ParseTime)
 
+	//dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=%s", "djptkkps_heroku", "dUZCa8m5QFKVTMy", "49.128.186.146", "djptkkps_heroku", c.ParseTime)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: false,
 		Logger:                                   logger.Default.LogMode(logger.Info),
